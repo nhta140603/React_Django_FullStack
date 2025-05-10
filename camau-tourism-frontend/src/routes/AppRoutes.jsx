@@ -10,7 +10,7 @@ import PersonalTrip from '../pages/PersonalTrips';
 
 import UserInfo from '../pages/User-profile';
 import UserTours from '../pages/User-tours'
-import UserBookingHotel from '../pages/User-Booking';
+import UserBookingHotel from '../pages/User-booking';
 import ProfileLayout from '../layouts/ProfileLayout'
 import DestinationDetailPage from '../pages/DestinationDetailPage';
 import ArticlesDetailPage from '../pages/ArticlesDetailPage';
