@@ -1,0 +1,43 @@
+@import "tailwindcss";
+@import "react-quill-new/dist/quill.snow.css";
+.no-scrollbar 
+{
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.avatar-hover:hover {
+    box-shadow: 0 4px 14px 0 rgba(34,211,238,0.45), 0 1.5px 4px 0 rgba(0,0,0,0.08);
+    border-color: #22d3ee !important; /* cyan-400 */
+    transform: scale(1.08);
+    transition: all 0.25s cubic-bezier(.4,0,.2,1);
+}
+.avatar-hover {
+    transition: all 0.25s cubic-bezier(.4,0,.2,1);
+}
+
+.whitespace-nowrap{
+    white-space:nowrap;
+}
+
+
+.truncate-cell {
+    max-width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+  }
+
+.side-bar {
+    display:block
+}
+
+.side-bar.active{
+    display:block
+}
+
+.position-relative{
+    position: relative;
+    right: 12px;
+}

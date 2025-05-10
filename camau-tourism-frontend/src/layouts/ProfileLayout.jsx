@@ -1,0 +1,42 @@
+import React, { useState } from "react";
+import ProfileSidebar from "../components/Users/ProfileSidebar";
+import MainLayout from "./MainLayout";
+import { Outlet } from "react-router-dom";
+import { getInfoUser, updateInfoUser } from "../api/user_api";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+export default function UserProfile() {
+  const { data: userData, isLoading: loading, error } = useQuery({
+    queryKey: ["userData"],
+    queryFn: getInfoUser,
+    staleTime: 5 * 60 * 1000,
+    retry: 2,
+  });
+  const [selectedTab, setSelectedTab] = useState("trang-ca-nhan");
+
+  if (loading) return <MainLayout></MainLayout>;
+  if (error)
+    return (
+      <MainLayout>
+        <div className="text-center py-20 text-red-500">{error}</div>
+      </MainLayout>
+    );
+  if (!userData) return null;
+
+  return (
+    <MainLayout>
+      <div className="flex min-h-screen">
+        <ProfileSidebar
+          selected={selectedTab}
+          onSelect={setSelectedTab}
+          avatar={userData.avatar}
+          name={userData.name}
+        />
+        <Outlet />
+        <ToastContainer position="top-right" autoClose={3000} />
+      </div>
+    </MainLayout>
+
+  );
+}
