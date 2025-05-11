@@ -28,7 +28,7 @@ from datetime import timedelta
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['https://6ae7a5ba-e7a1-4574-ba0c-8bbe2e9f6e18-dev.e1-us-east-azure.choreoapis.dev/djangoreactapp/camautourismbackend/v1.0']
 
 
 # Application definition
