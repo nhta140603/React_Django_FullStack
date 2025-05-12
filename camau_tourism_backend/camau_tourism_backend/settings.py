@@ -46,7 +46,16 @@ INSTALLED_APPS = [
     'api',
     'adminAPI',
     'ckeditor',
+    'cloudinary', 
+    'cloudinary_storage'
 ]
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'deavaowp3',
+    'API_KEY': '986618732939791',
+    'API_SECRET': 'x-7Onfk61SX7W1t8DqAdhu2EPgA'
+}
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 CORS_ALLOW_ALL_ORIGINS = True
 

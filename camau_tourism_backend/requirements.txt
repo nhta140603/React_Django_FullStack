@@ -12,3 +12,4 @@ django-ckeditor
 requests
 Pillow
 gunicorn
+django-cloudinary-storage
