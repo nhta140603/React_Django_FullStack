@@ -83,13 +83,13 @@ class TourSerializer(serializers.ModelSerializer):
             return obj.image.url
 
 class DestinationSerializer(serializers.ModelSerializer):
-    image_url = serializers.SerializerMethodField()
     class Meta:
         model = Destination
         fields = '__all__'
-    def get_image_url(self, obj):
-        if obj.image_url:
-            return obj.image_url.url
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['image_url'] = instance.image_url.url if instance.image_url else None
+        return data
 
 class ArticlesSerializer(serializers.ModelSerializer):
     cover_image_url = serializers.SerializerMethodField()
