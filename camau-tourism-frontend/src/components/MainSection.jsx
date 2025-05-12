@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import sectionBg from '../assets/images/backgrounds/Section.jpg';
+import sectionBg from '../../assets/images/backgrounds/Section.jpg';
 
 function HeroSection() {
   const parallaxRef = useRef(null);
