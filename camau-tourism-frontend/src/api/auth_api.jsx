@@ -1,4 +1,7 @@
-const API_URL = "/choreo-apis/djangoreactapp/camautourismbackend/v1/api/client/";
+const API_URL =
+  (window?.configs && window.configs.API_URL)
+    ? window.configs.API_URL
+    : (import.meta.env.VITE_API_URL || '/choreo-apis/djangoreactapp/camautourismbackend/v1/api/client/');
 
 export async function registerUser(data) {
   const response = await fetch(`${API_URL}register/`, {
