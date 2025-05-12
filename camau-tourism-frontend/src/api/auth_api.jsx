@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8000/api/client/";
+const API_URL = "/choreo-apis/djangoreactapp/camautourismbackend/v1/api/client/";
 
 export async function registerUser(data) {
   const response = await fetch(`${API_URL}register/`, {
