@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.postgres.fields import ArrayField
 from ckeditor.fields import RichTextField
 from django.utils.text import slugify
+from cloudinary.models import CloudinaryField
 
 class Client(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -40,7 +41,7 @@ class Destination(models.Model):
     longitude = models.FloatField(blank=True, null=True)
     website = models.URLField(blank=True, null=True)
     phone = models.CharField(max_length=20, blank=True, null=True)
-    image_url = models.ImageField(upload_to='destinations/', blank=True, null=True)
+    image_url = CloudinaryField('image', folder='destinations', blank=True, null=True)
     is_featured = models.BooleanField(default=False)
     slug = models.SlugField(unique= False, blank=True)
     def save(self, *args, **kwargs):
