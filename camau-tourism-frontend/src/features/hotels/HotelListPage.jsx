@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import FilterSidebar from "/WORK/App_Web_QBDL_CaMau/camau-tourism-frontend/src/components/Hotels/HotelFilter";
+import FilterSidebar from "../../components/Hotels/HotelFilter";
 import HotelCard from "../../components/Hotels/HotelCard"
 import { getList } from "../../api/user_api"
 import FilterBar from "../../components/Hotels/FilterBar";
