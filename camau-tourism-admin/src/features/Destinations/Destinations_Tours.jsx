@@ -100,7 +100,7 @@ export default function TourSchedulePage() {
 
   async function fetchDestinations() {
     const data = await getList('destinations');
-    setDetination(data.map(destination => ({
+    setDetination(data.results.map(destination => ({
       value: destination.id,
       label: destination.name,
       image: destination.image_url
