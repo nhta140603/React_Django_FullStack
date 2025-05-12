@@ -119,7 +119,7 @@ function HeroSection() {
               </path>
             </svg>
             <img
-              src="src/assets/images/backgrounds/Section.jpg"
+              src={sectionBg}
               alt="Cà Mau Nature"
               className="rounded-3xl shadow-2xl w-full object-cover border-4 border-cyan-200 aspect-[12/5] max-h-[300px]"
               style={{ background: "#e0f2fe" }}
