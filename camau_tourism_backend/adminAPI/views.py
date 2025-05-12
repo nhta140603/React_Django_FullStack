@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
-
+from rest_framework.parsers import MultiPartParser, FormParser
 
 class IsAdminOrReadOnly(permissions.BasePermission):
     def has_permission(self, request, view):
@@ -43,6 +43,7 @@ class DestinationViewSet(viewsets.ModelViewSet):
     queryset = Destination.objects.all()
     pagination_class = StandardResultsSetPagination
     serializer_class = DestinationSerializer
+    parser_classes = [MultiPartParser, FormParser]
 
 class ClientViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminOrReadOnly]   
