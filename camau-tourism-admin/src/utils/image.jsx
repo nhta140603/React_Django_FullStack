@@ -1,7 +1,7 @@
 const BASE_URLS = {
   default: (window?.configs && window.configs.IMAGE_BASE_URL)
               ? window.configs.IMAGE_BASE_URL
-              : (import.meta.env.VITE_IMAGE_BASE_URL || '/choreo-apis/djangoreactapp/camautourismbackend/v1'),
+              : (import.meta.env.VITE_IMAGE_BASE_URL || '/choreo-apis/djangoreactapp/camautourismbackend/v1/'),
   avatar: (window?.configs && window.configs.AVATAR_BASE_URL)
               ? window.configs.AVATAR_BASE_URL
               : (import.meta.env.VITE_AVATAR_BASE_URL || '/avatar-path'),

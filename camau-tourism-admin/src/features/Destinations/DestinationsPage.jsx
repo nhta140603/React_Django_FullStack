@@ -207,7 +207,7 @@ export default function DestinationPage() {
       title: "Ảnh",
       render: (destination) => (
         <img
-          src={getImageUrl(destination.image_url)}
+          src={destination.image_url}
           alt={destination.name}
           className="w-14 h-14 rounded-lg border object-cover"
         />
