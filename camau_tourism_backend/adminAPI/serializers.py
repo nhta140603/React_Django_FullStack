@@ -57,7 +57,7 @@ class DestinationSerializer(serializers.ModelSerializer):
     image_url = serializers.SerializerMethodField()
     class Meta:
         model = Destination
-        fields = ['__all__']
+        fields = '__all__'
     def get_image_url(self, obj):
         if obj.image_url:
             return obj.image_url.url
