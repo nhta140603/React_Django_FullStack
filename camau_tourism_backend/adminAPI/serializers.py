@@ -34,9 +34,9 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'first_name', 'last_name', 'full_name', 'is_active']
-
     def get_full_name(self, obj):
         return obj.get_full_name()
+    
 class UserStatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -69,13 +69,14 @@ class TourGuideSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class CuisineSerializer(serializers.ModelSerializer):
-    image = serializers.SerializerMethodField()
     class Meta:
         model = Cuisine
         fields = '__all__'
-    def get_image(self, obj):
-        if obj.image:
-            return obj.image.url
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['image'] = instance.image.url if instance.image else None
+        return data
+
 
 class HotelAmenitySerializer(serializers.ModelSerializer):
     class Meta:
@@ -84,14 +85,14 @@ class HotelAmenitySerializer(serializers.ModelSerializer):
 
 
 class TourSerializer(serializers.ModelSerializer):
-    image = serializers.SerializerMethodField()
     class Meta:
         model = Tour
         fields = '__all__'
-    def get_image(self, obj):
-        if obj.image:
-            return obj.image.url
-        
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['image'] = instance.image.url if instance.image else None
+        return data
+
 class TourDestinationSerializer(serializers.ModelSerializer):
     class Meta:
         model = TourDestination
@@ -113,26 +114,27 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class HotelSerializer(serializers.ModelSerializer):
-    image_cover = serializers.SerializerMethodField()
     class Meta:
         model = Hotel
         fields = '__all__'
-    def get_image_cover(self, obj):
-        if obj.image_cover:
-            return obj.image_cover.url
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['image_cover'] = instance.image_cover.url if instance.image_cover else None
+        return data
+
 
 class HotelRoomSerializer(serializers.ModelSerializer):
-    image_url = serializers.SerializerMethodField()
     hotel = serializers.PrimaryKeyRelatedField(queryset=Hotel.objects.all())
     class Meta:
         model = HotelRoom
         fields = '__all__'
     def get_hotel(self, obj):
         return obj.hotel.name if obj.hotel else None
-    def get_image_url(self, obj):
-        if obj.image_url:
-            return obj.image_url.url
-
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['image_cover'] = instance.image_url.url if instance.image_url else None
+        return data
+    
 class RoomBookingSerializer(serializers.ModelSerializer):
     class Meta:
         model = RoomBooking
@@ -169,22 +171,22 @@ class PersonalTourGuideBookingSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class FestivalSerializer(serializers.ModelSerializer):
-    image_url = serializers.SerializerMethodField()
     class Meta:
         model = Festival
         fields = '__all__'
-    def get_image_url(self, obj):
-        if obj.image_url:
-            return obj.image_url.url
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['image_cover'] = instance.image_url.url if instance.image_url else None
+        return data
               
 class ArticlesSerializer(serializers.ModelSerializer):
-    cover_image_url = serializers.SerializerMethodField()
     class Meta:
         model = Article
         fields = '__all__'
-    def get_cover_image_url(self, obj):
-        if obj.cover_image_url:
-            return obj.cover_image_url.url
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['image_cover'] = instance.cover_image_url.url if instance.cover_image_url else None
+        return data
 
 class PromotionSerializer(serializers.ModelSerializer):
     class Meta:
