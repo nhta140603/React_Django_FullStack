@@ -1,4 +1,8 @@
-const AVATAR_BASE_URL = '/choreo-apis/djangoreactapp/camautourismbackend/v1/';
+const AVATAR_BASE_URL = 
+  (window?.configs && window.configs.AVATAR_BASE_URL)
+    ? window.configs.AVATAR_BASE_URL
+    : (import.meta.env.VITE_AVATAR_BASE_URL || '/choreo-apis/djangoreactapp/camautourismbackend/v1/');
+    
 const API_URL =
   (window?.configs && window.configs.API_URL)
     ? window.configs.API_URL
