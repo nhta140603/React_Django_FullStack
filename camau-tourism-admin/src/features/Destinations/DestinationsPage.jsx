@@ -23,7 +23,7 @@ export default function DestinationPage() {
     "Địa điểm mua sắm",
     "Du lịch sinh thái"
   ];
-  const [destinations, setDestinations] = useState({count: 0, results: []});
+  const [destinations, setDestinations] = useState({ count: 0, results: [] });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -33,7 +33,7 @@ export default function DestinationPage() {
 
   const [detailModalOpen, setDetailModalOpen] = useState(false);
   const [selectedDestination, setSelectedDestination] = useState([]);
-  const [selectedRowIds, setSelectedRowIds] = useState([]); 
+  const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(5)
   const [totalPages, setTotalPages] = useState(1)
@@ -78,40 +78,51 @@ export default function DestinationPage() {
     setEditTour(null);
   };
   const handleEditSubmit = async (values) => {
-    let payload = values;
     try {
-      if (values.image_url instanceof File) {
-        const formData = new FormData();
+      const formData = new FormData();
+      const hasFile = values.image_url instanceof File || (values.image_url && values.image_url[0] instanceof File);
+
+      if (hasFile) {
         formColumns.forEach(col => {
-          if (values[col.key] !== undefined && values[col.key] !== null) {
-            formData.append(col.key, values[col.key]);
+          const val = values[col.key];
+          if (val !== undefined && val !== null) {
+            if (col.key === "image_url" && val instanceof File) {
+              formData.append("image_url", val);
+            } else if (col.key === "image_url" && val[0] instanceof File) {
+              formData.append("image_url", val[0]); // Nếu là FileList
+            } else {
+              formData.append(col.key, val);
+            }
           }
         });
-        payload = formData;
+
         if (!editTour) {
-          await createItem('destinations', payload, true)
-          toast.success("Thêm thành công địa điểm")
+          await createItem("destinations", formData);
+          toast.success("Thêm thành công địa điểm");
         } else {
-          await updateItem('destinations', editTour.id, payload, true)
-          toast.success("Cập nhật thành công địa điểm")
+          await updateItem("destinations", editTour.id, formData);
+          toast.success("Cập nhật thành công địa điểm");
         }
       } else {
         if (!editTour) {
-          await createItem('destinations', payload)
-          toast.success("Thêm thành công địa điểm")
+          await createItem("destinations", values);
+          toast.success("Thêm thành công địa điểm");
         } else {
-          await updateItem('destinations', editTour.id, payload)
-          toast.success("Cập nhật thành công địa điểm")
+          await updateItem("destinations", editTour.id, values);
+          toast.success("Cập nhật thành công địa điểm");
         }
       }
-      setDetailModalOpen(false)
-      setEditModalOpen(false)
-      setEditTour(null)
-      fetchDestinations()
+
+      setDetailModalOpen(false);
+      setEditModalOpen(false);
+      setEditTour(null);
+      fetchDestinations();
+
     } catch (err) {
       toast.error("Có lỗi khi thực hiện thao tác: " + (err.message || "Lỗi không xác định"));
     }
   };
+
 
   const handleDelete = async (destination) => {
     if (window.confirm(`Bạn có muốn xóa ${destination.name}?`)) {
@@ -136,7 +147,7 @@ export default function DestinationPage() {
       }
     }
   };
-  
+
   const handleToggleFeatured = async (destination) => {
     try {
       setDestinations(prev => {
@@ -148,11 +159,11 @@ export default function DestinationPage() {
         });
         return { ...prev, results: newResults };
       });
-      
-      await updateItem("destinations", destination.id, { 
-        is_featured: !destination.is_featured 
+
+      await updateItem("destinations", destination.id, {
+        is_featured: !destination.is_featured
       });
-            const message = !destination.is_featured 
+      const message = !destination.is_featured
         ? `${destination.name} đã được đánh dấu nổi bật`
         : `${destination.name} đã bỏ đánh dấu nổi bật`;
       toast.success(message);
@@ -166,12 +177,12 @@ export default function DestinationPage() {
         });
         return { ...prev, results: newResults };
       });
-      
+
       console.error("Toggle featured error:", err);
       toast.error("Có lỗi khi cập nhật trạng thái nổi bật!");
     }
   };
-  
+
   const columns = [
     {
       key: "checkbox",
@@ -323,18 +334,18 @@ export default function DestinationPage() {
       description: "Đánh dấu địa điểm này để hiển thị nổi bật trên trang chủ"
     },
   ];
-  
+
   const navigate = useNavigate()
   const actions = [
     {
       key: "toggle_featured",
       title: (destination) => destination.is_featured ? "Bỏ đánh dấu nổi bật" : "Đánh dấu nổi bật",
       onClick: handleToggleFeatured,
-      icon: (destination) => destination.is_featured ? 
-        <FaStar className="text-yellow-500" /> : 
+      icon: (destination) => destination.is_featured ?
+        <FaStar className="text-yellow-500" /> :
         <FaRegStar />,
-      className: (destination) => destination.is_featured ? 
-        "text-yellow-500 hover:text-yellow-700" : 
+      className: (destination) => destination.is_featured ?
+        "text-yellow-500 hover:text-yellow-700" :
         "text-gray-500 hover:text-yellow-500",
     },
     {
@@ -384,117 +395,117 @@ export default function DestinationPage() {
     </table>
   );
   const Pagination = () => {
-      const handlePageSizeChange = (e) => {
-        const newSize = parseInt(e.target.value, 10)
-        setPageSize(newSize)
-        setPage(1)
-      }
-  
-      return (
-        <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-4 rounded-lg">
-          <div className="flex flex-1 justify-between sm:hidden">
-            <button
-              onClick={() => setPage(prev => Math.max(prev - 1, 1))}
-              disabled={page === 1}
-              className={`relative inline-flex items-center rounded-md border px-4 py-2 text-sm font-medium ${page === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white text-gray-700 hover:bg-gray-50'}`}
-            >
-              Trước
-            </button>
-            <button
-              onClick={() => setPage(prev => Math.min(prev + 1, totalPages))}
-              disabled={page === totalPages}
-              className={`relative ml-3 inline-flex items-center rounded-md border px-4 py-2 text-sm font-medium ${page === totalPages ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white text-gray-700 hover:bg-gray-50'}`}
-            >
-              Sau
-            </button>
+    const handlePageSizeChange = (e) => {
+      const newSize = parseInt(e.target.value, 10)
+      setPageSize(newSize)
+      setPage(1)
+    }
+
+    return (
+      <div className="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6 mt-4 rounded-lg">
+        <div className="flex flex-1 justify-between sm:hidden">
+          <button
+            onClick={() => setPage(prev => Math.max(prev - 1, 1))}
+            disabled={page === 1}
+            className={`relative inline-flex items-center rounded-md border px-4 py-2 text-sm font-medium ${page === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white text-gray-700 hover:bg-gray-50'}`}
+          >
+            Trước
+          </button>
+          <button
+            onClick={() => setPage(prev => Math.min(prev + 1, totalPages))}
+            disabled={page === totalPages}
+            className={`relative ml-3 inline-flex items-center rounded-md border px-4 py-2 text-sm font-medium ${page === totalPages ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-white text-gray-700 hover:bg-gray-50'}`}
+          >
+            Sau
+          </button>
+        </div>
+        <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm text-gray-700">
+              Hiển thị <span className="font-medium">{((page - 1) * pageSize) + 1}</span> đến <span className="font-medium">{Math.min(page * pageSize, destinations.count)}</span> trong tổng số <span className="font-medium">{destinations.count}</span> địa điểm
+            </p>
           </div>
-          <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-            <div>
-              <p className="text-sm text-gray-700">
-                Hiển thị <span className="font-medium">{((page - 1) * pageSize) + 1}</span> đến <span className="font-medium">{Math.min(page * pageSize, destinations.count)}</span> trong tổng số <span className="font-medium">{destinations.count}</span> địa điểm
-              </p>
-            </div>
-            <div className="flex items-center">
-              <label htmlFor="pageSize" className="mr-2 text-sm text-gray-700">Hiển thị:</label>
-              <select
-                id="pageSize"
-                value={pageSize}
-                onChange={handlePageSizeChange}
-                className="rounded border-gray-300 text-sm mr-6"
+          <div className="flex items-center">
+            <label htmlFor="pageSize" className="mr-2 text-sm text-gray-700">Hiển thị:</label>
+            <select
+              id="pageSize"
+              value={pageSize}
+              onChange={handlePageSizeChange}
+              className="rounded border-gray-300 text-sm mr-6"
+            >
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="20">20</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+            </select>
+
+            <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Phân trang">
+              <button
+                onClick={() => setPage(1)}
+                disabled={page === 1}
+                className={`relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 focus:z-20 focus:outline-offset-0 ${page === 1 ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-50'}`}
               >
-                <option value="5">5</option>
-                <option value="10">10</option>
-                <option value="20">20</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-              </select>
-              
-              <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Phân trang">
-                <button
-                  onClick={() => setPage(1)}
-                  disabled={page === 1}
-                  className={`relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 focus:z-20 focus:outline-offset-0 ${page === 1 ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-50'}`}
-                >
-                  <span className="sr-only">Trang đầu</span>
-                  <span className="text-xs">«</span>
-                </button>
-                <button
-                  onClick={() => setPage(prev => Math.max(prev - 1, 1))}
-                  disabled={page === 1}
-                  className={`relative inline-flex items-center px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 focus:z-20 focus:outline-offset-0 ${page === 1 ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-50'}`}
-                >
-                  <span className="sr-only">Trang trước</span>
-                  <FaChevronLeft className="h-3 w-3" aria-hidden="true" />
-                </button>
-                
-                {[...Array(Math.min(5, totalPages))].map((_, i) => {
-                  let pageNumber;
-                  if (totalPages <= 5) {
-                    pageNumber = i + 1;
-                  } else if (page <= 3) {
-                    pageNumber = i + 1;
-                  } else if (page >= totalPages - 2) {
-                    pageNumber = totalPages - 4 + i;
-                  } else {
-                    pageNumber = page - 2 + i;
-                  }
-                  
-                  if (pageNumber <= totalPages) {
-                    return (
-                      <button
-                        key={pageNumber}
-                        onClick={() => setPage(pageNumber)}
-                        className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ring-1 ring-inset ring-gray-300 focus:z-20 focus:outline-offset-0 ${page === pageNumber ? 'bg-blue-600 text-white' : 'text-gray-900 hover:bg-gray-50'}`}
-                      >
-                        {pageNumber}
-                      </button>
-                    );
-                  }
-                  return null;
-                })}
-                
-                <button
-                  onClick={() => setPage(prev => Math.min(prev + 1, totalPages))}
-                  disabled={page === totalPages}
-                  className={`relative inline-flex items-center px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 focus:z-20 focus:outline-offset-0 ${page === totalPages ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-50'}`}
-                >
-                  <span className="sr-only">Trang sau</span>
-                  <FaChevronRight className="h-3 w-3" aria-hidden="true" />
-                </button>
-                <button
-                  onClick={() => setPage(totalPages)}
-                  disabled={page === totalPages}
-                  className={`relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 focus:z-20 focus:outline-offset-0 ${page === totalPages ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-50'}`}
-                >
-                  <span className="sr-only">Trang cuối</span>
-                  <span className="text-xs">»</span>
-                </button>
-              </nav>
-            </div>
+                <span className="sr-only">Trang đầu</span>
+                <span className="text-xs">«</span>
+              </button>
+              <button
+                onClick={() => setPage(prev => Math.max(prev - 1, 1))}
+                disabled={page === 1}
+                className={`relative inline-flex items-center px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 focus:z-20 focus:outline-offset-0 ${page === 1 ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-50'}`}
+              >
+                <span className="sr-only">Trang trước</span>
+                <FaChevronLeft className="h-3 w-3" aria-hidden="true" />
+              </button>
+
+              {[...Array(Math.min(5, totalPages))].map((_, i) => {
+                let pageNumber;
+                if (totalPages <= 5) {
+                  pageNumber = i + 1;
+                } else if (page <= 3) {
+                  pageNumber = i + 1;
+                } else if (page >= totalPages - 2) {
+                  pageNumber = totalPages - 4 + i;
+                } else {
+                  pageNumber = page - 2 + i;
+                }
+
+                if (pageNumber <= totalPages) {
+                  return (
+                    <button
+                      key={pageNumber}
+                      onClick={() => setPage(pageNumber)}
+                      className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ring-1 ring-inset ring-gray-300 focus:z-20 focus:outline-offset-0 ${page === pageNumber ? 'bg-blue-600 text-white' : 'text-gray-900 hover:bg-gray-50'}`}
+                    >
+                      {pageNumber}
+                    </button>
+                  );
+                }
+                return null;
+              })}
+
+              <button
+                onClick={() => setPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={page === totalPages}
+                className={`relative inline-flex items-center px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 focus:z-20 focus:outline-offset-0 ${page === totalPages ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-50'}`}
+              >
+                <span className="sr-only">Trang sau</span>
+                <FaChevronRight className="h-3 w-3" aria-hidden="true" />
+              </button>
+              <button
+                onClick={() => setPage(totalPages)}
+                disabled={page === totalPages}
+                className={`relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 focus:z-20 focus:outline-offset-0 ${page === totalPages ? 'bg-gray-100 cursor-not-allowed' : 'hover:bg-gray-50'}`}
+              >
+                <span className="sr-only">Trang cuối</span>
+                <span className="text-xs">»</span>
+              </button>
+            </nav>
           </div>
         </div>
-      );
-    };
+      </div>
+    );
+  };
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Danh sách địa điểm du lịch</h1>
@@ -536,7 +547,7 @@ export default function DestinationPage() {
         <Modal onClose={handleCloseDetailModal} title={
           <>
             <div className="flex items-center gap-2">
-              <span className="font-semibold">Chi tiết địa điểm:</span> 
+              <span className="font-semibold">Chi tiết địa điểm:</span>
               {selectedDestination.name}
               {selectedDestination.is_featured && (
                 <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
@@ -605,15 +616,15 @@ export default function DestinationPage() {
               <span className="font-medium">Kinh độ: </span>
               {selectedDestination.longitude || "--"}
             </div>
-            
+
             <div className="pt-2 mt-2 border-t">
-              <button 
-                className={`flex items-center gap-1 px-3 py-1 rounded-md ${selectedDestination.is_featured ? 
-                  'bg-yellow-100 text-yellow-700 hover:bg-yellow-200' : 
+              <button
+                className={`flex items-center gap-1 px-3 py-1 rounded-md ${selectedDestination.is_featured ?
+                  'bg-yellow-100 text-yellow-700 hover:bg-yellow-200' :
                   'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
                 onClick={() => {
                   handleToggleFeatured(selectedDestination);
-                  setSelectedDestination(prev => ({...prev, is_featured: !prev.is_featured}));
+                  setSelectedDestination(prev => ({ ...prev, is_featured: !prev.is_featured }));
                 }}
               >
                 {selectedDestination.is_featured ? (
