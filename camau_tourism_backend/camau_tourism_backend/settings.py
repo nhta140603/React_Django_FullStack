@@ -51,9 +51,9 @@ INSTALLED_APPS = [
 ]
 
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'deavaowp3',
-    'API_KEY': '986618732939791',
-    'API_SECRET': 'x-7Onfk61SX7W1t8DqAdhu2EPgA'
+    'cloud_name': 'deavaowp3',
+    'api_key': '986618732939791',
+    'api_secret': 'x-7Onfk61SX7W1t8DqAdhu2EPgA'
 }
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
