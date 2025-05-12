@@ -59,8 +59,7 @@ class DestinationSerializer(serializers.ModelSerializer):
         model = Destination
         fields = '__all__'
     def get_image_url(self, obj):
-        if obj.image_url:
-            return obj.image_url.url
+        return obj.image_url.url if obj.image_url else None
 
 
 class TourGuideSerializer(serializers.ModelSerializer):
