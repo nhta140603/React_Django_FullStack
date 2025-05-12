@@ -37,7 +37,13 @@ export default function DestinationPage() {
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(5)
   const [totalPages, setTotalPages] = useState(1)
+  const BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
+  function getImageUrl(url) {
+    if (!url) return "/default-image.png";
+    if (url.startsWith("http")) return url.replace(/^http:\/\//, "https://");
+    return BACKEND_BASE_URL + url;
+  }
   const fetchDestinations = async () => {
     try {
       setLoading(true);
@@ -207,7 +213,7 @@ export default function DestinationPage() {
       title: "Ảnh",
       render: (destination) => (
         <img
-          src={destination.image_url || "/default-image.png"}
+          src={getImageUrl(destination.image_url) || "/default-image.png"}
           alt={destination.name}
           className="w-14 h-14 rounded-lg border object-cover"
         />
