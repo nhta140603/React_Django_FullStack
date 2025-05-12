@@ -54,11 +54,17 @@ class ClientSerializer(serializers.ModelSerializer):
         ]
 
 class DestinationSerializer(serializers.ModelSerializer):
+    image_url = serializers.SerializerMethodField()
     class Meta:
         model = Destination
         fields = [
             'id','name','description','location','type','open_time','close_time'
             ,'ticket_price','latitude','longitude','website','phone','image_url', 'is_featured', 'slug']
+    def get_image_url(self, obj):
+        request = self.context.get('request')
+        if obj.image_url:
+            return request.build_absolute_uri(obj.image_url.url)
+        return None
 
 
 class TourGuideSerializer(serializers.ModelSerializer):
