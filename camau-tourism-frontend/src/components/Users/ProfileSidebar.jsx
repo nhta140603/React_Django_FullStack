@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getAvatarUrl } from '../../api/user_api';
+import defaultAvatar from "../../assets/images/avatar/man-profile_1083548-15963.jpg";
 import { Link } from "react-router-dom";
 import {
   FaUser, FaSuitcaseRolling, FaHotel, FaCar, FaStar,
@@ -18,7 +18,7 @@ const menuItems = [
 ];
 
 export default function ProfileSidebar({ avatar, name }) {
-  const [avatarUrl, setAvatarUrl] = useState('');
+  const { user } = useAuth();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const location = useLocation();
   const getSelectedTab = () => {
@@ -26,14 +26,7 @@ export default function ProfileSidebar({ avatar, name }) {
     if(location.pathname.includes('cac-chuyen-di')) return "cac-chuyen-di";
     if(location.pathname.includes('cac-don-dat-phong')) return "cac-don-dat-phong";
   }
-  useEffect(() => {
-    const fetchAvatarUrl = async () => {
-      const url = await getAvatarUrl(avatar);
-      setAvatarUrl(url);
-    };
-
-    fetchAvatarUrl();
-  }, [avatar]);
+  const avatarUrl = user?.avatar ? `${user.avatar}` : defaultAvatar;
   const selected = getSelectedTab();
   return (
     <aside 
@@ -55,7 +48,7 @@ export default function ProfileSidebar({ avatar, name }) {
         <div className="relative group">
           <img
             className={`${isCollapsed ? 'w-12 h-12' : 'w-24 h-24'} rounded-full border-4 border-white object-cover shadow-inner transition-all duration-300`}
-            src={avatarUrl || 'https://via.placeholder.com/150'}
+            src={avatarUrl || defaultAvatar}
             alt="avatar"
           />
           <div className="absolute inset-0 bg-black bg-opacity-40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
