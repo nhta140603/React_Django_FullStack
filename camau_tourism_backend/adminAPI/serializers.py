@@ -132,7 +132,7 @@ class HotelRoomSerializer(serializers.ModelSerializer):
         return obj.hotel.name if obj.hotel else None
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        data['image_cover'] = instance.image_url.url if instance.image_url else None
+        data['image_url'] = instance.image_url.url if instance.image_url else None
         return data
     
 class RoomBookingSerializer(serializers.ModelSerializer):
