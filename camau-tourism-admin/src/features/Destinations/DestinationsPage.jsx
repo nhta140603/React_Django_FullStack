@@ -10,7 +10,7 @@ import { ToastContainer, toast } from "react-toastify";
 import Tooltip from "../../components/Tooltip"
 import { useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
-
+import { getImageUrl } from "../../utils/image";
 export default function DestinationPage() {
   const typeOptions = [
     "Địa điểm",
@@ -207,7 +207,7 @@ export default function DestinationPage() {
       title: "Ảnh",
       render: (destination) => (
         <img
-          src={destination.image_url || "/default-image.png"}
+          src={getImageUrl(destination.image_url)}
           alt={destination.name}
           className="w-14 h-14 rounded-lg border object-cover"
         />
