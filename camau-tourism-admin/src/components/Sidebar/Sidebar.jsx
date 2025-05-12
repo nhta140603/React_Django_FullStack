@@ -34,7 +34,7 @@ const menuGroups = [
     title: "Lễ hội & Ẩm thực",
     items: [
       { icon: <FaCalendarAlt />, label: "Lễ hội", path: "/festivals" },
-      { icon: <PiBowlFoodFill />, label: "Ẩm thực", path: "/cuisine" },
+      { icon: <PiBowlFoodFill />, label: "Ẩm thực", path: "/cuisines" },
       // { icon: <FaGift />, label: "Khuyến mãi", path: "/promotions" },
     ]
   },
