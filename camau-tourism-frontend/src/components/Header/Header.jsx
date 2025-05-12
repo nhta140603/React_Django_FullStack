@@ -26,7 +26,7 @@ const AVATAR_BASE_URL =
   (window?.configs && window.configs.AVATAR_BASE_URL)
     ? window.configs.AVATAR_BASE_URL
     : (import.meta.env.VITE_AVATAR_BASE_URL || '/choreo-apis/djangoreactapp/camautourismbackend/v1');
-  const avatarUrl = user?.avatar ? `${AVATAR_BASE_URL}/${user.avatar}` : defaultAvatar;
+  const avatarUrl = user?.avatar ? `${AVATAR_BASE_URL}${user.avatar}` : defaultAvatar;
   return (
     <header className="bg-gradient-to-bl from-blue-600 via-blue-500 to-teal-400 text-white sticky top-0 z-50">
       <div className="container mx-auto flex justify-between items-center py-3 px-4 md:px-8 max-w-[1310px]">

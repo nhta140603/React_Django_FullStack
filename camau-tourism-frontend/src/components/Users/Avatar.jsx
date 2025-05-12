@@ -1,11 +1,14 @@
-const AVATAR_BASE_URL = "http://localhost:8000";
-
+const AVATAR_BASE_URL = 
+  (window?.configs && window.configs.AVATAR_BASE_URL)
+    ? window.configs.AVATAR_BASE_URL
+    : (import.meta.env.VITE_AVATAR_BASE_URL || '/choreo-apis/djangoreactapp/camautourismbackend/v1');
+import defaultAvatar from "../../assets/images/avatar/man-profile_1083548-15963.jpg";
 export default function Avatar({ src, alt, size = "default" }) {
   const avatarUrl = src
-    ? src.startsWith("http")
+    ? src.startsWith("https")
       ? src
       : AVATAR_BASE_URL + src
-    : "/default-avatar.png";
+    : {defaultAvatar};
     
   const sizeClasses = {
     small: "w-12 h-12 border-2",
@@ -19,7 +22,7 @@ export default function Avatar({ src, alt, size = "default" }) {
         src={avatarUrl} 
         alt={alt || "Avatar"} 
         className="object-cover w-full h-full transition-transform duration-300 hover:scale-105" 
-        onError={(e) => {e.target.src = "/default-avatar.png"}}
+        onError={(e) => {e.target.src = {defaultAvatar}}}
       />
     </div>
   );
