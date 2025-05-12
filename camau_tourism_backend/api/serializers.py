@@ -50,7 +50,6 @@ class UserSerializer(serializers.ModelSerializer):
 
 class ClientSerializers(serializers.ModelSerializer):
     user = UserSerializer()
-
     class Meta:
         model = Client
         fields = [
@@ -75,36 +74,60 @@ class AvatarSerializer(serializers.ModelSerializer):
         fields = ['avatar']
 
 class TourSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
     class Meta:
         model = Tour
         fields = '__all__'
+    def get_image(self, obj):
+        if obj.image:
+            return obj.image.url
 
 class DestinationSerializer(serializers.ModelSerializer):
+    image_url = serializers.SerializerMethodField()
     class Meta:
         model = Destination
         fields = '__all__'
+    def get_image_url(self, obj):
+        if obj.image_url:
+            return obj.image_url.url
 
 class ArticlesSerializer(serializers.ModelSerializer):
+    cover_image_url = serializers.SerializerMethodField()
     class Meta:
         model = Article
         fields = '__all__'
-
+    def get_cover_image_url(self, obj):
+        if obj.cover_image_url:
+            return obj.cover_image_url.url
+        
 class CuisineSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
     class Meta:
         model = Cuisine
         fields = '__all__'
+    def get_image(self, obj):
+        if obj.image:
+            return obj.image.url
 
 
 class HotelRoomSerializer(serializers.ModelSerializer):
+    image_url = serializers.SerializerMethodField()
     class Meta:
         model = HotelRoom
         fields = '__all__'
+    def get_image_url(self, obj):
+        if obj.image_url:
+            return obj.image_url.url
 
 class HotelSerializer(serializers.ModelSerializer):
+    image_cover = serializers.SerializerMethodField()
     min_price = serializers.SerializerMethodField()
     class Meta:
         model = Hotel
         fields ='__all__'
+    def get_image_cover(self, obj):
+        if obj.image_cover:
+            return obj.image_cover.url
     def get_min_price(self, obj):
         rooms = obj.rooms.all()
         min_room = rooms.order_by('price').first()
@@ -130,10 +153,14 @@ class TourDestinationSerializer(serializers.ModelSerializer):
         return obj.destination.type if obj.destination else None
 
 class FestivalSerializer(serializers.ModelSerializer):
+    image_url = serializers.SerializerMethodField()
     class Meta:
         model = Festival
         fields = '__all__'
-
+    def get_image_url(self, obj):
+        if obj.image_url:
+            return obj.image_url.url
+        
 class TourBookingSerializer(serializers.ModelSerializer):
     tour = TourSerializer() 
     class Meta:

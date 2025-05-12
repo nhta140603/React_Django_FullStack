@@ -7,7 +7,7 @@ from cloudinary.models import CloudinaryField
 
 class Client(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
+    avatar = CloudinaryField('image', folder='avatars', blank=True, null=True)
     gender = models.CharField(max_length=20, blank=True, null=True)
     date_of_birth = models.DateField(blank=True, null=True)
     phone = models.CharField(max_length=20)
@@ -18,7 +18,7 @@ class Client(models.Model):
 class TourGuide(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     full_name = models.CharField(max_length=100)
-    avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
+    avatar = CloudinaryField('image', folder='avatars', blank=True, null=True)
     gender = models.CharField(max_length=20, blank=True, null=True)
     dob = models.DateField(blank=True, null=True)
     phone = models.CharField(max_length=20)
@@ -51,7 +51,7 @@ class Destination(models.Model):
 
 class Tour(models.Model):
     name = models.CharField(max_length=255)
-    image = models.ImageField(upload_to='tours/', blank=True, null=True)
+    image = CloudinaryField('image', folder='tours', blank=True, null=True)
     description = RichTextField(blank=True, null=True)
     price = models.DecimalField(max_digits=12, decimal_places=2)
     duration = models.IntegerField()
@@ -132,7 +132,7 @@ class Hotel(models.Model):
     latitude = models.FloatField(blank=True, null=True)
     longitude = models.FloatField(blank=True, null=True)
     website = models.URLField(blank=True, null=True)
-    image_cover = models.ImageField(upload_to='hotels/', blank=True, null=True)
+    image_cover = CloudinaryField('image', folder='hotels', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     slug = models.SlugField(unique= False, blank=True)
@@ -150,7 +150,7 @@ class HotelRoom(models.Model):
     capacity = models.IntegerField(default=2)
     facilities = ArrayField(models.CharField(max_length=50), blank=True, null=True)
     is_available = models.BooleanField(default=True)
-    image_url = models.ImageField(upload_to='hotel-rooms/', blank=True, null=True)
+    image_url = CloudinaryField('image', folder='hotel-rooms', blank=True, null=True)
     image_gallery = ArrayField(models.URLField(), blank=True, null=True)
     floor = models.IntegerField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -280,7 +280,7 @@ class Festival(models.Model):
     event_date = models.CharField(max_length=100, blank=True, null=True)
     address = models.CharField(max_length=255, blank=True, null=True)
     is_featured = models.BooleanField(default=False)
-    image_url = models.ImageField(upload_to='events/', blank=True, null=True)
+    image_url = CloudinaryField('image', folder='events', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     slug = models.SlugField(unique= False, blank=True)
@@ -336,7 +336,7 @@ class Article(models.Model):
     title = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255, unique=True, blank=True, null=True)
     content = RichTextField()
-    cover_image_url = models.ImageField(upload_to='events-news/', blank=True, null=True)
+    cover_image_url = CloudinaryField('image', folder='event-news', blank=True, null=True)
     event_date = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -389,7 +389,7 @@ class FAQ(models.Model):
 class Cuisine(models.Model):
     name = models.CharField(max_length=255, unique=True)
     description = RichTextField(blank=True, null=True)
-    image = models.ImageField(upload_to='cuisine/', blank=True, null=True, verbose_name="Ảnh đại diện")
+    image = CloudinaryField('image', folder='cuisine', blank=True, null=True)
     gallery = models.JSONField(blank=True, null=True)
     is_public = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)

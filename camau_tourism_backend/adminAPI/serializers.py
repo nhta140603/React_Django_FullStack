@@ -71,9 +71,13 @@ class TourGuideSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class CuisineSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
     class Meta:
         model = Cuisine
         fields = '__all__'
+    def get_image(self, obj):
+        if obj.image:
+            return obj.image.url
 
 class HotelAmenitySerializer(serializers.ModelSerializer):
     class Meta:
@@ -82,10 +86,14 @@ class HotelAmenitySerializer(serializers.ModelSerializer):
 
 
 class TourSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
     class Meta:
         model = Tour
         fields = '__all__'
-
+    def get_image(self, obj):
+        if obj.image:
+            return obj.image.url
+        
 class TourDestinationSerializer(serializers.ModelSerializer):
     class Meta:
         model = TourDestination
@@ -107,17 +115,25 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class HotelSerializer(serializers.ModelSerializer):
+    image_cover = serializers.SerializerMethodField()
     class Meta:
         model = Hotel
         fields = '__all__'
+    def get_image_cover(self, obj):
+        if obj.image_cover:
+            return obj.image_cover.url
 
 class HotelRoomSerializer(serializers.ModelSerializer):
+    image_url = serializers.SerializerMethodField()
     hotel = serializers.PrimaryKeyRelatedField(queryset=Hotel.objects.all())
     class Meta:
         model = HotelRoom
         fields = '__all__'
     def get_hotel(self, obj):
         return obj.hotel.name if obj.hotel else None
+    def get_image_url(self, obj):
+        if obj.image_url:
+            return obj.image_url.url
 
 class RoomBookingSerializer(serializers.ModelSerializer):
     class Meta:
@@ -155,14 +171,22 @@ class PersonalTourGuideBookingSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class FestivalSerializer(serializers.ModelSerializer):
+    image_url = serializers.SerializerMethodField()
     class Meta:
         model = Festival
         fields = '__all__'
-        
+    def get_image_url(self, obj):
+        if obj.image_url:
+            return obj.image_url.url
+              
 class ArticlesSerializer(serializers.ModelSerializer):
+    cover_image_url = serializers.SerializerMethodField()
     class Meta:
         model = Article
         fields = '__all__'
+    def get_cover_image_url(self, obj):
+        if obj.cover_image_url:
+            return obj.cover_image_url.url
 
 class PromotionSerializer(serializers.ModelSerializer):
     class Meta:
