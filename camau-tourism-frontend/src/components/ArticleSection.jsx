@@ -43,7 +43,7 @@ function ArticleSection({ limit }) {
             ))
             : error
               ? <div className="col-span-full text-center text-red-600">{error}</div>
-              : articles.results.slice(0, limit).map((article) => (
+              : (articles.results || []).slice(0, limit).map((article) => (
                 <div
                   key={article.id}
                   tabIndex={0}
