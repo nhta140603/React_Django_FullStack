@@ -18,7 +18,9 @@ export default function Destinations() {
       retry: 2
   })
 
-  const destinationFeatures = destination.filter(d => (d.is_featured === true));
+  const destinationFeatures = Array.isArray(destination)
+    ? destination.filter(d => d.is_featured === true)
+    : [];
   const skeletonCount = 3;
 
   return (
