@@ -40,4 +40,4 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('loginAdmin/', UserLoginView.as_view(), name='login-admin'),
     path('', include(router.urls)),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
