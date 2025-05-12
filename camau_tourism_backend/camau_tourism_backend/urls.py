@@ -20,6 +20,6 @@ from api.views import *
 from django.conf.urls.static import static
 from django.conf import settings
 urlpatterns = [
-    path('api/client/', include('api.urls')),
-    path('api/admin/', include('adminAPI.urls')),
+    path('djangoreactapp/camautourismbackend/v1.0/api/client/', include('api.urls')),
+    path('djangoreactapp/camautourismbackend/v1.0/api/admin/', include('adminAPI.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
