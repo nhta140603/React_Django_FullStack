@@ -27,7 +27,8 @@ export default function ProfileSidebar({ avatar, name }) {
     if(location.pathname.includes('cac-chuyen-di')) return "cac-chuyen-di";
     if(location.pathname.includes('cac-don-dat-phong')) return "cac-don-dat-phong";
   }
-  const avatarUrl = user?.avatar ? `${user.avatar}` : defaultAvatar;
+  const avatarUrl = user?.avatar ? user?.avatar : defaultAvatar;
+  console.log(avatarUrl)
   const selected = getSelectedTab();
   return (
     <aside 

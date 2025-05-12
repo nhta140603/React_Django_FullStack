@@ -87,6 +87,7 @@ class UserProfile(viewsets.ViewSet):
         else:
             return self.update(request)
         
+        
 class AvatarUpdateView(APIView):
     parser_classes = [MultiPartParser, FormParser]
     permission_classes = [IsAuthenticated]
