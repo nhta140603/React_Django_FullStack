@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getList, updateItem, deleteItem, createItem, getPage } from "../../api/api_generics";
 import DataTable from "../../components/DataTable";
-import Modal from "../../../../camau-tourism-admin/src/components/Modal";
+import Modal from "../../components/Modal";
 import GenericForm from "../../components/EditForm";
 
 import {

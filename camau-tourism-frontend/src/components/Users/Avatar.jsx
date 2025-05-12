@@ -22,7 +22,7 @@ export default function Avatar({ src, alt, size = "default" }) {
         src={avatarUrl} 
         alt={alt || "Avatar"} 
         className="object-cover w-full h-full transition-transform duration-300 hover:scale-105" 
-        onError={(e) => {e.target.src = {defaultAvatar}}}
+        onError={(e) => {e.target.src = `${defaultAvatar}`}}
       />
     </div>
   );
