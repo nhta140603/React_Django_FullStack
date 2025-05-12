@@ -11,4 +11,4 @@ python-dotenv
 django-ckeditor
 requests
 Pillow
-uvicorn
+gunicorn
