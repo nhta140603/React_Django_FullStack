@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from "react";
+import sectionBg from 'src/assets/images/backgrounds/Section.jpg';
 
 function HeroSection() {
   const parallaxRef = useRef(null);
@@ -37,7 +38,7 @@ function HeroSection() {
         ref={parallaxRef}
         className="absolute inset-0 -z-10"
         style={{
-          backgroundImage: "url('src/assets/images/backgrounds/Section.jpg')",
+          backgroundImage: `url(${sectionBg})`,
           backgroundPosition: "center",
           backgroundSize: "cover",
           backgroundRepeat: "no-repeat",
