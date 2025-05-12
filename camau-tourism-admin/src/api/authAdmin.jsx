@@ -1,4 +1,7 @@
-const API_URL = "http://localhost:8000/api/admin/";
+const API_URL =
+  (window?.configs && window.configs.API_URL)
+    ? window.configs.API_URL
+    : (import.meta.env.VITE_API_URL || '/choreo-apis/djangoreactapp/camautourismbackend/v1/api/admin/');
 
 export async function loginUser(data) {
   const response = await fetch(`${API_URL}loginAdmin/`, {
