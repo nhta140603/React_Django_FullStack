@@ -31,6 +31,7 @@ export const getDetail = (resource, slug) =>
   fetchWithAuth(`${API_URL}${resource}/${slug}/`);
 
 export async function updateInfoUser(data) {
+  console.log(API_URL)
   return fetchWithAuth(`${API_URL}me/`, {
     method: "PATCH",
     body: JSON.stringify(data),
