@@ -5,11 +5,15 @@ const API_URL =
 
 const fetchWithAuth = async (url, options = {}) => {
   const token = localStorage.getItem("accessToken");
-  const headers = {
+  let headers = {
     "Authorization": `Bearer ${token}`,
     ...options.headers,
   };
-  if (!(options.body instanceof FormData) && !headers['Content-Type']) {
+  if (options.body instanceof FormData) {
+    headers = Object.fromEntries(
+      Object.entries(headers).filter(([k]) => k.toLowerCase() !== 'content-type')
+    );
+  } else if (!headers['Content-Type']) {
     headers['Content-Type'] = 'application/json';
   }
   const res = await fetch(url, { ...options, headers });
