@@ -49,20 +49,6 @@ INSTALLED_APPS = [
     'cloudinary', 
     'cloudinary_storage'
 ]
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'deavaowp3',
-    'API_KEY': '639922197762677',
-    'API_SECRET': 'LUbczShyAdXD9Ch-TPETCu8tghA'
-}
-
-import cloudinary
-
-cloudinary.config(
-  cloud_name = 'deavaowp3',
-  api_key = '639922197762677',
-  api_secret = 'LUbczShyAdXD9Ch-TPETCu8tghA'
-)
-
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
