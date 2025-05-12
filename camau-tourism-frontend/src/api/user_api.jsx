@@ -2,7 +2,7 @@ const AVATAR_BASE_URL = import.meta.env.VITE_AVATAR_BASE_URL;
 const API_URL =
   (window?.configs && window.configs.API_URL)
     ? window.configs.API_URL
-    : (import.meta.env.VITE_API_URL || '/choreo-apis/djangoreactapp/camautourismbackend/v1');
+    : (import.meta.env.VITE_API_URL || '/choreo-apis/djangoreactapp/camautourismbackend/v1/api/client/');
 
 
 const fetchWithAuth = async (url, options = {}) => {
