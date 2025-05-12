@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import defaultAvatar from "../../assets/images/avatar/man-profile_1083548-15963.jpg";
+import { useAuth } from '../../contexts/AuthContext';
 import { Link } from "react-router-dom";
 import {
   FaUser, FaSuitcaseRolling, FaHotel, FaCar, FaStar,
