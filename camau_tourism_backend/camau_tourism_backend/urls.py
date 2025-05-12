@@ -19,8 +19,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from api.views import *
 from django.conf.urls.static import static
 from django.conf import settings
-API_PREFIX = 'djangoreactapp/camautourismbackend/v1.0/'
 urlpatterns = [
-    path(f'{API_PREFIX}api/client/', include('api.urls')),
-    path(f'{API_PREFIX}api/admin/', include('adminAPI.urls')),
+    path('api/client/', include('api.urls')),
+    path('api/admin/', include('adminAPI.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
