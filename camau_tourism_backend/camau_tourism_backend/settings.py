@@ -51,8 +51,8 @@ INSTALLED_APPS = [
 ]
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': 'deavaowp3',
-    'API_KEY': '986618732939791',
-    'API_SECRET': 'x-7Onfk61SX7W1t8DqAdhu2EPgA'
+    'API_KEY': '639922197762677',
+    'API_SECRET': 'LUbczShyAdXD9Ch-TPETCu8tghA'
 }
 import cloudinary
 
