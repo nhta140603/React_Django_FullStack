@@ -22,7 +22,7 @@ function Header() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-  const avatarUrl = user?.avatar ? user?.avatar : defaultAvatar;
+  const avatarUrl = user?.avatar ? `https://res.cloudinary.com/deavaowp3/${user?.avatar}` : defaultAvatar;
   return (
     <header className="bg-gradient-to-bl from-blue-600 via-blue-500 to-teal-400 text-white sticky top-0 z-50">
       <div className="container mx-auto flex justify-between items-center py-3 px-4 md:px-8 max-w-[1310px]">
