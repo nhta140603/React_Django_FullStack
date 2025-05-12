@@ -54,12 +54,13 @@ CLOUDINARY_STORAGE = {
     'API_KEY': '639922197762677',
     'API_SECRET': 'LUbczShyAdXD9Ch-TPETCu8tghA'
 }
+
 import cloudinary
 
 cloudinary.config(
   cloud_name = 'deavaowp3',
-  api_key = '986618732939791',
-  api_secret = 'x-7Onfk61SX7W1t8DqAdhu2EPgA'
+  api_key = '639922197762677',
+  api_secret = 'LUbczShyAdXD9Ch-TPETCu8tghA'
 )
 
 
