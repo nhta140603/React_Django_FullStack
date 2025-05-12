@@ -63,7 +63,8 @@ class DestinationSerializer(serializers.ModelSerializer):
     def get_image_url(self, obj):
         request = self.context.get('request')
         if obj.image_url:
-            return request.build_absolute_uri(obj.image_url.url)
+            url = obj.image_url.url
+            return request.build_absolute_uri(url).replace('http://', 'https://')
         return None
 
 
