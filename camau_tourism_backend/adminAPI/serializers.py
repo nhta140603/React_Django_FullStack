@@ -176,7 +176,7 @@ class FestivalSerializer(serializers.ModelSerializer):
         fields = '__all__'
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        data['image_cover'] = instance.image_url.url if instance.image_url else None
+        data['image_url'] = instance.image_url.url if instance.image_url else None
         return data
               
 class ArticlesSerializer(serializers.ModelSerializer):
@@ -185,7 +185,7 @@ class ArticlesSerializer(serializers.ModelSerializer):
         fields = '__all__'
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        data['image_cover'] = instance.cover_image_url.url if instance.cover_image_url else None
+        data['cover_image_url'] = instance.cover_image_url.url if instance.cover_image_url else None
         return data
 
 class PromotionSerializer(serializers.ModelSerializer):
