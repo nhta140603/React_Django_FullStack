@@ -55,7 +55,7 @@ export async function updateAvatar(file) {
 
 export function getAvatarUrl(src) {
   if (!src) return "/default-avatar.png";
-  if (src.startsWith("http")) return src;
+  if (src.startsWith("https")) return src;
   return AVATAR_BASE_URL + src;
 }
 
