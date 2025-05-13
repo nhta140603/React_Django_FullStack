@@ -13,6 +13,7 @@ export async function loginUser(data) {
       username: data.username,
       password: data.password,
     }),
+    credentials: "include",
   });
 
   const result = await response.json();

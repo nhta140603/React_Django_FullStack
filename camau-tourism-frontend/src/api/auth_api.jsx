@@ -34,7 +34,6 @@ export async function loginUser(data) {
       password: data.password,
     }),
     credentials: "include",
-
   });
   const result = await response.json();
   if(!response.ok)
