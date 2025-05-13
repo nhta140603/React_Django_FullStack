@@ -23,24 +23,20 @@ export async function loginUser(data) {
       result.detail ||
       result.non_field_errors?.[0] ||
       result.password?.[0] ||
-      result.no_admin?.[0] || 
+      result.no_admin?.[0] ||
       "Đăng nhập thất bại"
     );
   }
   return result;
 }
 
-  export async function getInfoUser() {
-    const res = await fetch(`${API_URL}me/`, {
-      method: "GET",
-      headers: {
-          "Authorization": `Bearer ${token}`,
-          'Content-Type': 'application/json'
-      },
-      credentials: "include",
-    });
-    if (!res.ok) {
-      throw new Error('Không thể lấy thông tin người dùng');
-    }
-    return res.json();
+export async function getInfoUser() {
+  const res = await fetch(`${API_URL}me/`, {
+    method: "GET",
+    credentials: "include",
+  });
+  if (!res.ok) {
+    throw new Error('Không thể lấy thông tin người dùng');
   }
+  return res.json();
+}

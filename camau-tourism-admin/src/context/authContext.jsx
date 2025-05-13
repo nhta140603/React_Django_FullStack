@@ -1,36 +1,34 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { getInfoUser } from '../api/authAdmin';
-import Cookies from 'js-cookie';
 
 const AdminAuthContext = createContext();
+
 export function AdminAuthProvider({ children }) {
   const [admin, setAdmin] = useState(null);
-  const [adminProfile, setAdminProfile] = useState(null);
-  const [loading, setLoading] = useState(true)
-  useEffect(() => {
-    const token = Cookies.get('accessToken');
-    if (token) {
-      fetchProfile()
-        .then(profile => setAdmin(profile))
-        .catch(() => setAdmin(null))
-        .finaly(() => setLoading(false))
-    }
-  }, []);
+  const [loading, setLoading] = useState(true);
 
-  const loginAdmin = async (adminData) => {
-    await getInfoUser()
+  useEffect(() => {
+    getInfoUser()
       .then(profile => setAdmin(profile))
       .catch(() => setAdmin(null))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const loginAdmin = async () => {
+    try {
+      const profile = await getInfoUser();
+      setAdmin(profile);
+    } catch {
+      setAdmin(null);
+    }
   };
 
   const logoutAdmin = () => {
     setAdmin(null);
-    Cookies.remove('accessToken');
-    Cookies.remove('refreshToken');
   };
 
   const isAdmin = () => {
-    return admin && (admin.role === "admin" || admin.isAdmin);
+    return admin && (admin.role === "admin" || admin.is_staff || admin.is_superuser);
   };
 
   return (

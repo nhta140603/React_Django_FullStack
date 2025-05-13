@@ -8,7 +8,8 @@ from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.parsers import MultiPartParser, FormParser
-
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 class IsAdminOrReadOnly(permissions.BasePermission):
     def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:
@@ -226,3 +227,15 @@ class UserLoginView(generics.GenericAPIView):
             samesite="Lax",
         )
         return response
+    
+class AdminMeView(APIView):
+    permission_classes = [IsAuthenticated]
+    def get(self, request):
+        user = request.user
+        return Response({
+            "id": user.id,
+            "username": user.username,
+            "role": getattr(user, 'role', None),
+            "is_staff": user.is_staff,
+            "is_superuser": user.is_superuser,
+        })
