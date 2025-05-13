@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { getInfoUser } from '../api/authAdmin';
-
+import Cookies from 'js-cookie'
 const AdminAuthContext = createContext();
 
 export function AdminAuthProvider({ children }) {
@@ -25,6 +25,8 @@ export function AdminAuthProvider({ children }) {
 
   const logoutAdmin = () => {
     setAdmin(null);
+    Cookies.remove('accessToken')
+    Cookies.remove('refreshToken')
   };
 
   const isAdmin = () => {
