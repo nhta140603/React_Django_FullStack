@@ -209,16 +209,21 @@ class UserLoginView(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data
-
-        user_data = {
-            "id": user.id,
-            "username": user.username,
-        }
-        
         token = RefreshToken.for_user(user)
-        user_data["tokens"] = {
-            "refresh": str(token),
-            "access": str(token.access_token)
-        }
+        response = Response({"id": user.id, "username": user.username}, status=200)
+        response.set_cookie(
+            key='accessToken',
+            value= str(token.access_token),
+            httponly=True,
+            secure=True,
+            samesite=Lax,
+        )
+        response.set_cookie(
+            key='refreshToken',
+            value= str(token),
+            httponly=True,
+            secure=True,
+            samesite=Lax,
+        )
 
         return Response(user_data, status=status.HTTP_200_OK)

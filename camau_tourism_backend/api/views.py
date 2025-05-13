@@ -19,7 +19,6 @@ from django.utils import timezone
 from django.shortcuts import redirect
 import requests
 from rest_framework import status as drf_status
-import datetime
 import uuid
 import hmac
 import hashlib
@@ -49,15 +48,15 @@ class UserLoginView(generics.GenericAPIView):
             response.set_cookie(
                 key="accessToken",
                 value=str(token.access_token),
-                httponly=False,
-                secure=False,
+                httponly=True,
+                secure=True,
                 samesite="Lax"
             )
             response.set_cookie(
                 key="refreshToken",
                 value=str(token),
-                httponly=False,
-                secure=False,
+                httponly=True,
+                secure=True,
                 samesite="Lax"
             )
             return response
