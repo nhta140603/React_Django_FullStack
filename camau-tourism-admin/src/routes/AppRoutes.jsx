@@ -31,50 +31,57 @@ import RoomBookingListPage from '../pages/hotel-rooms/RoomBookingPage';
 import LoginPage from '../pages/LoginPage';
 import ProtectedRoute from '../routes/ProtectedRoutes'
 import PublicRoute from './PublicRoutes';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient();
 function AppRoutes() {
   return (
-    <Router>
-      <Routes>
-      <Route element={<PublicRoute/>}>
-        <Route path="/loginAdmin" element={<LoginPage />} />
-      </Route>
-        <Route element={<ProtectedRoute/>}>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/destinations/detail_page/:id" element={<DestinationCreatePage />} />
-          <Route path="/tours/detail_page/:id" element={<TourCreatePage />} />
-          <Route path="/dashboard"  element={<Dashboard />} />
-          <Route path="/clients" element={<ClientListPage />} />
+    <QueryClientProvider client={queryClient}>
 
-          <Route path="/cuisines" element={<CuisineListPage />} />
-          <Route path="/cuisines-create" element={<CuisineCreatePage />} />
-          <Route path="/room-bookings" element={<RoomBookingListPage />} />
-          <Route path="/destinations" element={<DestinationsListPage />} />
-
-          <Route path="/tour-bookings" element={<TourBookingListPage />} />
-
-          
-          <Route path="/hotels" element={<HotelsListPage />} />
-          <Route path="/hotel-rooms" element={<HotelRoomListPage />} />
-          <Route path="/amenties" element={<AmenitiesListPage />} />
-          <Route path="/room-types" element={<RoomTypeListPage />} />
-          <Route path="/tours" element={<ToursListPage />} />
-          <Route path="/tours-destinations" element={<DestinationToursPage />} />
-          <Route path="/tour-guides" element={<TourGuide />} />
-          <Route path="/reviews" element={<ReviewPage />} />
-          <Route path="/transportations" element={<TransportationsListPage />} />
-          <Route path="/tickets" element={<TicketListPage />} />
-          <Route path="/vehicle-rentals" element={<VeihicalListPage />} />
-          <Route path="/vehicle" element={<VehicleListPage />} />
-          <Route path="/personal-trips" element={<PersonalTripListPage />} />
-          <Route path="/personal-tour-guide-bookings" element={<PersonalTourGuideBookingPageListPage />} />
-          <Route path="/festivals" element={<FestivalListPage />} />
-          <Route path="/festivals/detail_page/:id" element={<FestivalCreatePage />} />
-          <Route path="/articles" element={<EventsNewsListPage />} />
-          <Route path="/articles-create" element={<EventNewCreatePage />} />
-          <Route path="/articles-edit/:id" element={<EventNewCreatePage />} />
+      <Router>
+        <Routes>
+          <Route element={<PublicRoute />}>
+            <Route path="/loginAdmin" element={<LoginPage />} />
           </Route>
-      </Routes>
-    </Router>
+          <Route element={<ProtectedRoute />}>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/destinations/detail_page/:id" element={<DestinationCreatePage />} />
+            <Route path="/tours/detail_page/:id" element={<TourCreatePage />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/clients" element={<ClientListPage />} />
+
+            <Route path="/cuisines" element={<CuisineListPage />} />
+            <Route path="/cuisines-create" element={<CuisineCreatePage />} />
+            <Route path="/room-bookings" element={<RoomBookingListPage />} />
+            <Route path="/destinations" element={<DestinationsListPage />} />
+
+            <Route path="/tour-bookings" element={<TourBookingListPage />} />
+
+
+            <Route path="/hotels" element={<HotelsListPage />} />
+            <Route path="/hotel-rooms" element={<HotelRoomListPage />} />
+            <Route path="/amenties" element={<AmenitiesListPage />} />
+            <Route path="/room-types" element={<RoomTypeListPage />} />
+            <Route path="/tours" element={<ToursListPage />} />
+            <Route path="/tours-destinations" element={<DestinationToursPage />} />
+            <Route path="/tour-guides" element={<TourGuide />} />
+            <Route path="/reviews" element={<ReviewPage />} />
+            <Route path="/transportations" element={<TransportationsListPage />} />
+            <Route path="/tickets" element={<TicketListPage />} />
+            <Route path="/vehicle-rentals" element={<VeihicalListPage />} />
+            <Route path="/vehicle" element={<VehicleListPage />} />
+            <Route path="/personal-trips" element={<PersonalTripListPage />} />
+            <Route path="/personal-tour-guide-bookings" element={<PersonalTourGuideBookingPageListPage />} />
+            <Route path="/festivals" element={<FestivalListPage />} />
+            <Route path="/festivals/detail_page/:id" element={<FestivalCreatePage />} />
+            <Route path="/articles" element={<EventsNewsListPage />} />
+            <Route path="/articles-create" element={<EventNewCreatePage />} />
+            <Route path="/articles-edit/:id" element={<EventNewCreatePage />} />
+          </Route>
+        </Routes>
+      </Router>
+    </QueryClientProvider>
+
   );
 }
 
