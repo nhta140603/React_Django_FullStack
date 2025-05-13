@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 class IsAdminOrReadOnly(permissions.BasePermission):
@@ -27,7 +27,7 @@ class TourViewSet(viewsets.ModelViewSet):
     queryset = Tour.objects.all()
     pagination_class = StandardResultsSetPagination
     serializer_class = TourSerializer
-    parser_classes = [MultiPartParser, FormParser]
+    parser_classes = [MultiPartParser, JSONParser, FormParser]
 
 class CuisineViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminOrReadOnly]
