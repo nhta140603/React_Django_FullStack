@@ -48,7 +48,9 @@ function Header() {
               title="Online"
             ></span>
           </button>
-          <span className="font-semibold text-gray-700 hidden sm:block whitespace-nowrap">{admin.username}</span>
+          <span className="font-semibold text-gray-700 hidden sm:block whitespace-nowrap">
+            {admin ? admin.username : "Tài khoản"}
+          </span>
           {dropdownOpen && (
             <div
               className="absolute right-0 top-14 min-w-[180px] bg-white border border-gray-200 rounded-lg shadow-lg animate-dropdown-fade z-50"
@@ -60,7 +62,7 @@ function Header() {
               <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-2">
                 <FaUser className="text-cyan-600" />
                 <div>
-                  <div className="font-semibold text-gray-700 whitespace-nowrap">{admin.username}</div>
+                  <div className="font-semibold text-gray-700 whitespace-nowrap">{admin?.username}</div>
                   <div className="text-xs text-gray-400">Quản trị viên</div>
                 </div>
               </div>
