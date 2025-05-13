@@ -33,7 +33,6 @@ export async function loginUser(data) {
 export async function getInfoUser() {
   const res = await fetch(`${API_URL}me/`, {
     method: "GET",
-    credentials: "include",
   });
   if (!res.ok) {
     throw new Error('Không thể lấy thông tin người dùng');
