@@ -7,7 +7,7 @@ import { AdminAuthProvider } from "./context/authContext";
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <AdminAuthProvider>
-    <AppRoutes />
+      <AppRoutes />
     </AdminAuthProvider>
   </StrictMode>
 );
