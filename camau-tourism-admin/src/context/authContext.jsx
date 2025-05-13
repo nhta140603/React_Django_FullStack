@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { getInfoUser } from '../api/authAdmin';
+import { getInfoUser,logoutUser  } from '../api/authAdmin';
 import Cookies from 'js-cookie'
 const AdminAuthContext = createContext();
 
@@ -23,11 +23,14 @@ export function AdminAuthProvider({ children }) {
     }
   };
 
-  const logoutAdmin = () => {
-    Cookies.remove('accessToken', { path: '/' });
-    Cookies.remove('refreshToken', { path: '/' });
-    setAdmin(null);
-  };
+const logoutAdmin = async () => {
+  try {
+    await logoutUser();
+  } catch (e) {
+    throw new Error(e.messages || `Có lỗi xảy ra`)
+  }
+  setAdmin(null);
+};
 
   const isAdmin = () => {
     return admin && (admin.role === "admin" || admin.is_staff || admin.is_superuser);

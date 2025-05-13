@@ -39,3 +39,14 @@ export async function getInfoUser() {
   }
   return res.json();
 }
+
+export async function logoutUser() {
+  const res = await fetch(`${API_URL}logoutAdmin/`, {
+    method: "POST",
+    credentials: "include"
+  });
+  if (!res.ok) {
+    throw new Error('Không thể đăng xuất');
+  }
+  return res.json();
+}

@@ -227,7 +227,14 @@ class UserLoginView(generics.GenericAPIView):
             samesite="Lax",
         )
         return response
-    
+
+class UserLogoutView(APIView):
+    def post(self, request, *args, **kwargs):
+        response = Response({"detail": "Logged out"}, status=200)
+        response.delete_cookie('accessToken', samesite='Lax')
+        response.delete_cookie('refreshToken', samesite='Lax')
+        return response
+
 class AdminMeView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):
