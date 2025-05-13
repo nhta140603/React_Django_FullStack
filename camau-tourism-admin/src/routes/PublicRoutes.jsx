@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Navigate, Outlet } from "react-router-dom";
-import { getInfoUser } from "../api/user_api";
+import { getInfoUser } from "../api/authAdmin";
 
 const PublicRoute = () => {
   const { isLoading, isError, data } = useQuery({

@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { getInfoUser } from "../api/user_api"; 
+import { getInfoUser } from "../api/authAdmin"; 
 import { useQuery } from "@tanstack/react-query";
 const Spinner = () => (
   <div style={{
