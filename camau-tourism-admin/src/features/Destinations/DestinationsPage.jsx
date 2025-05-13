@@ -290,20 +290,6 @@ export default function DestinationPage() {
       validation: v => v?.trim().length > 0 || "Vui lòng nhập vị trí"
     },
     {
-      key: "website",
-      title: "Website",
-      inputType: "text",
-      required: false,
-      validation: v => !v || /^https?:\/\/[\w\-\.]+(\.[\w\-]+)+[/#?]?.*$/.test(v) || "Website không hợp lệ"
-    },
-    {
-      key: "phone",
-      title: "Số điện thoại",
-      inputType: "text",
-      required: false,
-      validation: v => !v || /^0\d{9,10}$/.test(v) || "Số điện thoại không hợp lệ"
-    },
-    {
       key: "latitude",
       title: "Vĩ độ",
       inputType: "text",
@@ -314,14 +300,7 @@ export default function DestinationPage() {
       title: "Kinh độ",
       inputType: "text",
       required: false,
-    },
-    {
-      key: "is_featured",
-      title: "Đánh dấu nổi bật",
-      inputType: "checkbox",
-      required: false,
-      description: "Đánh dấu địa điểm này để hiển thị nổi bật trên trang chủ"
-    },
+    }
   ];
   
   const navigate = useNavigate()
