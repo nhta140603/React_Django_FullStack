@@ -216,14 +216,13 @@ class UserLoginView(generics.GenericAPIView):
             value= str(token.access_token),
             httponly=True,
             secure=True,
-            samesite=Lax,
+            samesite="Lax",
         )
         response.set_cookie(
             key='refreshToken',
             value= str(token),
             httponly=True,
             secure=True,
-            samesite=Lax,
+            samesite="Lax",
         )
-
-        return Response(user_data, status=status.HTTP_200_OK)
+        return response
