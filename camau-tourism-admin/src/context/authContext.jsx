@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { getInfoUser } from '../api/authAdmin';
+import Cookies from 'js-cookie';
 
 const AdminAuthContext = createContext();
 export function AdminAuthProvider({ children }) {
