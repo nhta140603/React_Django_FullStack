@@ -182,6 +182,7 @@ class TourDestinationViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminOrReadOnly]
     serializer_class = TourDestinationSerializer
     queryset = TourDestination.objects.all()
+    parser_classes = [MultiPartParser, FormParser]
     def get_queryset(self):
         tour_id = self.kwargs.get('tour_id')
         if tour_id:
