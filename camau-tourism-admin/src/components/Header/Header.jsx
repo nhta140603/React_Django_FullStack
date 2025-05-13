@@ -16,13 +16,6 @@ function Header() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleLogout = () => {
-    logoutAdmin();
-    alert("Đăng xuất thành công!");
-    setDropdownOpen(false);
-    window.location.href = "/loginAdmin";
-  };
-
   return (
     <header className="bg-white sticky top-0 z-30 flex items-center justify-between px-8 h-16 shadow rounded-b-lg">
       <div className="font-bold text-2xl text-cyan-700 flex items-center gap-3 animate-fade-in">
@@ -55,7 +48,7 @@ function Header() {
               title="Online"
             ></span>
           </button>
-          <span className="font-semibold text-gray-700 hidden sm:block whitespace-nowrap">Nguyễn Admin</span>
+          <span className="font-semibold text-gray-700 hidden sm:block whitespace-nowrap">admin.user_name</span>
           {dropdownOpen && (
             <div
               className="absolute right-0 top-14 min-w-[180px] bg-white border border-gray-200 rounded-lg shadow-lg animate-dropdown-fade z-50"
@@ -67,13 +60,13 @@ function Header() {
               <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-2">
                 <FaUser className="text-cyan-600" />
                 <div>
-                  <div className="font-semibold text-gray-700 whitespace-nowrap">Nguyễn Admin</div>
+                  <div className="font-semibold text-gray-700 whitespace-nowrap">admin.user_name</div>
                   <div className="text-xs text-gray-400">Quản trị viên</div>
                 </div>
               </div>
               <button
                 className="w-full flex items-center gap-2 px-4 py-3 hover:bg-cyan-50 text-red-500 font-semibold transition rounded-b-lg"
-                onClick={handleLogout}
+                onClick={logoutAdmin}
               >
                 <FaSignOutAlt />
                 Đăng xuất
