@@ -1,4 +1,3 @@
-// LoginForm.jsx
 import { useState } from "react";
 import LoginInput from "../components/LoginInput";
 import { loginUser } from "../api/authAdmin";
@@ -24,9 +23,7 @@ export default function LoginForm() {
     }
     setLoading(true);
     try {
-      const result = await loginUser(form);
-      localStorage.setItem("accessToken", result.tokens.access);
-      localStorage.setItem("refreshToken", result.tokens.refresh);
+      await loginUser(form);
       window.location.href = "/dashboard";
     } catch (err) {
       setError(err.message);
