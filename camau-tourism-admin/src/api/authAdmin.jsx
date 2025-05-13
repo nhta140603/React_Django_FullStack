@@ -41,7 +41,7 @@ export async function getInfoUser() {
 }
 
 export async function logoutUser() {
-  const res = await fetch(`${API_URL}logoutAdmin/`, {
+  const res = await fetch(`${API_URL}logout/`, {
     method: "POST",
     credentials: "include"
   });
