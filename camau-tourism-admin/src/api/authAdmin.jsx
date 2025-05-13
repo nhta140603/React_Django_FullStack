@@ -31,13 +31,13 @@ export async function loginUser(data) {
 }
 
   export async function getInfoUser() {
-    const token = localStorage.getItem("accessToken"); 
     const res = await fetch(`${API_URL}me/`, {
       method: "GET",
       headers: {
           "Authorization": `Bearer ${token}`,
           'Content-Type': 'application/json'
-      }
+      },
+      credentials: "include",
     });
     if (!res.ok) {
       throw new Error('Không thể lấy thông tin người dùng');
