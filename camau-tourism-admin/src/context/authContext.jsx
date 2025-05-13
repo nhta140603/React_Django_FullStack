@@ -24,9 +24,9 @@ export function AdminAuthProvider({ children }) {
   };
 
   const logoutAdmin = () => {
+    Cookies.remove('accessToken', { path: '/' });
+    Cookies.remove('refreshToken', { path: '/' });
     setAdmin(null);
-    Cookies.remove('accessToken')
-    Cookies.remove('refreshToken')
   };
 
   const isAdmin = () => {
