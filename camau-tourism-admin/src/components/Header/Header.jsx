@@ -31,55 +31,49 @@ function Header() {
           <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white animate-pulse" />
           <FaBell className="text-cyan-700 text-xl" />
         </button>
-<div className="flex items-center gap-2 relative" ref={dropdownRef}>
-  <button
-    className="relative focus:outline-none cursor-pointer"
-    onClick={() => setDropdownOpen((open) => !open)}
-    aria-haspopup="true"
-    aria-expanded={dropdownOpen}
-    disabled={!admin}
-  >
-    <img
-      src="https://i.pravatar.cc/300?img=1"
-      alt="avatar"
-      className="w-10 h-10 rounded-full border-2 border-cyan-400 object-cover shadow-sm avatar-hover"
-    />
-    <span
-      className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 border-2 border-white rounded-full animate-pulse"
-      title="Online"
-    ></span>
-  </button>
-  {admin ? (
-    <span className="font-semibold text-gray-700 hidden sm:block whitespace-nowrap">{admin.username}</span>
-  ) : (
-    <a href="/admin/login" className="text-cyan-700 hover:underline">Đăng nhập</a>
-  )}
-
-  {dropdownOpen && admin && (
-    <div
-      className="absolute right-0 top-14 min-w-[180px] bg-white border border-gray-200 rounded-lg shadow-lg animate-dropdown-fade z-50"
-      style={{
-        boxShadow: "0 8px 24px rgba(0,0,0,.08)",
-        minWidth: "10rem",
-      }}
-    >
-      <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-2">
-        <FaUser className="text-cyan-600" />
-        <div>
-          <div className="font-semibold text-gray-700 whitespace-nowrap">{admin.username}</div>
-          <div className="text-xs text-gray-400">Quản trị viên</div>
+        <div className="flex items-center gap-2 relative" ref={dropdownRef}>
+          <button
+            className="relative focus:outline-none cursor-pointer"
+            onClick={() => setDropdownOpen((open) => !open)}
+            aria-haspopup="true"
+            aria-expanded={dropdownOpen}
+          >
+            <img
+              src="https://i.pravatar.cc/300?img=1"
+              alt="avatar"
+              className="w-10 h-10 rounded-full border-2 border-cyan-400 object-cover shadow-sm avatar-hover"
+            />
+            <span
+              className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 border-2 border-white rounded-full animate-pulse"
+              title="Online"
+            ></span>
+          </button>
+          <span className="font-semibold text-gray-700 hidden sm:block whitespace-nowrap">{admin.username}</span>
+          {dropdownOpen && (
+            <div
+              className="absolute right-0 top-14 min-w-[180px] bg-white border border-gray-200 rounded-lg shadow-lg animate-dropdown-fade z-50"
+              style={{
+                boxShadow: "0 8px 24px rgba(0,0,0,.08)",
+                minWidth: "10rem",
+              }}
+            >
+              <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-2">
+                <FaUser className="text-cyan-600" />
+                <div>
+                  <div className="font-semibold text-gray-700 whitespace-nowrap">{admin.username}</div>
+                  <div className="text-xs text-gray-400">Quản trị viên</div>
+                </div>
+              </div>
+              <button
+                className="w-full flex items-center gap-2 px-4 py-3 hover:bg-cyan-50 text-red-500 font-semibold transition rounded-b-lg"
+                onClick={logoutAdmin}
+              >
+                <FaSignOutAlt />
+                Đăng xuất
+              </button>
+            </div>
+          )}
         </div>
-      </div>
-      <button
-        className="w-full flex items-center gap-2 px-4 py-3 hover:bg-cyan-50 text-red-500 font-semibold transition rounded-b-lg"
-        onClick={logoutAdmin}
-      >
-        <FaSignOutAlt />
-        Đăng xuất
-      </button>
-    </div>
-  )}
-</div>
       </div>
       <style>{`
         @keyframes dropdown-fade {
