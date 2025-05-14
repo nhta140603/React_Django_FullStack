@@ -300,7 +300,7 @@ const TourDetail = () => {
                           <div className="flex flex-col md:flex-row items-start gap-4">
                             <div className="w-full md:w-1/3 h-48 overflow-hidden rounded-lg">
                               <img
-                                src={`http://localhost:8000${dest.image_destination}`}
+                                src={dest.image_destination}
                                 alt={dest.image_destination}
                                 className="w-full h-full object-cover hover:scale-110 transition-transform duration-700"
                               />

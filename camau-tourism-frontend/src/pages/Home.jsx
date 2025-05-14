@@ -7,11 +7,12 @@ const PersonalTripSection = React.lazy(() => import('../components/PersonalTripS
 const ArticleSection = React.lazy(() => import('../components/ArticleSection'));
 const CTASection = React.lazy(() => import('../components/CTASection'));
 const FeaturedTours = React.lazy(() => import('../features/tours/FeaturedTours'));
-
+import WeatherPostCast from '../components/WeatherPostCast'
 function Home() {
   return (
     <MainLayout>
       <HeroSection />
+      <WeatherPostCast/>
       <Suspense fallback={null}>
         <FeaturedDestinations />
         <PersonalTripSection />
