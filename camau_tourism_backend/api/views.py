@@ -317,11 +317,14 @@ class MomoCallbackView(APIView):
     
 class RoomBookingViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
-    queryset = RoomBooking.objects.all()
     serializer_class = RoomBookingSerializer
+    queryset = RoomBooking.objects.none()
+    def get_queryset(self):
+        return RoomBooking.objects.filter(client=self.request.user)
+
     def perform_create(self, serializer):
-        client = self.request.user.client
-        serializer.save(client=client)
+        serializer.save(client=self.request.user)
+
     def create(self, request, *args, **kwargs):
         print('>>> request.data:', request.data)
         return super().create(request, *args, **kwargs)
