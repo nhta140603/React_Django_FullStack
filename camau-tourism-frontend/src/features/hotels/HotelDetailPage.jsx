@@ -593,7 +593,7 @@ const amenities = [
                       <div className="flex flex-col md:flex-row gap-4 md:items-center">
                         <div className="md:w-24 h-24 rounded-lg overflow-hidden">
                           <img 
-                            src={`${AVATAR_BASE_URL}/${rooms[activeRoomTab].image_url}`} 
+                            src={`${rooms[activeRoomTab].image_url}`} 
                             alt={rooms[activeRoomTab].room_type}
                             className="w-full h-full object-cover"
                           />
