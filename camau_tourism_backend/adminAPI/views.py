@@ -34,7 +34,7 @@ class CuisineViewSet(viewsets.ModelViewSet):
     queryset = Cuisine.objects.all()
     pagination_class = StandardResultsSetPagination
     serializer_class = CuisineSerializer
-    parser_classes = [MultiPartParser, FormParser]
+    parser_classes = [MultiPartParser, JSONParser, FormParser]
 
 class VehicalViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminOrReadOnly]
@@ -46,7 +46,7 @@ class DestinationViewSet(viewsets.ModelViewSet):
     queryset = Destination.objects.all()
     pagination_class = StandardResultsSetPagination
     serializer_class = DestinationSerializer
-    parser_classes = [MultiPartParser, FormParser]
+    parser_classes = [MultiPartParser, JSONParser, FormParser]
 
 class ClientViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminOrReadOnly]   
@@ -65,7 +65,7 @@ class HotelViewSet(viewsets.ModelViewSet):
     queryset = Hotel.objects.all()
     pagination_class = StandardResultsSetPagination
     serializer_class = HotelSerializer
-    parser_classes = [MultiPartParser, FormParser]
+    parser_classes = [MultiPartParser, JSONParser, FormParser]
     
 class HotelAmenityViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminOrReadOnly]
@@ -90,7 +90,7 @@ class HotelRoomViewSet(viewsets.ModelViewSet):
     queryset = HotelRoom.objects.all()
     pagination_class = StandardResultsSetPagination
     serializer_class = HotelRoomSerializer
-    parser_classes = [MultiPartParser, FormParser]
+    parser_classes = [MultiPartParser, JSONParser, FormParser]
 
 class TourBookingViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminOrReadOnly]
@@ -134,14 +134,14 @@ class FestivalViewSet(viewsets.ModelViewSet):
     queryset = Festival.objects.all()
     pagination_class = StandardResultsSetPagination
     serializer_class = FestivalSerializer
-    parser_classes = [MultiPartParser, FormParser]
+    parser_classes = [MultiPartParser, JSONParser, FormParser]
 
 class ArticlesViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminOrReadOnly]
     queryset = Article.objects.all()
     pagination_class = StandardResultsSetPagination
     serializer_class = ArticlesSerializer
-    parser_classes = [MultiPartParser, FormParser]
+    parser_classes = [MultiPartParser, JSONParser, FormParser]
 
 class PromotionViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminOrReadOnly]
