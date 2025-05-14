@@ -48,6 +48,7 @@ export async function updateInfoUser(data) {
 export async function getInfoUser() {
   return fetchWithAuth(`${API_URL}me/`, {
     method: "GET",
+    credentials: "include"
   });
 }
 
