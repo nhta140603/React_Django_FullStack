@@ -52,10 +52,9 @@ function Header() {
       "transition-all duration-300 text-white sticky top-0 z-50",
       scrolled 
         ? "bg-blue-600/95 backdrop-blur-lg shadow-md py-2" 
-        : "bg-gradient-to-br from-blue-600 via-blue-500 to-teal-500 py-3"
+        : "bg-blue-600/95 backdrop-blur-lg shadow-md py-2"
     )}>
       <div className="container mx-auto flex justify-between items-center px-4 md:px-8 max-w-[1310px]">
-        {/* Logo */}
         <Link to="/" className="flex items-center gap-2 group">
           <div className="relative overflow-hidden rounded-full shadow-lg">
             <img 
@@ -73,7 +72,6 @@ function Header() {
           </div>
         </Link>
         
-        {/* Desktop Navigation */}
         <nav className="hidden lg:block">
           <ul className="flex space-x-6 font-medium text-base items-center">
             {menuItems.map((item, index) => (
@@ -90,9 +88,7 @@ function Header() {
           </ul>
         </nav>
         
-        {/* User Account Section */}
         <div className="relative flex items-center space-x-3">
-          {/* Mobile menu button */}
           <button 
             className="lg:hidden p-2 rounded-full hover:bg-blue-700 transition-colors"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -192,7 +188,6 @@ function Header() {
         </div>
       </div>
       
-      {/* Mobile Navigation Menu */}
       <div 
         className={classNames(
           "fixed inset-0 bg-blue-900/95 z-40 lg:hidden flex flex-col transition-all duration-300 ease-in-out backdrop-blur-lg",

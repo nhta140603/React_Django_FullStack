@@ -18,7 +18,7 @@ function Home() {
         <PersonalTripSection />
         <ArticleSection limit={3} />
         <CTASection />
-        <FeaturedTours limit={4} showSearch={false}/>
+        <FeaturedTours limit={3} showSearch={false}/>
       </Suspense>
     </MainLayout>
   );
