@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { WiCloudy } from 'weather-icons-react';
 
-const API_KEY = import.meta.env.VITE_API_KEY;
+const API_KEY_WEATHER = import.meta.env.VITE_API_KEY;
 const LAT = 9.1755247;
 const LON = 105.1047692;
 function SkeletonWeather() {
@@ -43,7 +43,7 @@ function WeatherPostCast() {
         async function fetchWeather() {
             try {
                 const res = await fetch(
-                    `https://api.weatherapi.com/v1/current.json?key=${API_KEY}&q=${LAT},${LON}&lang=vi`
+                    `https://api.weatherapi.com/v1/current.json?key=${API_KEY_WEATHER}&q=${LAT},${LON}&lang=vi`
                 );
                 const data = await res.json();
                 setWeather(data);
