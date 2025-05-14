@@ -60,7 +60,7 @@ function Destinations() {
                 ? <div className="col-span-full text-center text-red-500 py-6">{error.message}</div>
                 : (
                   <AnimatePresence>
-                    {featuredDestinations.map((destination, idx) => (
+                    {featuredDestinations?.map((destination, idx) => (
                       <motion.a
                         key={destination.id}
                         href={`/dia-diem/${destination.slug}`}

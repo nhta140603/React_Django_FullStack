@@ -159,7 +159,7 @@ export default function HotelDetailPage() {
         contact_phone: bookingData.contactPhone,
         total_amount: calculateTotalPrice(),
       };
-      console.log(bookingPayload.room)
+      console.log('bookingPayload', bookingPayload);
       await createRoomBooking('room-booking', bookingPayload)
     }catch(err){
         throw new Error(err.message || 'Lỗi đặt phòng')

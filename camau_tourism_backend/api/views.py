@@ -322,4 +322,7 @@ class RoomBookingViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         client = self.request.user.client
         serializer.save(client=client)
+    def create(self, request, *args, **kwargs):
+        print('>>> request.data:', request.data)
+        return super().create(request, *args, **kwargs)
 
