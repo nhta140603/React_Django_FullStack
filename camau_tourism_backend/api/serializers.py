@@ -169,7 +169,7 @@ class TourBookingSerializer(serializers.ModelSerializer):
 
 
 class RoomBookingSerializer(serializers.ModelSerializer):
-    room = HotelRoomSerializer()
+    room = serializers.PrimaryKeyRelatedField(queryset=HotelRoom.objects.all())
     location = serializers.SerializerMethodField()
     name = serializers.SerializerMethodField()
     class Meta:
@@ -178,6 +178,5 @@ class RoomBookingSerializer(serializers.ModelSerializer):
         read_only_fields = ['client']
     def get_location(self, obj):
         return obj.room.hotel.address if  obj.room.hotel.address else None
-    
     def get_name(self, obj):
         return obj.room.hotel.name if obj.room.hotel.name else None
