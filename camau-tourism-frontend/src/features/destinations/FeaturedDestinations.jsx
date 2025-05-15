@@ -272,9 +272,9 @@ export default function DestinationList() {
                     onClick={() => navigate(`/dia-diem/${dest.slug}`)}
                   >
                     <div className="relative h-48 overflow-hidden">
-                      {dest.image && (
+                      {dest.image_url && (
                         <img 
-                          src={dest.image} 
+                          src={dest.image_url} 
                           alt={dest.name} 
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                         />
