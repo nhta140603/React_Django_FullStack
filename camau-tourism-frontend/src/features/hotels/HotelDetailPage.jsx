@@ -444,7 +444,7 @@ const amenities = [
                     <div className="flex flex-col md:flex-row">
                       <div className="md:w-1/4 h-60 md:h-auto relative">
                         <img
-                          src={`${AVATAR_BASE_URL}/${rooms[activeRoomTab].image_url}`}
+                          src={rooms[activeRoomTab].image_url}
                           alt={rooms[activeRoomTab].room_type}
                           className="w-full h-full object-cover"
                         />

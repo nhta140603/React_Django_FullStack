@@ -6,7 +6,9 @@ import FilterBar from "../../components/Hotels/FilterBar";
 import SaleBanner from "../../components/Hotels/SaleBanner";
 import { useQuery } from "@tanstack/react-query";
 import { FaSortAmountDown } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 export default function HotelListPage() {
+  const navigate = useNavigate()
   const { data: hotel = [], isLoading: loading, error } = useQuery({
     queryKey: ['hotel'],
     queryFn: () => getList('hotels'),
@@ -554,7 +556,9 @@ export default function HotelListPage() {
             </div>
           </div>
 
-          <button className="mt-3 w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg transition">
+          <button
+           onClick={() => navigate(`/khach-san/${hotel.slug}`)}
+           className="mt-3 w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg transition">
             Chọn phòng
           </button>
         </div>
