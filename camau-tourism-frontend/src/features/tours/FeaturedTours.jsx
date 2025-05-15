@@ -123,6 +123,7 @@ function TourList({ limit, showSearch = true }) {
               văn hóa & ẩm thực đặc sắc nhất của vùng đất mũi Việt Nam!
             </p>
           </div>
+        </MotionItem>
 
           {showSearch && (
             <div className="mb-10 space-y-6">
@@ -211,7 +212,6 @@ function TourList({ limit, showSearch = true }) {
 
           {!isLoading && !error && displayedTours.length > 0 && (
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-
               {displayedTours.map((tour, index) => (
                 <MotionItem y={40}>
                   <div
@@ -304,7 +304,6 @@ function TourList({ limit, showSearch = true }) {
               </a>
             </div>
           )}
-        </MotionItem>
       </div>
     </section>
   );
