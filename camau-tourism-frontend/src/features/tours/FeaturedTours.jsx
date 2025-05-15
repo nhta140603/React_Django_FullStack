@@ -78,7 +78,7 @@ function TourList({ limit, showSearch = true }) {
     const fullStars = Math.floor(rating);
     const hasHalfStar = rating % 1 !== 0;
     const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
-    
+
     return (
       <div className="flex items-center">
         {[...Array(fullStars)].map((_, i) => (
@@ -152,17 +152,16 @@ function TourList({ limit, showSearch = true }) {
                   </div>
                 </div>
               </div>
-              
+
               <div className="flex justify-center flex-wrap gap-2">
                 {categories.map(category => (
                   <button
                     key={category.id}
                     onClick={() => setActiveFilter(category.id)}
-                    className={`px-4 py-2 rounded-full text-sm font-bold transition-all duration-200 ${
-                      activeFilter === category.id
-                        ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg scale-105"
-                        : "bg-white text-gray-600 hover:bg-gray-100 shadow border border-gray-200"
-                    }`}
+                    className={`px-4 py-2 rounded-full text-sm font-bold transition-all duration-200 ${activeFilter === category.id
+                      ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg scale-105"
+                      : "bg-white text-gray-600 hover:bg-gray-100 shadow border border-gray-200"
+                      }`}
                   >
                     {category.name}
                   </button>
@@ -212,8 +211,9 @@ function TourList({ limit, showSearch = true }) {
 
           {!isLoading && !error && displayedTours.length > 0 && (
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+
               {displayedTours.map((tour, index) => (
-                <MotionItem key={tour.id} delay={index * 0.05} y={40}>
+                <MotionItem y={40}>
                   <div
                     className="tour-card-container"
                     onMouseEnter={() => setHoveredCard(tour.id)}
@@ -287,6 +287,7 @@ function TourList({ limit, showSearch = true }) {
                   </div>
                 </MotionItem>
               ))}
+
             </div>
           )}
 
