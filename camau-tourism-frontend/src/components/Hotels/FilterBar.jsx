@@ -21,7 +21,7 @@ export default function FilterBar({ onFilter, count = 0 }) {
     });
   }, [popular, view]);
   return (
-    <div className="flex items-center flex-wrap r-1ihkh82  h-[55px] gap-[240px]">
+    <div className="flex items-center flex-wrap h-[55px] gap-[240px]">
       <div className="flex flex-col w-[293px]">
         <span className="font-bold ">Tỉnh Cà Mau</span>
         <span className="text-xs">{count} nơi lưu trú được tìm thấy</span>
