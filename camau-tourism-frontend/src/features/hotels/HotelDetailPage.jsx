@@ -4,7 +4,7 @@ import { getList, getDetail, createRoomBooking } from "../../api/user_api";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  FaHeart, FaShare, FaMapMarkerAlt, FaStar, FaWifi, FaParking, FaSwimmingPool,FaLandmark,FaMapMarker,FaStore,
+  FaHeart, FaShare, FaMapMarkerAlt, FaStar, FaWifi, FaParking, FaSwimmingPool, FaLandmark, FaMapMarker, FaStore,
   FaUtensils, FaDumbbell, FaCheck, FaCalendarAlt, FaUser, FaArrowRight, FaPhone,
   FaEnvelope, FaTimes, FaLock, FaCreditCard, FaImages, FaCheckSquare, FaClipboardCheck, FaInfoCircle, FaBaby, FaPaw, FaHome
 } from "react-icons/fa";
@@ -44,9 +44,8 @@ export default function HotelDetailPage() {
     specialRequests: "",
     paymentMethod: "credit_card"
   });
-  
-  const AVATAR_BASE_URL = import.meta.env.VITE_AVATAR_BASE_URL || "";
-  
+
+
   const {
     data: hotel,
     isLoading: loadingHotel,
@@ -67,10 +66,9 @@ export default function HotelDetailPage() {
     enabled: !!slug,
   });
 
-  // Generate mock gallery images if not available from API
   const galleryImages = useMemo(() => {
     if (!hotel) return [];
-    
+
     const images = [
       hotel.image_cover,
       "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80",
@@ -79,7 +77,7 @@ export default function HotelDetailPage() {
       "https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=800&q=80",
       "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=800&q=80"
     ].filter(Boolean);
-    
+
     return images;
   }, [hotel]);
 
@@ -95,19 +93,19 @@ export default function HotelDetailPage() {
           hotel.address
         )}&z=16&output=embed`
         : "";
-        
+
   const calculateNights = () => {
     const timeDiff = bookingData.checkOut.getTime() - bookingData.checkIn.getTime();
     return Math.ceil(timeDiff / (1000 * 3600 * 24));
   };
-  
+
   const calculateTotalPrice = () => {
     if (!rooms[activeRoomTab]) return 0;
     const nights = calculateNights();
     const roomPrice = Number(rooms[activeRoomTab].price);
     return roomPrice * nights;
   };
-  
+
   function validateBookingStep1() {
     if (!bookingData.checkIn || !bookingData.checkOut) {
       toast.warning('Vui lòng chọn ngày nhận và trả phòng!');
@@ -131,7 +129,7 @@ export default function HotelDetailPage() {
     }
     return true;
   }
-  
+
   function validateBookingStep2() {
     if (!bookingData.contactName.trim()) {
       toast.warning('Vui lòng nhập họ tên đầy đủ!');
@@ -163,7 +161,7 @@ export default function HotelDetailPage() {
     }
     return true;
   }
-  
+
   async function handleBookingSubmit() {
     try {
       const bookingPayload = {
@@ -191,7 +189,7 @@ export default function HotelDetailPage() {
     setShowBookingModal(true);
     setBookingStep(1);
   };
-  
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setBookingData(prev => ({
@@ -201,13 +199,13 @@ export default function HotelDetailPage() {
   };
 
   const nextImage = () => {
-    setCurrentImageIndex((prevIndex) => 
+    setCurrentImageIndex((prevIndex) =>
       prevIndex === galleryImages.length - 1 ? 0 : prevIndex + 1
     );
   };
 
   const prevImage = () => {
-    setCurrentImageIndex((prevIndex) => 
+    setCurrentImageIndex((prevIndex) =>
       prevIndex === 0 ? galleryImages.length - 1 : prevIndex - 1
     );
   };
@@ -230,7 +228,7 @@ export default function HotelDetailPage() {
           <div className="text-red-500 text-5xl mb-4">⚠️</div>
           <h2 className="text-xl md:text-2xl font-bold text-red-700 mb-2">Không tìm thấy khách sạn</h2>
           <p className="text-gray-600 mb-6">Khách sạn này không tồn tại hoặc đã bị xóa khỏi hệ thống.</p>
-          <button 
+          <button
             onClick={() => navigate(-1)}
             className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded-lg transition duration-200 font-medium w-full md:w-auto">
             Quay lại
@@ -277,45 +275,44 @@ export default function HotelDetailPage() {
     { label: "Bể bơi ngoài trời", value: "fa-swimming-pool", icon: FaSwimmingPool, description: "Bể bơi ngoài trời cho khách thư giãn", key: 3 },
     { label: "Bãi đỗ xe miễn phí", value: "fa-car", icon: FaCar, description: "Bãi đỗ xe an toàn, miễn phí cho khách lưu trú", key: 4 },
     { label: "Phòng gym", value: "fa-dumbbell", icon: FaDumbbell, description: "Phòng tập thể dục hiện đại, trang bị đầy đủ thiết bị", key: 5 },
-    { label: "Lễ tân 24/7", value: "fa-concierge-bell", icon: FaConciergeBell, description: "Dịch vụ lễ tân phục vụ 24/7", key: 6  },
-    { label: "Dọn phòng hàng ngày", value: "fa-broom", icon: FaBroom, description: "Phòng được dọn dẹp, làm sạch mỗi ngày", key: 7  },
-    { label: "Dịch vụ phòng (Room Service)", value: "fa-bell", icon: FaBell, description: "Gọi món, phục vụ tại phòng 24/7", key: 8  },
-    { label: "Spa & Massage", value: "fa-spa", icon: FaSpa, description: "Dịch vụ spa, massage thư giãn chuyên nghiệp", key: 9  },
-    { label: "Quầy bar", value: "fa-glass-martini-alt", icon: FaGlassMartiniAlt, description: "Thưởng thức đồ uống và cocktail tại quầy bar", key: 10  },
-    { label: "Sân vườn", value: "fa-tree", icon: FaTree, description: "Không gian xanh, sân vườn thư giãn", key: 11  },
-    { label: "Két sắt", value: "fa-lock", icon: FaLock, description: "Két sắt an toàn trong phòng", key: 12  },
-    { label: "Điều hoà nhiệt độ", value: "fa-snowflake", icon: FaSnowflake, description: "Hệ thống điều hoà nhiệt độ tại phòng", key: 13  },
-    { label: "Thang máy", value: "fa-elevator", icon: FaElevator, description: "Thang máy tiện lợi cho khách", key: 14  },
-    { label: "Ban công", value: "fa-umbrella-beach", icon: FaUmbrellaBeach, description: "Ban công riêng với view đẹp", key: 15  },
-    { label: "Dịch vụ đưa đón sân bay", value: "fa-shuttle-van", icon: FaShuttleVan, description: "Xe đưa đón sân bay tiện lợi", key: 16  },
-    { label: "Phòng hội nghị", value: "fa-chalkboard-teacher", icon: FaChalkboardTeacher, description: "Phòng họp, hội nghị trang bị hiện đại", key: 17  },
-    { label: "Truyền hình cáp", value: "fa-tv", icon: FaTv, description: "TV, truyền hình cáp tại phòng", key: 18  },
-    { label: "Tủ lạnh mini", value: "fa-ice-cream", icon: FaIceCream, description: "Tủ lạnh mini trong phòng", key: 19  },
-    { label: "Máy sấy tóc", value: "fa-wind", icon: FaWind, description: "Trang bị máy sấy tóc tại phòng tắm", key: 20  },
-    { label: "Ấm siêu tốc", value: "fa-mug-hot", icon: FaMugHot, description: "Ấm đun nước siêu tốc tiện lợi", key: 21  },
-    { label: "Dịch vụ giặt là", value: "fa-soap", icon: FaSoap, description: "Dịch vụ giặt là, ủi quần áo chuyên nghiệp", key: 22  },
-    { label: "Phòng không hút thuốc", value: "fa-ban-smoking", icon: FaSmokingBan, description: "Phòng dành riêng cho khách không hút thuốc", key: 23  },
-    { label: "Nhận/trả phòng nhanh", value: "fa-clock", icon: FaClock, description: "Nhận và trả phòng nhanh chóng", key: 24  },
-    { label: "Bữa sáng miễn phí", value: "fa-bread-slice", icon: FaBreadSlice, description: "Bữa sáng miễn phí mỗi ngày", key: 25  },
-    { label: "Bãi biển riêng", value: "fa-umbrella-beach", icon: FaUmbrellaBeach, description: "Bãi biển riêng cho khách nghỉ dưỡng", key: 26  },
-    { label: "Sân chơi trẻ em", value: "fa-child", icon: FaChild, description: "Khu vui chơi dành cho trẻ em", key: 27  },
-    { label: "Dịch vụ giữ hành lý", value: "fa-suitcase-rolling", icon: FaSuitcaseRolling, description: "Nhận giữ hành lý cho khách", key: 28  },
-    { label: "Hệ thống báo cháy", value: "fa-bell", icon: FaBell, description: "Hệ thống báo cháy, an toàn phòng chống cháy nổ", key: 29  },
-    { label: "Dịch vụ cho thuê xe", value: "fa-car-side", icon: FaCarSide, description: "Dịch vụ cho thuê xe tiện lợi", key: 30  },
-    { label: "ATM trong khuôn viên", value: "fa-money-bill-wave", icon: FaMoneyBillWave, description: "Cây ATM ngay trong khách sạn", key: 31  },
-    { label: "Wifi khu vực công cộng", value: "fa-wifi", icon: FaWifi, description: "Wifi miễn phí mọi khu vực", key: 32  },
+    { label: "Lễ tân 24/7", value: "fa-concierge-bell", icon: FaConciergeBell, description: "Dịch vụ lễ tân phục vụ 24/7", key: 6 },
+    { label: "Dọn phòng hàng ngày", value: "fa-broom", icon: FaBroom, description: "Phòng được dọn dẹp, làm sạch mỗi ngày", key: 7 },
+    { label: "Dịch vụ phòng (Room Service)", value: "fa-bell", icon: FaBell, description: "Gọi món, phục vụ tại phòng 24/7", key: 8 },
+    { label: "Spa & Massage", value: "fa-spa", icon: FaSpa, description: "Dịch vụ spa, massage thư giãn chuyên nghiệp", key: 9 },
+    { label: "Quầy bar", value: "fa-glass-martini-alt", icon: FaGlassMartiniAlt, description: "Thưởng thức đồ uống và cocktail tại quầy bar", key: 10 },
+    { label: "Sân vườn", value: "fa-tree", icon: FaTree, description: "Không gian xanh, sân vườn thư giãn", key: 11 },
+    { label: "Két sắt", value: "fa-lock", icon: FaLock, description: "Két sắt an toàn trong phòng", key: 12 },
+    { label: "Điều hoà nhiệt độ", value: "fa-snowflake", icon: FaSnowflake, description: "Hệ thống điều hoà nhiệt độ tại phòng", key: 13 },
+    { label: "Thang máy", value: "fa-elevator", icon: FaElevator, description: "Thang máy tiện lợi cho khách", key: 14 },
+    { label: "Ban công", value: "fa-umbrella-beach", icon: FaUmbrellaBeach, description: "Ban công riêng với view đẹp", key: 15 },
+    { label: "Dịch vụ đưa đón sân bay", value: "fa-shuttle-van", icon: FaShuttleVan, description: "Xe đưa đón sân bay tiện lợi", key: 16 },
+    { label: "Phòng hội nghị", value: "fa-chalkboard-teacher", icon: FaChalkboardTeacher, description: "Phòng họp, hội nghị trang bị hiện đại", key: 17 },
+    { label: "Truyền hình cáp", value: "fa-tv", icon: FaTv, description: "TV, truyền hình cáp tại phòng", key: 18 },
+    { label: "Tủ lạnh mini", value: "fa-ice-cream", icon: FaIceCream, description: "Tủ lạnh mini trong phòng", key: 19 },
+    { label: "Máy sấy tóc", value: "fa-wind", icon: FaWind, description: "Trang bị máy sấy tóc tại phòng tắm", key: 20 },
+    { label: "Ấm siêu tốc", value: "fa-mug-hot", icon: FaMugHot, description: "Ấm đun nước siêu tốc tiện lợi", key: 21 },
+    { label: "Dịch vụ giặt là", value: "fa-soap", icon: FaSoap, description: "Dịch vụ giặt là, ủi quần áo chuyên nghiệp", key: 22 },
+    { label: "Phòng không hút thuốc", value: "fa-ban-smoking", icon: FaSmokingBan, description: "Phòng dành riêng cho khách không hút thuốc", key: 23 },
+    { label: "Nhận/trả phòng nhanh", value: "fa-clock", icon: FaClock, description: "Nhận và trả phòng nhanh chóng", key: 24 },
+    { label: "Bữa sáng miễn phí", value: "fa-bread-slice", icon: FaBreadSlice, description: "Bữa sáng miễn phí mỗi ngày", key: 25 },
+    { label: "Bãi biển riêng", value: "fa-umbrella-beach", icon: FaUmbrellaBeach, description: "Bãi biển riêng cho khách nghỉ dưỡng", key: 26 },
+    { label: "Sân chơi trẻ em", value: "fa-child", icon: FaChild, description: "Khu vui chơi dành cho trẻ em", key: 27 },
+    { label: "Dịch vụ giữ hành lý", value: "fa-suitcase-rolling", icon: FaSuitcaseRolling, description: "Nhận giữ hành lý cho khách", key: 28 },
+    { label: "Hệ thống báo cháy", value: "fa-bell", icon: FaBell, description: "Hệ thống báo cháy, an toàn phòng chống cháy nổ", key: 29 },
+    { label: "Dịch vụ cho thuê xe", value: "fa-car-side", icon: FaCarSide, description: "Dịch vụ cho thuê xe tiện lợi", key: 30 },
+    { label: "ATM trong khuôn viên", value: "fa-money-bill-wave", icon: FaMoneyBillWave, description: "Cây ATM ngay trong khách sạn", key: 31 },
+    { label: "Wifi khu vực công cộng", value: "fa-wifi", icon: FaWifi, description: "Wifi miễn phí mọi khu vực", key: 32 },
   ];
-  
+
   const hotelAmenitiesIds = Array.isArray(hotel?.amenities) ? hotel.amenities : [];
   const activeRoom = rooms[activeRoomTab] || {};
   const amenities_list = amenities.filter(amenity => hotelAmenitiesIds.includes(amenity.key)).slice(0, 6);
   const roomAmenitiesIds = Array.isArray(activeRoom.amenities) ? activeRoom.amenities : [];
   const amenities_Room_list = amenities.filter(amenity => roomAmenitiesIds.includes(amenity.key)).slice(0, 6);
-  
+
   return (
     <div className="bg-gradient-to-b from-blue-50 to-white min-h-screen font-sans">
       <div className="max-w-7xl mx-auto px-4 pt-4 pb-20 md:pt-6 md:pb-16">
-        {/* Gallery Section - Mobile Optimized */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -360,7 +357,7 @@ export default function HotelDetailPage() {
                   }}
                 />
               </div>
-              <div 
+              <div
                 className="relative h-[8.75rem] lg:h-44 rounded-xl overflow-hidden group cursor-pointer"
                 onClick={() => {
                   setCurrentImageIndex(2);
@@ -379,20 +376,17 @@ export default function HotelDetailPage() {
             </div>
           </div>
         </motion.div>
-        
-        {/* Mobile Gallery Controls */}
+
         <div className="flex md:hidden items-center justify-center mb-6 gap-2">
-          <button 
-            onClick={() => setShowFullGallery(true)} 
+          <button
+            onClick={() => setShowFullGallery(true)}
             className="flex items-center justify-center gap-2 bg-white shadow-md rounded-full px-4 py-2 text-sm font-medium text-blue-600"
           >
             <FaImages /> Xem tất cả ảnh ({galleryImages.length})
           </button>
         </div>
 
-        {/* Main Content Card */}
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-8">
-          {/* Tabs Navigation - Scrollable on Mobile */}
           <div className="flex overflow-x-auto border-b no-scrollbar">
             <button
               onClick={() => setActiveTab("rooms")}
@@ -466,16 +460,14 @@ export default function HotelDetailPage() {
               </div>
             </div>
 
-            {/* Hotel Description */}
             <div className="mb-6 md:mb-8">
               <h3 className="text-base md:text-lg font-semibold mb-2 md:mb-3 text-gray-800">Giới thiệu</h3>
               <div className="bg-gray-50 rounded-xl p-3 md:p-4 text-gray-700">
-                <p className="text-sm md:text-base mb-3" dangerouslySetInnerHTML={{__html:hotel.description}}></p>
+                <p className="text-sm md:text-base mb-3" dangerouslySetInnerHTML={{ __html: hotel.description }}></p>
                 <button className="text-blue-600 hover:underline font-medium text-sm md:text-base">Xem thêm</button>
               </div>
             </div>
 
-            {/* Rooms Tab Content */}
             {activeTab === "rooms" && (
               <div>
                 <h3 className="text-base md:text-lg font-semibold mb-3 md:mb-4 text-gray-800">Các loại phòng</h3>
@@ -484,11 +476,10 @@ export default function HotelDetailPage() {
                     <button
                       key={room.id || idx}
                       onClick={() => setActiveRoomTab(idx)}
-                      className={`px-3 md:px-4 py-2 rounded-t-lg font-medium transition-colors whitespace-nowrap text-sm ${
-                        activeRoomTab === idx
+                      className={`px-3 md:px-4 py-2 rounded-t-lg font-medium transition-colors whitespace-nowrap text-sm ${activeRoomTab === idx
                           ? "text-blue-700 border-b-2 border-blue-700 bg-white"
                           : "text-gray-500 hover:text-blue-700"
-                      }`}
+                        }`}
                     >
                       {room.room_type}
                     </button>
@@ -503,7 +494,6 @@ export default function HotelDetailPage() {
                     transition={{ duration: 0.3 }}
                     className="bg-white border rounded-xl overflow-hidden mb-4 shadow-md transition duration-200"
                   >
-                    {/* Room Card - Optimized for Mobile */}
                     <div className="flex flex-col md:flex-row">
                       <div className="w-full md:w-1/4 h-48 md:h-auto relative">
                         <img
@@ -517,63 +507,63 @@ export default function HotelDetailPage() {
                           </div>
                         )}
                       </div>
-                  <div className="p-4 md:p-6 flex-1 flex flex-col md:flex-row">
-                    <div className="flex-1">
-                      <h4 className="text-xl font-bold text-gray-800 mb-2">{rooms[activeRoomTab].room_type}</h4>
-                      <div className="mb-4 flex flex-wrap gap-2">
-                        <span className="bg-gray-100 text-gray-700 rounded-full px-3 py-1 text-xs font-medium">
-                          {rooms[activeRoomTab].capacity} khách
-                        </span>
-                        <span className="bg-gray-100 text-gray-700 rounded-full px-3 py-1 text-xs font-medium">
-                          {rooms[activeRoomTab].beds || "1 giường đôi"}
-                        </span>
-                        <span className="bg-gray-100 text-gray-700 rounded-full px-3 py-1 text-xs font-medium">
-                          {rooms[activeRoomTab].floor ? `Tầng ${rooms[activeRoomTab].floor}` : "Diện tích tiêu chuẩn"}
-                        </span>
-                      </div>
-                      <div className="mb-4">
-                        <h5 className="text-sm font-medium text-gray-700 mb-2">Tiện nghi phòng:</h5>
-                        <div className="grid grid-cols-2 gap-1">
-                        {amenities_Room_list.map((amenity, index) => {
-                          return (
-                            <div key={index} className="flex items-center text-sm text-gray-600">
-                            <FaCheck className="text-green-500 mr-1" size={12} /> {amenity.label}
+                      <div className="p-4 md:p-6 flex-1 flex flex-col md:flex-row">
+                        <div className="flex-1">
+                          <h4 className="text-xl font-bold text-gray-800 mb-2">{rooms[activeRoomTab].room_type}</h4>
+                          <div className="mb-4 flex flex-wrap gap-2">
+                            <span className="bg-gray-100 text-gray-700 rounded-full px-3 py-1 text-xs font-medium">
+                              {rooms[activeRoomTab].capacity} khách
+                            </span>
+                            <span className="bg-gray-100 text-gray-700 rounded-full px-3 py-1 text-xs font-medium">
+                              {rooms[activeRoomTab].beds || "1 giường đôi"}
+                            </span>
+                            <span className="bg-gray-100 text-gray-700 rounded-full px-3 py-1 text-xs font-medium">
+                              {rooms[activeRoomTab].floor ? `Tầng ${rooms[activeRoomTab].floor}` : "Diện tích tiêu chuẩn"}
+                            </span>
                           </div>
-                          );
-                        })}
+                          <div className="mb-4">
+                            <h5 className="text-sm font-medium text-gray-700 mb-2">Tiện nghi phòng:</h5>
+                            <div className="grid grid-cols-2 gap-1">
+                              {amenities_Room_list.map((amenity, index) => {
+                                return (
+                                  <div key={index} className="flex items-center text-sm text-gray-600">
+                                    <FaCheck className="text-green-500 mr-1" size={12} /> {amenity.label}
+                                  </div>
+                                );
+                              })}
 
-                        </div>
-                      </div>
-                      <div className="text-sm text-blue-600 font-medium hover:underline cursor-pointer">
-                        Xem chi tiết phòng
-                      </div>
-                    </div>
-                    <div className="md:w-1/4 mt-4 md:mt-0 md:pl-6 md:border-l flex flex-col justify-between">
-                      <div>
-                        <div className="flex items-center justify-end">
-                          <div className="line-through text-gray-400 text-sm">
-                            {(Number(rooms[activeRoomTab].price) * 1.15).toLocaleString()} VND
+                            </div>
+                          </div>
+                          <div className="text-sm text-blue-600 font-medium hover:underline cursor-pointer">
+                            Xem chi tiết phòng
                           </div>
                         </div>
-                        <div className="text-right">
-                          <span className="text-2xl font-bold text-red-500">{Number(rooms[activeRoomTab].price).toLocaleString()} VND</span>
-                          <span className="text-xs text-gray-500">/đêm</span>
-                        </div>
-                        <div className="text-xs text-gray-500 text-right mb-4">
-                          Chưa bao gồm thuế và phí
+                        <div className="md:w-1/4 mt-4 md:mt-0 md:pl-6 md:border-l flex flex-col justify-between">
+                          <div>
+                            <div className="flex items-center justify-end">
+                              <div className="line-through text-gray-400 text-sm">
+                                {(Number(rooms[activeRoomTab].price) * 1.15).toLocaleString()} VND
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <span className="text-2xl font-bold text-red-500">{Number(rooms[activeRoomTab].price).toLocaleString()} VND</span>
+                              <span className="text-xs text-gray-500">/đêm</span>
+                            </div>
+                            <div className="text-xs text-gray-500 text-right mb-4">
+                              Chưa bao gồm thuế và phí
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => openBookingModal(activeRoomTab)}
+                            className="w-full bg-blue-600 hover:bg-blue-700 transition text-white py-2 px-4 rounded-lg font-medium">
+                            Đặt ngay
+                          </button>
                         </div>
                       </div>
-                      <button 
-                        onClick={() => openBookingModal(activeRoomTab)}
-                        className="w-full bg-blue-600 hover:bg-blue-700 transition text-white py-2 px-4 rounded-lg font-medium">
-                        Đặt ngay
-                      </button>
-                    </div>
-                  </div>
                     </div>
                   </motion.div>
                 )}
-                
+
                 {rooms.length === 0 && (
                   <div className="text-center py-8">
                     <div className="text-gray-400 text-4xl mb-3">😢</div>
@@ -628,14 +618,14 @@ export default function HotelDetailPage() {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="mb-6">
                   <h3 className="text-base md:text-lg font-semibold mb-3 text-gray-800">Tất cả tiện nghi</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="bg-gray-50 rounded-xl p-4">
                       <h4 className="font-medium text-blue-600 mb-3 flex items-center"><FaConciergeBell className="mr-2" /> Dịch vụ & Tiện ích</h4>
                       <ul className="space-y-2 text-sm">
-                        {amenities.filter(a => hotelAmenitiesIds.includes(a.key) && [1,6,7,8,16,22,24,28,30].includes(a.key)).map(amenity => (
+                        {amenities.filter(a => hotelAmenitiesIds.includes(a.key) && [1, 6, 7, 8, 16, 22, 24, 28, 30].includes(a.key)).map(amenity => (
                           <li key={amenity.key} className="flex items-start">
                             <amenity.icon className="text-blue-500 mt-1 mr-2 flex-shrink-0" />
                             <div>
@@ -646,11 +636,11 @@ export default function HotelDetailPage() {
                         ))}
                       </ul>
                     </div>
-                    
+
                     <div className="bg-gray-50 rounded-xl p-4">
                       <h4 className="font-medium text-green-600 mb-3 flex items-center"><FaUtensils className="mr-2" /> Ẩm thực & Giải trí</h4>
                       <ul className="space-y-2 text-sm">
-                        {amenities.filter(a => hotelAmenitiesIds.includes(a.key) && [2,3,5,9,10,25,27].includes(a.key)).map(amenity => (
+                        {amenities.filter(a => hotelAmenitiesIds.includes(a.key) && [2, 3, 5, 9, 10, 25, 27].includes(a.key)).map(amenity => (
                           <li key={amenity.key} className="flex items-start">
                             <amenity.icon className="text-green-500 mt-1 mr-2 flex-shrink-0" />
                             <div>
@@ -661,11 +651,11 @@ export default function HotelDetailPage() {
                         ))}
                       </ul>
                     </div>
-                    
+
                     <div className="bg-gray-50 rounded-xl p-4">
                       <h4 className="font-medium text-red-600 mb-3 flex items-center"><FaHome className="mr-2" /> Tiện nghi phòng</h4>
                       <ul className="space-y-2 text-sm">
-                        {amenities.filter(a => hotelAmenitiesIds.includes(a.key) && [12,13,18,19,20,21,23].includes(a.key)).map(amenity => (
+                        {amenities.filter(a => hotelAmenitiesIds.includes(a.key) && [12, 13, 18, 19, 20, 21, 23].includes(a.key)).map(amenity => (
                           <li key={amenity.key} className="flex items-start">
                             <amenity.icon className="text-red-500 mt-1 mr-2 flex-shrink-0" />
                             <div>
@@ -701,7 +691,7 @@ export default function HotelDetailPage() {
 
               </div>
             )}
-            
+
             {activeTab === "reviews" && (
               <div>
                 <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
@@ -721,7 +711,7 @@ export default function HotelDetailPage() {
                     Viết đánh giá
                   </button>
                 </div>
-                
+
                 <div className="space-y-4">
                   {/* Sample reviews - would be dynamically populated from API */}
                   <div className="border-b pb-4">
@@ -743,7 +733,7 @@ export default function HotelDetailPage() {
                       Khách sạn tuyệt vời với dịch vụ 5 sao. Phòng rộng rãi, sạch sẽ và có view đẹp. Nhân viên thân thiện và phục vụ chu đáo. Bể bơi và nhà hàng đều rất tốt. Sẽ quay lại trong lần tới!
                     </p>
                   </div>
-                  
+
                   <div className="border-b pb-4">
                     <div className="flex justify-between items-start mb-2">
                       <div className="flex items-center">
@@ -763,7 +753,7 @@ export default function HotelDetailPage() {
                       Vị trí khách sạn thuận tiện, gần biển và nhiều địa điểm tham quan. Phòng sạch sẽ, tuy nhiên hơi ồn vào buổi tối. Bữa sáng khá đa dạng và ngon miệng. Nhân viên phục vụ tốt và nhiệt tình.
                     </p>
                   </div>
-                  
+
                   <div className="border-b pb-4">
                     <div className="flex justify-between items-start mb-2">
                       <div className="flex items-center">
@@ -783,7 +773,7 @@ export default function HotelDetailPage() {
                       Nhân viên phục vụ tốt nhưng phòng cũ hơn so với hình ảnh trên website. Điều hòa hoạt động không hiệu quả và wifi thường xuyên bị ngắt kết nối. Vị trí khá xa trung tâm nên không thuận tiện lắm.
                     </p>
                   </div>
-                  
+
                   <button className="w-full py-2 border border-blue-500 text-blue-600 rounded-lg hover:bg-blue-50 transition font-medium text-sm">
                     Xem thêm đánh giá
                   </button>
@@ -792,14 +782,14 @@ export default function HotelDetailPage() {
             )}
           </div>
         </div>
-        
+
         <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t py-3 px-4 md:hidden z-10">
           <div className="flex items-center justify-between">
             <div>
               <div className="text-xs text-gray-500">Giá từ</div>
               <div className="text-lg font-bold text-red-500">{minPrice ? `${minPrice.toLocaleString()} VND` : "--"}</div>
             </div>
-            <button 
+            <button
               onClick={() => rooms.length > 0 && openBookingModal(0)}
               className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition font-medium text-sm">
               Đặt phòng ngay
@@ -818,7 +808,7 @@ export default function HotelDetailPage() {
             className="fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center p-4"
             onClick={() => setShowFullGallery(false)}
           >
-            <div 
+            <div
               className="relative max-w-6xl w-full h-[80vh] flex items-center justify-center"
               onClick={(e) => e.stopPropagation()}
             >
@@ -828,14 +818,14 @@ export default function HotelDetailPage() {
               >
                 <FaTimes size={20} />
               </button>
-              
+
               <button
                 className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white p-3 rounded-full transition"
                 onClick={prevImage}
               >
                 <FaChevronLeft />
               </button>
-              
+
               <div className="w-full h-full flex items-center justify-center">
                 <img
                   src={galleryImages[currentImageIndex]}
@@ -843,14 +833,14 @@ export default function HotelDetailPage() {
                   className="max-h-full max-w-full object-contain"
                 />
               </div>
-              
+
               <button
                 className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 text-white p-3 rounded-full transition"
                 onClick={nextImage}
               >
                 <FaChevronRight />
               </button>
-              
+
               <div className="absolute bottom-4 left-0 right-0 flex justify-center">
                 <div className="bg-black/60 px-4 py-2 rounded-full text-white text-sm">
                   {currentImageIndex + 1} / {galleryImages.length}
@@ -896,8 +886,8 @@ export default function HotelDetailPage() {
                     <div className="mb-6 p-3 md:p-4 bg-blue-50 rounded-lg">
                       <div className="flex flex-col md:flex-row gap-3 md:gap-4 md:items-center">
                         <div className="w-full md:w-24 h-24 rounded-lg overflow-hidden">
-                          <img 
-                            src={`${rooms[activeRoomTab].image_url || "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=800&q=80"}`} 
+                          <img
+                            src={`${rooms[activeRoomTab].image_url || "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=800&q=80"}`}
                             alt={rooms[activeRoomTab].room_type}
                             className="w-full h-full object-cover"
                           />
@@ -930,7 +920,7 @@ export default function HotelDetailPage() {
                             locale="vi"
                             required
                             selected={bookingData.checkIn}
-                            onChange={date => setBookingData({...bookingData, checkIn: date})}
+                            onChange={date => setBookingData({ ...bookingData, checkIn: date })}
                             minDate={new Date()}
                             className="w-full p-2 md:p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-sm"
                           />
@@ -945,7 +935,7 @@ export default function HotelDetailPage() {
                             locale="vi"
                             required
                             selected={bookingData.checkOut}
-                            onChange={date => setBookingData({...bookingData, checkOut: date})}
+                            onChange={date => setBookingData({ ...bookingData, checkOut: date })}
                             minDate={new Date(bookingData.checkIn.getTime() + 86400000)}
                             className="w-full p-2 md:p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-sm"
                           />
@@ -1161,7 +1151,7 @@ export default function HotelDetailPage() {
                     </div>
                     <h3 className="text-lg md:text-xl font-bold text-gray-800 mb-2">Đặt phòng thành công!</h3>
                     <p className="text-gray-600 mb-6 text-sm md:text-base">Cảm ơn bạn đã chọn {hotel.name}. Xác nhận đặt phòng đã được gửi đến email của bạn.</p>
-                    
+
                     <div className="bg-blue-50 p-4 md:p-5 rounded-lg mb-6 max-w-md mx-auto">
                       <div className="text-left mb-4">
                         <h4 className="font-semibold mb-1 text-sm md:text-base">Thông tin đặt phòng:</h4>
@@ -1193,7 +1183,7 @@ export default function HotelDetailPage() {
                         <span className="font-bold text-red-600 text-sm md:text-base">{(Number(rooms[activeRoomTab].price) * calculateNights() * 1.1).toLocaleString()} VND</span>
                       </div>
                     </div>
-                    
+
                     <button
                       onClick={() => setShowBookingModal(false)}
                       className="bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 md:px-8 rounded-lg transition font-medium text-sm md:text-base"
@@ -1216,7 +1206,7 @@ export default function HotelDetailPage() {
                 {bookingStep === 1 && (
                   <div></div>
                 )}
-                
+
                 {bookingStep === 1 && (
                   <button
                     onClick={() => {
@@ -1227,7 +1217,7 @@ export default function HotelDetailPage() {
                     Tiếp tục <FaChevronRight className="ml-1" />
                   </button>
                 )}
-                
+
                 {bookingStep === 2 && (
                   <button
                     onClick={async () => {
