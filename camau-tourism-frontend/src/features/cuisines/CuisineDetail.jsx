@@ -6,8 +6,6 @@ import { getDetail } from "../../api/user_api";
 export default function CuisineDetail() {
     const { slug } = useParams();
     const navigate = useNavigate();
-
-    // Lấy thông tin món ăn sử dụng useQuery
     const {
         data: cuisine,
         isLoading,
@@ -20,11 +18,9 @@ export default function CuisineDetail() {
         retry: false
     });
 
-    // Ảnh đang được xem/phóng to
     const [activeImage, setActiveImage] = useState(null);
     const [showImageViewer, setShowImageViewer] = useState(false);
 
-    // Khi có dữ liệu mới, đặt ảnh mặc định để xem
     useEffect(() => {
         if (cuisine?.image) {
             setActiveImage(cuisine.image);
@@ -136,9 +132,9 @@ export default function CuisineDetail() {
                 </div>
             </div>
 
-            <div className="max-w-7xl mx-auto px-4 py-12 -mt-16 relative z-10">
+            <div className="max-w-7xl mx-auto px-4 py-12 -mt-10 relative z-10">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div className="md:col-span-2 bg-white rounded-2xl shadow-xl p-8">
+                    <div className="md:col-span-2 bg-white rounded-2xl">
                         <div className="mb-12">
                             <div className="flex items-center gap-2 mb-4">
                                 <div className="w-8 h-1 bg-amber-500 rounded-full"></div>
@@ -154,9 +150,7 @@ export default function CuisineDetail() {
                         </div>
                     </div>
 
-                    {/* Sidebar */}
                     <div className="md:col-span-1 space-y-8">
-                        {/* Gallery */}
                         <div className="bg-white rounded-2xl shadow-xl p-6">
                             <div className="flex items-center justify-between mb-4">
                                 <h3 className="text-xl font-bold text-gray-800">Hình ảnh</h3>
@@ -190,7 +184,6 @@ export default function CuisineDetail() {
                             </div>
                         </div>
 
-                        {/* Where to Find */}
                         <div className="bg-white rounded-2xl shadow-xl p-6">
                             <h3 className="text-xl font-bold text-gray-800 mb-4">Địa điểm thưởng thức</h3>
 

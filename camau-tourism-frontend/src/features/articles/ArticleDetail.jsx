@@ -402,8 +402,8 @@ export default function ArticleDetailPage() {
         
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
           <div className="lg:col-span-3">
-            <article className="bg-white rounded-2xl shadow-sm overflow-hidden">
-              <div className="p-6 md:p-8 lg:p-10">
+            <article className="overflow-hidden">
+              <div className="p-1 md:p-8 lg:p-10">
                 <div 
                   ref={contentRef}
                   className="article-content prose prose-lg max-w-none prose-headings:text-gray-800 prose-headings:font-bold prose-p:text-gray-700 prose-a:text-orange-600 prose-a:no-underline hover:prose-a:underline prose-img:rounded-xl prose-img:shadow-md"
