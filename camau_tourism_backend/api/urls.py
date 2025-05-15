@@ -25,4 +25,5 @@ urlpatterns = [
     path("momo/create/", MomoPaymentView.as_view(), name="momo-create"),
     path("payment/momo/callback", MomoCallbackView.as_view(), name="momo-callback"),
     path("payment/momo/ipn", MomoCallbackView.as_view(), name="momo-ipn"),
+    path('logout/', UserLogoutView.as_view(), name='user-logout'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

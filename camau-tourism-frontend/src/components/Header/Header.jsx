@@ -56,90 +56,90 @@ function Header() {
         ? "bg-blue-600/95 backdrop-blur-lg shadow-md py-2"
         : "bg-blue-600/95 backdrop-blur-lg shadow-md py-2"
     )}>
-      <div className="flex lg:hidden justify-between items-center px-3 py-2">
-        <Link to="/" className="flex items-center gap-2">
-          <img src={logo} alt="logo" className="h-9 w-9 rounded-full shadow-md border-2 border-white" />
+      <div className="flex lg:hidden items-center justify-between px-3 py-2 relative">
+        <button
+          className="p-2 rounded-full text-white bg-blue-500/80 hover:bg-blue-700 transition absolute"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        >
+          {mobileMenuOpen ? <FaTimes className="w-5 h-5" /> : <FaBars className="w-5 h-5" />}
+        </button>
+        <Link to="/" className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2 z-10">
           <span className="text-lg font-bold text-white leading-tight tracking-wide">
             <span>Cà Mau</span> <span className="text-yellow-300">Tourism</span>
           </span>
         </Link>
-        <div className="flex items-center gap-2">
+
+        <div className="flex items-center justify-end flex-1">
           {loading ? (
-            <div className="w-20 h-8 bg-blue-400/30 rounded-full animate-pulse"></div>
+            <div className="w-9 h-9 bg-blue-400/30 rounded-full animate-pulse"></div>
           ) : !user ? (
-            <>
-              <Link
-                to="/login"
-                className="px-3 py-1 bg-white/90 text-blue-700 font-semibold rounded-xl shadow hover:bg-cyan-100 text-sm transition-all duration-200"
-                style={{ fontWeight: 600, minWidth: 74 }}
-              >
-                Đăng nhập
-              </Link>
-              <button
-                className="ml-1 p-2 rounded-full text-white bg-blue-500/80 hover:bg-blue-700 transition"
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              >
-                {mobileMenuOpen ? <FaTimes className="w-5 h-5" /> : <FaBars className="w-5 h-5" />}
-              </button>
-            </>
+            <Link
+              to="/login"
+              className="p-2 rounded-full bg-white/90 text-blue-700 shadow hover:bg-cyan-100 transition-all duration-200"
+              style={{ fontWeight: 600, minWidth: 38 }}
+            >
+              <FaUserCircle className="w-6 h-6" />
+            </Link>
           ) : (
-            <div className="flex items-center gap-2">
-              <div className="relative" ref={mobileAccountRef}>
-                <button
-                  className="flex items-center space-x-2 px-2 py-1 rounded-full hover:bg-blue-700/60 transition-all duration-300"
-                  onClick={() => setMobileAccountOpen((prev) => !prev)}
-                  aria-haspopup="true"
-                  aria-expanded={mobileAccountOpen}
-                >
-                  {/* <img src={avatarUrl} alt="Avatar" className="w-8 h-8 rounded-full border-2 border-cyan-300 shadow object-cover" /> */}
-                  <span className="text-white font-semibold text-base">{user.user.last_name || user.user.username || user.user.email.split('@')[0]}</span>
-                  <FaChevronDown className={classNames("transition-transform duration-300", mobileAccountOpen ? "rotate-180" : "")} />
-                </button>
-                {mobileAccountOpen && (
-                  <div className="absolute right-0 mt-2 w-60 bg-white text-gray-800 shadow-xl rounded-xl py-1 z-50 animate-fade-in-up">
-                    <div className="px-4 py-3 border-b border-gray-100">
-                      <p className="text-sm font-semibold text-gray-900 truncate">
-                        {user.user.first_name} {user.user.last_name}
-                      </p>
-                      <p className="text-xs text-gray-500 truncate">
-                        {user.user.email}
-                      </p>
-                    </div>
-                    <Link
-                      to="/trang-ca-nhan"
-                      className="flex items-center px-4 py-3 hover:bg-blue-50 transition-colors text-blue-700"
-                      onClick={() => setMobileAccountOpen(false)}
-                    >
-                      <FaUserCog className="mr-3 text-blue-600" />
-                      <span>Quản lý tài khoản</span>
-                    </Link>
-                    <Link
-                      to="/personaltrip"
-                      className="flex items-center px-4 py-3 hover:bg-blue-50 transition-colors text-blue-700"
-                      onClick={() => setMobileAccountOpen(false)}
-                    >
-                      <FaUserCircle className="mr-3 text-blue-600" />
-                      <span>Lộ trình cá nhân</span>
-                    </Link>
-                    <div className="border-t border-gray-100 my-1"></div>
-                    <button
-                      onClick={() => { setMobileAccountOpen(false); logout(); }}
-                      className="flex items-center px-4 py-3 w-full hover:bg-red-50 text-left text-red-600 transition-colors"
-                    >
-                      <FaSignOutAlt className="mr-3" />
-                      <span>Đăng xuất</span>
-                    </button>
-                  </div>
-                )}
-              </div>
+            <div className="relative" ref={mobileAccountRef}>
               <button
-                className="ml-1 p-2 rounded-full text-white bg-blue-500/80 hover:bg-blue-700 transition"
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="flex items-center space-x-2 px-2 py-1 rounded-full hover:bg-blue-700/60 transition-all duration-300"
+                onClick={() => setMobileAccountOpen((prev) => !prev)}
+                aria-haspopup="true"
+                aria-expanded={mobileAccountOpen}
               >
-                {mobileMenuOpen ? <FaTimes className="w-5 h-5" /> : <FaBars className="w-5 h-5" />}
+                <span className="text-white font-semibold text-base">{user.user.last_name || user.user.username || user.user.email.split('@')[0]}</span>
+                <FaChevronDown className={classNames("transition-transform duration-300", mobileAccountOpen ? "rotate-180" : "")} />
               </button>
+              {mobileAccountOpen && (
+                <div className="absolute right-0 mt-2 w-56 bg-white text-gray-800 shadow-xl rounded-xl py-1 z-[9999]">
+                  <div className="px-4 py-3 border-b border-gray-100">
+                    <p className="text-sm font-semibold text-gray-900 truncate">
+                      {user.user.first_name} {user.user.last_name}
+                    </p>
+                    <p className="text-xs text-gray-500 truncate">
+                      {user.user.email}
+                    </p>
+                  </div>
+                  <Link to="/trang-ca-nhan" className="flex items-center px-4 py-3 hover:bg-blue-50 transition-colors text-blue-700">
+                    <FaUserCog className="mr-3 text-blue-600" />
+                    <span>Quản lý tài khoản</span>
+                  </Link>
+                  <Link to="/personaltrip" className="flex items-center px-4 py-3 hover:bg-blue-50 transition-colors text-blue-700">
+                    <FaUserCircle className="mr-3 text-blue-600" />
+                    <span>Lộ trình cá nhân</span>
+                  </Link>
+                  <div className="border-t border-gray-100 my-1"></div>
+                  <button
+                    onClick={logout}
+                    className="flex items-center px-4 py-3 w-full hover:bg-red-50 text-left text-red-600 transition-colors"
+                  >
+                    <FaSignOutAlt className="mr-3" />
+                    <span>Đăng xuất</span>
+                  </button>
+                </div>
+              )}
             </div>
           )}
+        </div>
+      </div>
+
+      <div
+        className={classNames(
+          "fixed inset-0 z-50 lg:hidden flex transition-all duration-300",
+          mobileMenuOpen ? "opacity-0 pointer-events-auto" : "opacity-0 pointer-events-none"
+        )}
+      >
+        <div
+          className="absolute inset-0 backdrop-blur-sm z-40"
+          onClick={() => setMobileMenuOpen(false)}
+        ></div>
+        <div
+          className={classNames(
+            "relative h-full w-72 max-w-[80vw] bg-gradient-to-b from-blue-700 via-cyan-700 to-blue-700 shadow-lg p-5 z-50 transition-transform duration-300",
+            mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+          )}
+        >
         </div>
       </div>
       <div className="hidden lg:flex justify-between items-center max-w-[1310px] mx-auto px-6 py-2">
@@ -197,7 +197,7 @@ function Header() {
                 <FaChevronDown className={classNames("transition-transform duration-300", accountOpen ? "rotate-180" : "")} />
               </button>
               {accountOpen && (
-                <div className="absolute right-0 mt-2 w-56 bg-white text-gray-800 shadow-xl rounded-xl py-1 z-50">
+                <div className="absolute right-0 mt-2 w-56 bg-white text-gray-800 shadow-xl rounded-xl py-1 z-[9999]">
                   <div className="px-4 py-3 border-b border-gray-100">
                     <p className="text-sm font-semibold text-gray-900 truncate">
                       {user.user.first_name} {user.user.last_name}

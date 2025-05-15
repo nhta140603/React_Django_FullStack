@@ -60,7 +60,15 @@ class UserLoginView(generics.GenericAPIView):
                 samesite="Lax"
             )
             return response
-    
+
+class UserLogoutView(APIView):
+    permission_classes = [AllowAny]
+    def post(self, request, *args, **kwargs):
+        response = Response({"detail": "Đăng xuất thành côngs."}, status=200)
+        response.delete_cookie("accessToken")
+        response.delete_cookie("refreshToken")
+        return response
+
 class UserProfile(viewsets.ViewSet):
     permission_classes = [IsAuthenticated]
     def get_client(self, request):

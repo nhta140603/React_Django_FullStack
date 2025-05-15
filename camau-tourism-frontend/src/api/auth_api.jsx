@@ -48,3 +48,20 @@ export async function loginUser(data) {
   }
   return result
 }
+
+export async function logoutUser() {
+  const response = await fetch(`${API_URL}logout/`, {
+    method: "POST",
+    credentials: "include",
+  });
+  if (!response.ok) {
+    let result;
+    try {
+      result = await response.json();
+    } catch {
+      result = {};
+    }
+    throw new Error(result.detail || "Đăng xuất thất bại");
+  }
+  return true;
+}

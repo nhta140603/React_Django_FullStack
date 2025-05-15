@@ -55,7 +55,7 @@ function HeroSection() {
                 style={{ backgroundImage: `url('${slide.img}')` }}
               />
               <div
-                className="absolute inset-0 z-10 pointer-events-none"
+                className="absolute inset-0 z-20 pointer-events-none"
                 style={{
                   background:
                     "linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.6) 100%)"

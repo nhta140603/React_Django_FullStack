@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { getInfoUser } from '../api/user_api';
-import Cookies from 'js-cookie';
+import {logoutUser} from '../api/auth_api'
 
 const AuthContext = createContext();
 
@@ -20,11 +20,14 @@ export function AuthProvider({ children }) {
       .catch(() => setUser(null));
   };
 
-  const logout = () => {
+const logout = async () => {
+  try {
+    await logoutUser();
     setUser(null);
-    Cookies.remove('accessToken');
-    Cookies.remove('refreshToken');
-  };
+  } catch (err) {
+    alert(err.message);
+  }
+};
 
   return (
     <AuthContext.Provider value={{ user, login, logout, loading }}>
