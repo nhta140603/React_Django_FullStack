@@ -213,7 +213,7 @@ function TourList({ limit, showSearch = true }) {
           {!isLoading && !error && displayedTours.length > 0 && (
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
               {displayedTours.map((tour, index) => (
-                <MotionItem y={40}>
+                <MotionItem key={index}  y={40}>
                   <div
                     className="tour-card-container"
                     onMouseEnter={() => setHoveredCard(tour.id)}
