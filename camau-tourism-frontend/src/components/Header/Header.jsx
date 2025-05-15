@@ -340,24 +340,6 @@ function Header() {
               </Link>
             </li>
           ))}
-          {!user && (
-            <li className="flex px-5 py-4 gap-2">
-              <Link
-                to="/login"
-                className="flex-1 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-blue-900 font-semibold text-center transition"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Đăng nhập
-              </Link>
-              <Link
-                to="/register"
-                className="flex-1 py-2 ml-2 rounded-lg border-2 border-cyan-400 text-cyan-300 hover:bg-cyan-600 hover:text-white font-semibold text-center transition"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Đăng ký
-              </Link>
-            </li>
-          )}
         </ul>
       </div>
 
