@@ -33,7 +33,7 @@ const modules = {
     ['bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block'],
     [{ 'color': [] }, { 'background': [] }],
     [{ 'align': [] }],
-    [{ 'list': 'ordered'}, { 'list': 'bullet' }, { 'indent': '-1'}, { 'indent': '+1' }],
+    [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
     ['link', 'image', 'video'],
     ['clean'],
     ['table'],
@@ -68,11 +68,18 @@ export default function DestinationDescriptionEditPage() {
       .catch(() => toast.error("Không tìm thấy địa điểm!"))
       .finally(() => setLoading(false));
   }, [id]);
-
+  function optimizeCloudinaryUrls(html) {
+    if (!html) return html;
+    return html.replace(
+      /https:\/\/res\.cloudinary\.com\/([^/]+)\/image\/upload\/(?!.*f_auto,q_auto.*\/)/g,
+      'https://res.cloudinary.com/$1/image/upload/f_auto,q_auto/'
+    );
+  }
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await updateItem("destinations", id, { description });
+      const optimizedDescription = optimizeCloudinaryUrls(description);
+      await updateItem("destinations", id, { description: optimizedDescription });
       toast.success("Cập nhật mô tả thành công!");
       setTimeout(() => navigate(`/destinations`), 1200);
     } catch {

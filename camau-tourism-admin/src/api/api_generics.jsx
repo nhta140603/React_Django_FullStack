@@ -60,9 +60,11 @@ export const getPage = (resource, page, page_size) =>
 export async function uploadImageToServer(file) {
   const formData = new FormData();
   formData.append("file", file);
-  const res = await fetchWithAuth("/api/upload-image/", {
+  const res = await fetchWithAuth("/upload-image/", {
     method: "POST",
     body: formData
   });
-  return res.url;
+  let url = res.url;
+  url = url.replace('/upload/', '/upload/f_auto,q_auto/');
+  return url;
 }
