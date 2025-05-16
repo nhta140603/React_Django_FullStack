@@ -111,7 +111,6 @@ class AvatarUpdateView(APIView):
     
 class TourViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
-    queryset = Tour.objects.all()
     serializer_class = TourSerializer
     lookup_field = 'slug'
     @action(detail=True, methods=['get'], url_path='tour-destination')
