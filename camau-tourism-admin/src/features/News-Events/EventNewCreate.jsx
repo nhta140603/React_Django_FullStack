@@ -11,7 +11,7 @@ const formats = [
   'header', 'font', 'size',
   'bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block',
   'color', 'background',
-  'list', 'bullet', 'indent', 'align',
+  'list', 'indent', 'align',
   'link', 'image', 'video', 'clean',
   'table'
 ];
@@ -29,7 +29,7 @@ export default function ArticleEditPage() {
     cover_image_url: "",
     event_date: null,
   });
-  const imageHandler = function() {
+  const imageHandler = function () {
     const input = document.createElement("input");
     input.setAttribute("type", "file");
     input.setAttribute("accept", "image/*");
@@ -53,21 +53,20 @@ export default function ArticleEditPage() {
   const [loading, setLoading] = useState(isEditMode);
   const [saving, setSaving] = useState(false);
 
-const modules = {
-  toolbar: [
-    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-    ['bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block'],
-    [{ 'color': [] }, { 'background': [] }],
-    [{ 'align': [] }],
-    [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
-    ['link', 'image', 'video'],
-    ['clean'],
-    ['table'],
-  ],
-  handlers: {
-    image: imageHandler
-  }
-};
+  const modules = {
+    toolbar: [
+      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+      ['bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block'],
+      [{ 'color': [] }, { 'background': [] }],
+      [{ 'align': [] }],
+      [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
+      ['link', 'image', 'video'],
+      ['table'],
+    ],
+    handlers: {
+      image: imageHandler
+    }
+  };
   useEffect(() => {
     if (isEditMode) {
       getDetail("articles", id)

@@ -1,10 +1,32 @@
 import React, { useEffect, useState } from "react";
-import { getDetail, getList, updateItem } from "../../api/api_generics";
+import { getDetail, updateItem, uploadImageToServer } from "../../api/api_generics";
 import { useParams, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 import "react-toastify/dist/ReactToastify.css";
+
+const imageHandler = function () {
+  const input = document.createElement("input");
+  input.setAttribute("type", "file");
+  input.setAttribute("accept", "image/*");
+  input.click();
+  input.onchange = async () => {
+    const file = input.files[0];
+    if (file) {
+      try {
+        const url = await uploadImageToServer(file);
+        const quill = this.quill;
+        const range = quill.getSelection(true);
+        quill.insertEmbed(range.index, "image", url);
+        quill.setSelection(range.index + 1);
+      } catch (e) {
+        toast.error("Lỗi upload ảnh!");
+      }
+    }
+  };
+};
+
 const modules = {
   toolbar: [
     [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
@@ -16,7 +38,11 @@ const modules = {
     ['clean'],
     ['table'],
   ],
+  handlers: {
+    image: imageHandler,
+  }
 };
+
 const formats = [
   'header', 'font', 'size',
   'bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block',
@@ -25,6 +51,7 @@ const formats = [
   'link', 'image', 'video', 'clean',
   'table'
 ];
+
 export default function DestinationDescriptionEditPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -35,7 +62,6 @@ export default function DestinationDescriptionEditPage() {
   useEffect(() => {
     getDetail("destinations", id)
       .then(data => {
-        console.log("Data:", data);
         setDestination(data);
         setDescription(data.description || "");
       })
