@@ -251,16 +251,19 @@ class AdminMeView(APIView):
         })
 
 
+
 class ImageUploadView(APIView):
     parser_classes = [MultiPartParser, JSONParser, FormParser]
-    permission_classes = [IsAuthenticated] 
+    permission_classes = [IsAuthenticated]
+
     def post(self, request, *args, **kwargs):
         file_obj = request.FILES.get('file')
         if not file_obj:
             return Response({'error': 'No file provided'}, status=400)
         result = cloudinary_upload(
             file_obj,
-            folder="article-images"
+            folder="article-images",
+            transformation=[{"width": 1200, "quality": "auto:eco", "crop": "limit"}]
         )
         url = result['secure_url']
         return Response({'url': url})
