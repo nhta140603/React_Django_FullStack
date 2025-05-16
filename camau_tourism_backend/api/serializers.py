@@ -98,7 +98,7 @@ class ArticlesSerializer(serializers.ModelSerializer):
         fields = '__all__'
     def get_cover_image_url(self, obj):
         if obj.cover_image_url:
-            return obj.cover_image_url.url
+            return str(obj.cover_image_url)
         
 class CuisineSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
