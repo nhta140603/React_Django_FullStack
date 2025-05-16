@@ -334,7 +334,7 @@ class Article(models.Model):
     )
     type = models.CharField(max_length=10, choices=ARTICLE_TYPE_CHOICES)
     title = models.CharField(max_length=255)
-    slug = models.SlugField(max_length=255, unique=True, blank=True, null=True)
+    slug = models.SlugField(max_length=255, unique=True, blank=True, null=True, db_index=True)
     content = RichTextField()
     cover_image_url = CloudinaryField('image', folder='event-news', blank=True, null=True)
     event_date = models.DateTimeField(blank=True, null=True)

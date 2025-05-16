@@ -150,7 +150,7 @@ class FestivalViewSet(viewsets.ModelViewSet):
 
 class ArticleViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
-    queryset = Article.objects.all()
+    queryset = Article.objects.all().order_by('-created_at')
     serializer_class = ArticlesSerializer
     lookup_field = 'slug'
     pagination_class = StandardResultsSetPagination
