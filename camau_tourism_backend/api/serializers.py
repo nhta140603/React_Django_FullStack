@@ -98,7 +98,9 @@ class ArticlesSerializer(serializers.ModelSerializer):
         fields = '__all__'
     def get_cover_image_url(self, obj):
         if obj.cover_image_url:
-            return str(obj.cover_image_url)
+            CLOUDINARY_BASE = "https://res.cloudinary.com/deavaowp3/"
+            return f"{CLOUDINARY_BASE}{obj.cover_image_url}"
+        return None
         
 class CuisineSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
