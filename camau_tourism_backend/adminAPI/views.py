@@ -10,6 +10,8 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
+from cloudinary.uploader import upload as cloudinary_upload
+
 class IsAdminOrReadOnly(permissions.BasePermission):
     def has_permission(self, request, view):
         if request.method in permissions.SAFE_METHODS:
@@ -247,3 +249,18 @@ class AdminMeView(APIView):
             "is_staff": user.is_staff,
             "is_superuser": user.is_superuser,
         })
+
+
+class ImageUploadView(APIView):
+    parser_classes = [MultiPartParser, JSONParser, FormParser]
+    permission_classes = [IsAuthenticated] 
+    def post(self, request, *args, **kwargs):
+        file_obj = request.FILES.get('file')
+        if not file_obj:
+            return Response({'error': 'No file provided'}, status=400)
+        result = cloudinary_upload(
+            file_obj,
+            folder="article-images"
+        )
+        url = result['secure_url']
+        return Response({'url': url})

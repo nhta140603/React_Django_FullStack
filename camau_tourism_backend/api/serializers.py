@@ -101,7 +101,7 @@ class ArticlesSerializer(serializers.ModelSerializer):
             CLOUDINARY_BASE = "https://res.cloudinary.com/deavaowp3/"
             return f"{CLOUDINARY_BASE}{obj.cover_image_url}"
         return None
-        
+
 class CuisineSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
     class Meta:

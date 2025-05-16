@@ -1,24 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { createItem, getDetail, updateItem } from "../../api/api_generics";
+import { createItem, getDetail, updateItem, uploadImageToServer } from "../../api/api_generics";
 import { useParams, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 import "react-toastify/dist/ReactToastify.css";
 import { FaCalendarAlt, FaNewspaper, FaSave, FaTimes, FaImage } from "react-icons/fa";
-
-const modules = {
-  toolbar: [
-    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-    ['bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block'],
-    [{ 'color': [] }, { 'background': [] }],
-    [{ 'align': [] }],
-    [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
-    ['link', 'image', 'video'],
-    ['clean'],
-    ['table'],
-  ],
-};
 
 const formats = [
   'header', 'font', 'size',
@@ -42,10 +29,45 @@ export default function ArticleEditPage() {
     cover_image_url: "",
     event_date: null,
   });
+  const imageHandler = function() {
+    const input = document.createElement("input");
+    input.setAttribute("type", "file");
+    input.setAttribute("accept", "image/*");
+    input.click();
+    input.onchange = async () => {
+      const file = input.files[0];
+      if (file) {
+        try {
+          const url = await uploadImageToServer(file);
+          const quill = this.quill;
+          const range = quill.getSelection(true);
+          quill.insertEmbed(range.index, "image", url);
+          quill.setSelection(range.index + 1);
+        } catch (e) {
+          alert("Lỗi upload ảnh!");
+        }
+      }
+    };
+  };
   const [previewImage, setPreviewImage] = useState("");
   const [loading, setLoading] = useState(isEditMode);
   const [saving, setSaving] = useState(false);
 
+const modules = {
+  toolbar: [
+    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+    ['bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block'],
+    [{ 'color': [] }, { 'background': [] }],
+    [{ 'align': [] }],
+    [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
+    ['link', 'image', 'video'],
+    ['clean'],
+    ['table'],
+  ],
+  handlers: {
+    image: imageHandler
+  }
+};
   useEffect(() => {
     if (isEditMode) {
       getDetail("articles", id)
@@ -106,7 +128,7 @@ export default function ArticleEditPage() {
         setPreviewImage(reader.result);
         setFormData(prev => ({
           ...prev,
-          cover_image_url: file 
+          cover_image_url: file
         }));
       };
       reader.readAsDataURL(file);
@@ -126,22 +148,22 @@ export default function ArticleEditPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
-  
+
     try {
       const payload = new FormData();
       payload.append("type", formData.type);
       payload.append("title", formData.title);
       payload.append("slug", formData.slug || "");
       payload.append("content", formData.content);
-  
+
       if (formData.type === "event" && formData.event_date) {
         payload.append("event_date", formData.event_date);
       }
-  
+
       if (formData.cover_image_url) {
         payload.append("cover_image_url", formData.cover_image_url);
       }
-  
+
       if (isEditMode) {
         await updateItem("articles", id, payload, true);
         toast.success("Cập nhật bài viết thành công!");
@@ -149,7 +171,7 @@ export default function ArticleEditPage() {
         await createItem("articles", payload, true);
         toast.success("Tạo bài viết mới thành công!");
       }
-  
+
       setTimeout(() => navigate(`/articles`), 1200);
     } catch (error) {
       console.error(error);
@@ -179,8 +201,8 @@ export default function ArticleEditPage() {
                   type="button"
                   onClick={() => setFormData(prev => ({ ...prev, type: "news" }))}
                   className={`py-2 px-3 rounded-md flex items-center justify-center ${formData.type === "news"
-                      ? "bg-blue-50 text-blue-700 border border-blue-200"
-                      : "bg-gray-50 text-gray-600 border border-gray-200"
+                    ? "bg-blue-50 text-blue-700 border border-blue-200"
+                    : "bg-gray-50 text-gray-600 border border-gray-200"
                     }`}
                 >
                   <FaNewspaper className="mr-2" /> Tin tức
@@ -189,8 +211,8 @@ export default function ArticleEditPage() {
                   type="button"
                   onClick={() => setFormData(prev => ({ ...prev, type: "event" }))}
                   className={`py-2 px-3 rounded-md flex items-center justify-center ${formData.type === "event"
-                      ? "bg-purple-50 text-purple-700 border border-purple-200"
-                      : "bg-gray-50 text-gray-600 border border-gray-200"
+                    ? "bg-purple-50 text-purple-700 border border-purple-200"
+                    : "bg-gray-50 text-gray-600 border border-gray-200"
                     }`}
                 >
                   <FaCalendarAlt className="mr-2" /> Sự kiện

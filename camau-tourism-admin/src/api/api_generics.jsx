@@ -55,3 +55,14 @@ export const deleteItem = (resource, id) =>
 
 export const getPage = (resource, page, page_size) =>
   fetchWithAuth(`${API_URL}${resource}/?page=${page}&page_size=${page_size}`);
+
+
+export async function uploadImageToServer(file) {
+  const formData = new FormData();
+  formData.append("file", file);
+  const res = await fetchWithAuth("/api/upload-image/", {
+    method: "POST",
+    body: formData
+  });
+  return res.url;
+}
