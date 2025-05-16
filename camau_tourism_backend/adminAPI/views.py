@@ -251,7 +251,6 @@ class AdminMeView(APIView):
         })
 
 
-
 class ImageUploadView(APIView):
     parser_classes = [MultiPartParser, JSONParser, FormParser]
     permission_classes = [IsAuthenticated]
@@ -263,7 +262,7 @@ class ImageUploadView(APIView):
         result = cloudinary_upload(
             file_obj,
             folder="article-images",
-            transformation=[{"width": 1200, "quality": "auto:eco", "crop": "limit"}]
+            eager=[{"width": 1200, "quality": "auto:eco", "crop": "limit"}],
         )
-        url = result['secure_url']
+        url = result['eager'][0]['secure_url']
         return Response({'url': url})
