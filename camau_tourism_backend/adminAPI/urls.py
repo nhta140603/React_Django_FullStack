@@ -41,5 +41,6 @@ urlpatterns = [
     path('loginAdmin/', UserLoginView.as_view(), name='login-admin'),
     path('me/', AdminMeView.as_view(), name='admin-me'),
     path('logout/', UserLogoutView.as_view()),
+    path('upload-image/', ImageUploadView.as_view(), name='upload-image'),
     path('', include(router.urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
