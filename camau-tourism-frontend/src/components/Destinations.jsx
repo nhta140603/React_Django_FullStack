@@ -94,12 +94,12 @@ function Destinations() {
                           >
                             <h3 className="text-2xl font-bold mb-2">{destination.name}</h3>
                             <motion.p
-                              className={`text-sm text-white/90 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100 line-clamp-2`}
+                              className={`text-sm text-white/90 opacity-0 truncate group-hover:opacity-100 transition-opacity duration-300 delay-100 line-clamp-2`}
                               initial={{ opacity: 0 }}
                               whileHover={{ opacity: 1 }}
                               transition={{ delay: 0.12 }}
+                              dangerouslySetInnerHTML={{__html: destination.description}}
                             >
-                              {destination.description}
                             </motion.p>
                             <motion.span
                               className="mt-4 inline-flex bg-emerald-500 hover:bg-emerald-600 text-white py-2 px-4 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 items-center"
