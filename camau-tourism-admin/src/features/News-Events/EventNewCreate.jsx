@@ -29,44 +29,48 @@ export default function ArticleEditPage() {
     cover_image_url: "",
     event_date: null,
   });
-  const imageHandler = function () {
-    const input = document.createElement("input");
-    input.setAttribute("type", "file");
-    input.setAttribute("accept", "image/*");
-    input.click();
-    input.onchange = async () => {
-      const file = input.files[0];
-      if (file) {
-        try {
-          const url = await uploadImageToServer(file);
-          const quill = this.quill;
-          const range = quill.getSelection(true);
-          quill.insertEmbed(range.index, "image", url);
-          quill.setSelection(range.index + 1);
-        } catch (e) {
-          alert("Lỗi upload ảnh!");
-        }
+const imageHandler = function () {
+  const input = document.createElement("input");
+  input.setAttribute("type", "file");
+  input.setAttribute("accept", "image/*");
+  input.click();
+  input.onchange = async () => {
+    const file = input.files[0];
+    if (file) {
+      try {
+        const url = await uploadImageToServer(file);
+        const quill = this.quill;
+        const range = quill.getSelection(true);
+        quill.insertEmbed(range.index, "image", url);
+        quill.setSelection(range.index + 1);
+      } catch (e) {
+        toast.error("Lỗi upload ảnh!");
       }
-    };
+    }
   };
-  const [previewImage, setPreviewImage] = useState("");
-  const [loading, setLoading] = useState(isEditMode);
-  const [saving, setSaving] = useState(false);
+};
 
-  const modules = {
-    toolbar: [
+const modules = {
+  toolbar: {
+    container: [
       [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
       ['bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block'],
       [{ 'color': [] }, { 'background': [] }],
       [{ 'align': [] }],
       [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
       ['link', 'image', 'video'],
+      ['clean'],
       ['table'],
     ],
     handlers: {
-      image: imageHandler
+      image: imageHandler,
     }
-  };
+  }
+};
+  const [previewImage, setPreviewImage] = useState("");
+  const [loading, setLoading] = useState(isEditMode);
+  const [saving, setSaving] = useState(false);
+
   useEffect(() => {
     if (isEditMode) {
       getDetail("articles", id)
