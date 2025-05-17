@@ -58,7 +58,7 @@ export const getPage = (resource, page, page_size) =>
 export async function uploadImageToServer(file) {
   const formData = new FormData();
   formData.append("file", file);
-  const res = await fetchWithAuth(`${API_URL}/upload-image/`, {
+  const res = await fetchWithAuth(`${API_URL}upload-image/`, {
     method: "POST",
     body: formData
   });
