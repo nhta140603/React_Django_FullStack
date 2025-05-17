@@ -265,4 +265,5 @@ class ImageUploadView(APIView):
             eager=[{"width": 1200, "quality": "auto:eco", "crop": "limit"}],
         )
         url = result['eager'][0]['secure_url']
-        return Response({'url': url})
+        public_id = result['public_id']
+        return Response({'url': url, 'public_id': public_id})
