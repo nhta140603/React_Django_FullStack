@@ -261,8 +261,7 @@ function TourList({ limit, showSearch = true }) {
                             </div>
                           </div>
                         </div>
-                        <p className="text-gray-600 text-base flex-1 mb-4 line-clamp-3">
-                          {tour.description || "Khám phá vẻ đẹp nguyên sơ của vùng đất Cà Mau với nhiều trải nghiệm thú vị, đắm mình trong thiên nhiên hoang dã và thưởng thức ẩm thực đặc sắc vùng sông nước."}
+                        <p dangerouslySetInnerHTML={{__html: tour.description || "Khám phá vẻ đẹp nguyên sơ của vùng đất Cà Mau với nhiều trải nghiệm thú vị, đắm mình trong thiên nhiên hoang dã và thưởng thức ẩm thực đặc sắc vùng sông nước."}} className="text-gray-600 text-base flex-1 mb-4 line-clamp-3">
                         </p>
                         <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-100">
                           {tour.price && (
