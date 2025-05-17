@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { createItem, getDetail, updateItem } from "../../api/api_generics";
+import { createItem, getDetail, updateItem, uploadImageToServer } from "../../api/api_generics";
 import { useParams, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import ReactQuill from "react-quill-new";
@@ -7,16 +7,43 @@ import "react-quill-new/dist/quill.snow.css";
 import "react-toastify/dist/ReactToastify.css";
 import { FaSave, FaTimes, FaImage, FaEye, FaEyeSlash } from "react-icons/fa";
 
+const imageHandler = function () {
+  const input = document.createElement("input");
+  input.setAttribute("type", "file");
+  input.setAttribute("accept", "image/*");
+  input.click();
+  input.onchange = async () => {
+    const file = input.files[0];
+    if (file) {
+      try {
+        const url = await uploadImageToServer(file);
+        const quill = this.quill;
+        const range = quill.getSelection(true);
+        quill.insertEmbed(range.index, "image", url);
+        quill.setSelection(range.index + 1);
+      } catch (e) {
+        toast.error("Lỗi upload ảnh!");
+      }
+    }
+  };
+};
+
 const modules = {
-  toolbar: [
-    [{ 'header': [1, 2, 3, false] }],
-    ['bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block'],
-    [{ 'color': [] }, { 'background': [] }],
-    [{ 'align': [] }],
-    [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
-    ['link', 'image', 'video'],
-    ['clean'],
-  ],
+  toolbar: {
+    container: [
+      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+      ['bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block'],
+      [{ 'color': [] }, { 'background': [] }],
+      [{ 'align': [] }],
+      [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
+      ['link', 'image', 'video'],
+      ['clean'],
+      ['table'],
+    ],
+    handlers: {
+      image: imageHandler,
+    }
+  }
 };
 
 const formats = [

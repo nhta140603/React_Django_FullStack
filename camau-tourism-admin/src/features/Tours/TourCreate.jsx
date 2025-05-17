@@ -1,23 +1,48 @@
 import React, { useEffect, useState } from "react";
-import { getDetail, getList, updateItem } from "../../api/api_generics";
+import { getDetail, getList, updateItem, uploadImageToServer } from "../../api/api_generics";
 import { useParams, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 import 'quill/dist/quill.bubble.css';
 import "react-toastify/dist/ReactToastify.css";
+const imageHandler = function () {
+  const input = document.createElement("input");
+  input.setAttribute("type", "file");
+  input.setAttribute("accept", "image/*");
+  input.click();
+  input.onchange = async () => {
+    const file = input.files[0];
+    if (file) {
+      try {
+        const url = await uploadImageToServer(file);
+        const quill = this.quill;
+        const range = quill.getSelection(true);
+        quill.insertEmbed(range.index, "image", url);
+        quill.setSelection(range.index + 1);
+      } catch (e) {
+        toast.error("Lỗi upload ảnh!");
+      }
+    }
+  };
+};
 
 const modules = {
-  toolbar: [
-    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-    ['bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block'],
-    [{ 'color': [] }, { 'background': [] }],
-    [{ 'align': [] }],
-    [{ 'list': 'ordered'}, { 'list': 'bullet' }, { 'indent': '-1'}, { 'indent': '+1' }],
-    ['link', 'image', 'video'],
-    ['clean'],
-    ['table'],
-  ]
+  toolbar: {
+    container: [
+      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+      ['bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block'],
+      [{ 'color': [] }, { 'background': [] }],
+      [{ 'align': [] }],
+      [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'indent': '-1' }, { 'indent': '+1' }],
+      ['link', 'image', 'video'],
+      ['clean'],
+      ['table'],
+    ],
+    handlers: {
+      image: imageHandler,
+    }
+  }
 };
 const formats = [
   'header', 'font', 'size',
@@ -44,10 +69,19 @@ export default function TourDescriptionEditPage() {
       .finally(() => setLoading(false));
   }, [id]);
 
+  function optimizeCloudinaryUrls(html) {
+    if (!html) return html;
+    return html.replace(
+      /https:\/\/res\.cloudinary\.com\/([^/]+)\/image\/upload\/(?!.*f_auto,q_auto.*\/)/g,
+      'https://res.cloudinary.com/$1/image/upload/f_auto,q_auto/'
+    );
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await updateItem("tours", id, { description });
+      const optimizedDescription = optimizeCloudinaryUrls(description);
+      await updateItem("tours", id, { description: optimizedDescription });
       toast.success("Cập nhật mô tả thành công!");
       setTimeout(() => navigate(`/tours`), 1200);
     } catch {

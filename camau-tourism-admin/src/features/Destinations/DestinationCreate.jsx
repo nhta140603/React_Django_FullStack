@@ -70,6 +70,7 @@ export default function DestinationDescriptionEditPage() {
       .catch(() => toast.error("Không tìm thấy địa điểm!"))
       .finally(() => setLoading(false));
   }, [id]);
+  
   function optimizeCloudinaryUrls(html) {
     if (!html) return html;
     return html.replace(
