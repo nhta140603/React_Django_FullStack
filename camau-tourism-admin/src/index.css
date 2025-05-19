@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "react-quill-new/dist/quill.snow.css";
+
 .no-scrollbar 
 {
     -ms-overflow-style: none;

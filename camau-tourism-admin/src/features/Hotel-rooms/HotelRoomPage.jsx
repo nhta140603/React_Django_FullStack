@@ -10,7 +10,7 @@ import "react-toastify/dist/ReactToastify.css";
 import CurrencyInput from 'react-currency-input-field';
 import AmenitiesSelector from "../../components/AmenitiesSelector";
 import { fetchAllPages } from '../../utils/fetchAllPages';
-
+import { Switch } from "../../components/ui/switch"
 export default function HotelRoomPage() {
   const [hotelroom, setHotels] = useState({ count: 0, results: [] });
   const [loading, setLoading] = useState(false);
@@ -195,15 +195,20 @@ export default function HotelRoomPage() {
       await updateItem("hotel-rooms", payload.id, {
         ...payload,
         is_available: newStatus,
-        status_reason: null,
-        status_note: null
       });
+      setHotels(prev => ({
+        ...prev,
+        results: prev.results.map(t => 
+          t.id === payload.id
+            ? {...t, is_available:newStatus}
+            : t
+        )
+      }))
       toast.success(
         newStatus
           ? `Phòng "${payload.id}" đã được mở lại thành công!`
           : `Phòng "${payload.id}" đã được tạm ngưng!`
       );
-      fetchHotelRoom();
     } catch (err) {
       toast.error("Có lỗi khi cập nhật trạng thái phòng.");
     }
@@ -385,19 +390,10 @@ export default function HotelRoomPage() {
       title: "Trạng thái",
       render: (room) => (
         <div className="flex items-center">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleToggleStatus(room);
-            }}
-            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${room.is_available ? "bg-green-500" : "bg-gray-300"
-              }`}
-          >
-            <span
-              className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${room.is_available ? "translate-x-6" : "translate-x-1"
-                }`}
-            />
-          </button>
+          <Switch
+            checked={room.is_available}
+            onCheckedChange={() => handleToggleStatus(room)}
+          />
           <span className={`ml-2 text-sm ${room.is_available ? "text-green-600" : "text-gray-500"}`}>
             {room.is_available ? "Hoạt động" : "Tạm ngưng"}
           </span>

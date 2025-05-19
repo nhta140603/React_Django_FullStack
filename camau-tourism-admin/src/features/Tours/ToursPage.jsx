@@ -4,7 +4,6 @@ import { getList, updateItem, deleteItem, createItem, getPage } from "../../api/
 import DataTable from "../../components/DataTable";
 import Modal from "../../components/Modal";
 import GenericForm from "../../components/EditForm";
-
 import {
   FaUserEdit,
   FaTrash,
@@ -14,8 +13,6 @@ import {
   FaRegCalendarCheck,
   FaCheckCircle,
   FaRegFileAlt,
-  FaInfoCircle,
-  FaExclamationTriangle,
   FaPauseCircle,
   FaChevronLeft,
   FaChevronRight
@@ -26,6 +23,7 @@ import { ToastContainer, toast } from "react-toastify";
 import CurrencyInput from 'react-currency-input-field';
 import "react-toastify/dist/ReactToastify.css";
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
+import { Switch } from "../../components/ui/switch"
 export default function TourPage() {
   const [tour, setTour] = useState({ count: 0, results: [] });
   const [loading, setLoading] = useState(false);
@@ -124,7 +122,7 @@ export default function TourPage() {
       setLoading(false);
     }
   }
-  
+
   useEffect(() => {
     fetchTourGuide();
   }, []);
@@ -254,55 +252,28 @@ export default function TourPage() {
   const handleToggleStatus = async (tour) => {
     try {
       const newStatus = !tour.is_active;
-      if (!newStatus) {
-        setStatusTarget({
-          id: tour.id,
-          name: tour.name,
-          currentStatus: tour.is_active,
-          newStatus: newStatus
-        });
-        setStatusModalOpen(true);
-      } else {
-        let payload = { ...tour };
-        if (typeof payload.image === "string" && payload.image.startsWith("http")) {
-          delete payload.image;
-        }
-        await updateItem("tours", payload.id, {
-          ...payload,
-          is_active: newStatus,
-          status_reason: null,
-          status_note: null
-        });
-        toast.success(`Tour "${payload.name}" đã được kích hoạt thành công!`);
-        fetchTours();
+      let payload = { ...tour };
+      if (typeof payload.image === "string" && payload.image.startsWith("http")) {
+        delete payload.image;
       }
-    } catch (err) {
-      toast.error("Có lỗi khi cập nhật trạng thái tour.");
-    }
-  };
-
-  const handleStatusModalConfirm = async (reason, note) => {
-    if (!statusTarget) return;
-
-    try {
-      await updateItem("tours", statusTarget.id, {
-        is_active: statusTarget.newStatus,
-        status_reason: reason,
-        status_note: note || null
+      await updateItem("tours", payload.id, {
+        ...payload,
+        is_active: newStatus
       });
-
-      toast.success(`Đã chuyển tour "${statusTarget.name}" sang trạng thái tạm ngưng.`);
-      setStatusModalOpen(false);
-      setStatusTarget(null);
-      fetchTours();
+      setTour(prev => ({
+        ...prev,
+        results: prev.results.map(t =>
+          t.id === payload.id
+            ? { ...t, is_active: newStatus }
+            : t
+        )
+      }));
+      toast.success(
+        `Tour "${payload.name}" đã được ${newStatus ? "kích hoạt" : "tạm ngưng"} thành công!`
+      );
     } catch (err) {
       toast.error("Có lỗi khi cập nhật trạng thái tour.");
     }
-  };
-
-  const handleStatusModalCancel = () => {
-    setStatusModalOpen(false);
-    setStatusTarget(null);
   };
 
   const handleBatchStatus = async (newStatus) => {
@@ -358,7 +329,7 @@ export default function TourPage() {
   };
 
   const filteredTours = Array.isArray(tour?.results)
-  ? tour.results.filter(item => {
+    ? tour.results.filter(item => {
       if (statusFilter === "active" && !item.is_active) return false;
       if (statusFilter === "inactive" && item.is_active) return false;
       if (searchValue) {
@@ -368,7 +339,7 @@ export default function TourPage() {
       }
       return true;
     })
-  : [];
+    : [];
   const formColumns = [
     {
       key: "image",
@@ -381,12 +352,6 @@ export default function TourPage() {
       title: "Tên tour",
       dataIndex: "name",
       inputType: "text",
-    },
-    {
-      key: "description",
-      title: "Mô tả",
-      dataIndex: "description",
-      inputType: "textarea",
     },
     {
       key: "price",
@@ -493,27 +458,16 @@ export default function TourPage() {
       dataIndex: "is_active",
       render: (tour) => (
         <div className="flex items-center">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleToggleStatus(tour);
-            }}
-            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${tour.is_active ? "bg-green-500" : "bg-gray-300"
+          <Switch
+            checked={tour.is_active}
+            onCheckedChange={() => handleToggleStatus(tour)}
+          />
+          <span
+            className={`ml-2 text-sm font-medium transition-colors duration-300 ${tour.is_active ? "text-green-600" : "text-gray-500"
               }`}
           >
-            <span
-              className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${tour.is_active ? "translate-x-6" : "translate-x-1"
-                }`}
-            />
-          </button>
-          <span className={`ml-2 text-sm ${tour.is_active ? "text-green-600" : "text-gray-500"}`}>
             {tour.is_active ? "Hoạt động" : "Tạm ngưng"}
           </span>
-          {!tour.is_active && tour.status_reason && (
-            <Tooltip label={`Lý do: ${tour.status_reason}${tour.status_note ? ` - ${tour.status_note}` : ''}`}>
-              <FaInfoCircle className="ml-1 text-gray-400" />
-            </Tooltip>
-          )}
         </div>
       ),
       inputType: "checkbox",
@@ -569,79 +523,6 @@ export default function TourPage() {
     </table>
   );
 
-  const StatusReasonForm = ({ onConfirm, onCancel, isBatch = false }) => {
-    const [reason, setReason] = useState("");
-    const [note, setNote] = useState("");
-
-    return (
-      <div className="py-4">
-        <p className="mb-4">
-          {isBatch
-            ? `Bạn đang chuyển ${statusTarget?.count} tour sang trạng thái tạm ngưng.`
-            : `Bạn đang chuyển tour "${statusTarget?.name}" sang trạng thái tạm ngưng.`}
-        </p>
-
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Lý do tạm ngưng:</label>
-          <select
-            className="w-full p-2 border rounded"
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-          >
-            <option value="">-- Chọn lý do --</option>
-            <option value="seasonal">Hết mùa du lịch</option>
-            <option value="maintenance">Bảo trì cơ sở vật chất</option>
-            <option value="safety">Vấn đề an toàn</option>
-            <option value="unavailable">Địa điểm không khả dụng</option>
-            <option value="other">Lý do khác</option>
-          </select>
-        </div>
-
-        {reason === "other" && (
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-1">Ghi chú:</label>
-            <textarea
-              className="w-full p-2 border rounded"
-              rows="2"
-              placeholder="Nhập lý do cụ thể..."
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-            />
-          </div>
-        )}
-
-        <div className="bg-blue-50 border-l-4 border-blue-400 p-3 mb-4">
-          <div className="flex">
-            <div className="flex-shrink-0 text-blue-500">
-              <FaInfoCircle className="h-5 w-5" />
-            </div>
-            <div className="ml-3">
-              <p className="text-sm text-blue-700">
-                Tour ở trạng thái tạm ngưng sẽ không xuất hiện trên các nền tảng đặt tour.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex justify-end space-x-2">
-          <button
-            onClick={onCancel}
-            className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
-          >
-            Hủy
-          </button>
-          <button
-            onClick={() => onConfirm(reason, reason === "other" ? note : null)}
-            disabled={!reason}
-            className={`px-4 py-2 rounded font-medium ${!reason ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-blue-600 text-white hover:bg-blue-700'
-              }`}
-          >
-            Xác nhận
-          </button>
-        </div>
-      </div>
-    );
-  };
 
   const Pagination = () => {
     const handlePageSizeChange = (e) => {
@@ -687,7 +568,7 @@ export default function TourPage() {
               <option value="50">50</option>
               <option value="100">100</option>
             </select>
-            
+
             <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Phân trang">
               <button
                 onClick={() => setPage(1)}
@@ -705,8 +586,7 @@ export default function TourPage() {
                 <span className="sr-only">Trang trước</span>
                 <FaChevronLeft className="h-3 w-3" aria-hidden="true" />
               </button>
-              
-              {/* Page number buttons */}
+
               {[...Array(Math.min(5, totalPages))].map((_, i) => {
                 let pageNumber;
                 if (totalPages <= 5) {
@@ -718,7 +598,7 @@ export default function TourPage() {
                 } else {
                   pageNumber = page - 2 + i;
                 }
-                
+
                 if (pageNumber <= totalPages) {
                   return (
                     <button
@@ -732,7 +612,7 @@ export default function TourPage() {
                 }
                 return null;
               })}
-              
+
               <button
                 onClick={() => setPage(prev => Math.min(prev + 1, totalPages))}
                 disabled={page === totalPages}
@@ -814,8 +694,7 @@ export default function TourPage() {
               <p className="text-gray-500">Không tìm thấy tour nào phù hợp với điều kiện tìm kiếm</p>
             </div>
           )}
-          
-          {/* Pagination component */}
+
           {tour.count > 0 && <Pagination />}
         </>
       )}
@@ -843,21 +722,6 @@ export default function TourPage() {
                   )}
                 </span>
               </div>
-
-              {!selectedTour.is_active && selectedTour.status_reason && (
-                <div className="bg-gray-50 p-2 rounded border mt-2">
-                  <span className="font-medium">Lý do tạm ngưng: </span>
-                  <span className="text-gray-700">
-                    {selectedTour.status_reason === "seasonal" && "Hết mùa du lịch"}
-                    {selectedTour.status_reason === "maintenance" && "Bảo trì cơ sở vật chất"}
-                    {selectedTour.status_reason === "safety" && "Vấn đề an toàn"}
-                    {selectedTour.status_reason === "unavailable" && "Địa điểm không khả dụng"}
-                    {selectedTour.status_reason === "other" && "Lý do khác"}
-                    {selectedTour.status_reason !== "other" || !selectedTour.status_note ? "" : ` - ${selectedTour.status_note}`}
-                  </span>
-                </div>
-              )}
-
               <div>
                 <span className="font-medium">Giá: </span>
                 <span className="text-green-700 font-semibold">{Number(selectedTour.price).toLocaleString("vi-VN", { style: "currency", currency: "VND" })}</span>
@@ -930,79 +794,6 @@ export default function TourPage() {
             onCancel={handleEditClose}
             submitText={editTour ? "Cập nhật" : "Thêm mới"}
           />
-
-          {editTour && (
-            <div className="bg-gray-50 p-4 rounded-lg mt-6 border">
-              <h3 className="font-medium text-gray-800 mb-3">Quản lý trạng thái tour</h3>
-
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-gray-600">Trạng thái hiện tại:</p>
-                  <p className={`font-medium text-lg ${editTour?.is_active ? "text-green-600" : "text-gray-500"}`}>
-                    {editTour?.is_active ? "Tour đang hoạt động" : "Tour tạm ngưng"}
-                  </p>
-                </div>
-
-                <div className="flex flex-col items-center">
-                  <label className="relative inline-flex items-center cursor-pointer mb-2">
-                    <input
-                      type="checkbox"
-                      className="sr-only peer"
-                      checked={editTour?.is_active || false}
-                      onChange={() => {
-                        setEditTour(prev => ({ ...prev, is_active: !prev.is_active }));
-                      }}
-                    />
-                    <div className="w-14 h-7 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-green-500"></div>
-                  </label>
-                  <span className="text-xs text-gray-500">Chuyển đổi trạng thái</span>
-                </div>
-              </div>
-
-              <div className="mt-4 bg-white p-3 rounded-md border text-sm">
-                <div className="flex items-start mb-2">
-                  <div className="mr-2 text-blue-500"><FaInfoCircle size={16} /></div>
-                  <p>Tour đang hoạt động sẽ hiển thị trên ứng dụng và website cho khách hàng đặt.</p>
-                </div>
-                <div className="flex items-start">
-                  <div className="mr-2 text-yellow-500"><FaExclamationTriangle size={16} /></div>
-                  <p>Tour tạm ngưng sẽ không xuất hiện trên các nền tảng đặt tour.</p>
-                </div>
-              </div>
-
-              {editTour?.is_active === false && (
-                <div className="mt-3 border-t pt-3">
-                  <p className="text-sm mb-2">Lý do tạm ngưng:</p>
-                  <select
-                    className="w-full p-2 border rounded"
-                    value={editTour?.status_reason || ""}
-                    onChange={(e) => {
-                      setEditTour(prev => ({ ...prev, status_reason: e.target.value }));
-                    }}
-                  >
-                    <option value="">-- Chọn lý do --</option>
-                    <option value="seasonal">Hết mùa du lịch</option>
-                    <option value="maintenance">Bảo trì cơ sở vật chất</option>
-                    <option value="safety">Vấn đề an toàn</option>
-                    <option value="unavailable">Địa điểm không khả dụng</option>
-                    <option value="other">Lý do khác</option>
-                  </select>
-
-                  {editTour?.status_reason === "other" && (
-                    <textarea
-                      className="w-full p-2 border rounded mt-2"
-                      rows="2"
-                      placeholder="Nhập lý do cụ thể..."
-                      value={editTour?.status_note || ""}
-                      onChange={(e) => {
-                        setEditTour(prev => ({ ...prev, status_note: e.target.value }));
-                      }}
-                    />
-                  )}
-                </div>
-              )}
-            </div>
-          )}
         </Modal>
       )}
 
