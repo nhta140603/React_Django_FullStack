@@ -27,7 +27,7 @@ export default function DataTable({
     <div className="overflow-x-auto rounded-b-2xl shadow-lg bg-white border-cyan-100">
       <table className="min-w-full">
         <thead>
-          <tr className="bg-gradient-to-r from-cyan-700 to-cyan-400 text-white">
+          <tr className="bg-gradient-to-r from-cyan-700 to-cyan-400 text-white sticky top-0 z-1">
             {rowSelection && (
               <th className="px-4 py-3 text-center">
                 <input

@@ -30,7 +30,7 @@ export default function TourPage() {
   const [error, setError] = useState(null);
 
   const [ModalOpen, setModalOpen] = useState(false);
-  const [selectedTour, setSelectedTour] = useState(null);
+  const [selectedTour, setSelectedTour] = useState([]);
 
   const [destination, setDestinations] = useState([]);
   const [loadingDest, setLoadingDest] = useState(false);
@@ -413,6 +413,35 @@ export default function TourPage() {
 
   const columns = [
     {
+      key: "checkbox",
+      title: (
+        <input
+          type="checkbox"
+          checked={selectedRows.length === tour.length && tour.length > 0}
+          onChange={e => {
+            if (e.target.checked) {
+              setSelectedRows(tour.results.map(h => h.id));
+            } else {
+              setSelectedRows([]);
+            }
+          }}
+        />
+      ),
+      render: (row) => (
+        <input
+          type="checkbox"
+          checked={selectedRows.includes(row.id)}
+          onChange={e => {
+            if (e.target.checked) {
+              setSelectedRows(prev => [...prev, row.id]);
+            } else {
+              setSelectedRows(prev => prev.filter(id => id !== row.id));
+            }
+          }}
+        />
+      ),
+    },
+    {
       key: "name",
       title: "Tên tour",
       dataIndex: "name",
@@ -463,7 +492,7 @@ export default function TourPage() {
             onCheckedChange={() => handleToggleStatus(tour)}
           />
           <span
-            className={`ml-2 text-sm font-medium transition-colors duration-300 ${tour.is_active ? "text-green-600" : "text-gray-500"
+            className={`min-w-[75px] ml-2 text-sm font-medium transition-colors duration-300 ${tour.is_active ? "text-green-600" : "text-gray-500"
               }`}
           >
             {tour.is_active ? "Hoạt động" : "Tạm ngưng"}

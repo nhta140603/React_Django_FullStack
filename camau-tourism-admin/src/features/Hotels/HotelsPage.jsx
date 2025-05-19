@@ -243,10 +243,9 @@ export default function HotelPage() {
         hotel.star_rating ? (
           <span className="flex items-center gap-1 text-yellow-500">
             {Array(hotel.star_rating).fill(0).map((_, i) => <FaStar key={i} />)}
-            <span className="ml-1 text-gray-700">{hotel.star_rating} sao</span>
           </span>
         ) : (
-          <span>--</span>
+          <span>Chưa rõ</span>
         )
       ),
     },
@@ -255,7 +254,7 @@ export default function HotelPage() {
       title: "Địa chỉ",
       dataIndex: "address",
       render: (hotel) => (
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-1 truncate">
           <FaMapMarkerAlt className="inline text-cyan-600" />
           <span>{hotel.address}</span>
         </div>
@@ -267,29 +266,6 @@ export default function HotelPage() {
       dataIndex: "phone",
       render: (hotel) => hotel.phone || "--",
     },
-    {
-      key: "email",
-      title: "Email",
-      dataIndex: "email",
-      render: (hotel) => hotel.email || "--",
-    },
-    {
-      key: "website",
-      title: "Website",
-      render: (hotel) =>
-        hotel.website ? (
-          <a
-            href={hotel.website}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-cyan-700 hover:underline flex items-center gap-1"
-          >
-            <FaLink /> Trang web
-          </a>
-        ) : (
-          "--"
-        ),
-    }
   ];
 
   const actions = [
