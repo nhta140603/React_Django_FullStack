@@ -188,7 +188,7 @@ function Header() {
                         "opacity-0 transform -translate-y-5 pointer-events-none"
                     )}
                   >
-                    <div className="px-6 mt-4">
+                    <div className="px-6 mt-12">
                       <form onSubmit={handleLoginSubmit} className="space-y-7" autoComplete="off">
                         {loginError && (
                           <div className="p-3 bg-red-50 border border-red-200 text-red-600 rounded-lg text-sm">
@@ -253,7 +253,7 @@ function Header() {
                   </div>
                 </div>
                 
-                <div className="text-center mt-8">
+                <div className="text-center mt-12">
                   <button 
                     onClick={toggleLoginMethod} 
                     className="text-blue-600 hover:underline font-medium transition-all duration-200 hover:text-blue-800 px-4 py-2 rounded-full hover:bg-blue-50"

@@ -27,7 +27,7 @@ export default function CuisinePage() {
   const [filterPublic, setFilterPublic] = useState('all');
 
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(4);
   const [totalPages, setTotalPages] = useState(1);
 
   const navigate = useNavigate();

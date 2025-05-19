@@ -218,15 +218,15 @@ class UserLoginView(generics.GenericAPIView):
         response.set_cookie(
             key='accessToken',
             value= str(token.access_token),
-            httponly=True,
-            secure=True,
+            httponly=False,
+            secure=False,
             samesite="Lax",
         )
         response.set_cookie(
             key='refreshToken',
             value= str(token),
-            httponly=True,
-            secure=True,
+            httponly=False,
+            secure=False,
             samesite="Lax",
         )
         return response

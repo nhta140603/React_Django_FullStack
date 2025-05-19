@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getList } from "../../api/user_api";
 import { useQuery } from "@tanstack/react-query";
@@ -19,7 +19,18 @@ export default function CuisineList() {
     if (activeFilter === "specialty" && cuisine.tags?.includes("specialty")) return true;
     return false;
   });
-
+  function useIsMobile() {
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+    useEffect(() => {
+      function handler() {
+        setIsMobile(window.innerWidth < 768);
+      }
+      window.addEventListener("resize", handler);
+      return () => window.removeEventListener("resize", handler);
+    }, []);
+    return isMobile;
+  }
+  const isMobile = useIsMobile();
   function CuisineListSkeleton() {
     const skeletons = Array.from({ length: 3 }, (_, i) => i);
     return (
@@ -111,47 +122,68 @@ export default function CuisineList() {
                 </svg>
                 Khám phá các đặc sản Cà Mau
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-8">
-                {filteredCuisines.map((cuisine) => (
-                  <div
-                    key={cuisine.id}
-                    className="group relative bg-white rounded-xl md:rounded-2xl overflow-hidden shadow-md md:shadow-lg transition-all duration-300 hover:shadow-xl active:scale-95 md:active:scale-100 cursor-pointer"
-                    onClick={() => navigate(`/am-thuc/${cuisine.slug}`)}
-                  >
-                    <div className="aspect-[4/3] overflow-hidden">
-                      <img
-                        src={cuisine.image || "https://placehold.co/400x300/amber/white?text=Ẩm+Thực"}
-                        alt={cuisine.name}
-                        className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
-                      />
-                    </div>
-                    <div className="p-2 xs:p-3 md:p-6">
-                      <h3 className="text-base xs:text-lg md:text-xl font-bold text-gray-800 mb-1 xs:mb-2 md:mb-3 group-hover:text-amber-600 transition-colors line-clamp-1">
-                        {cuisine.name}
-                      </h3>
-                      <div className="flex items-center gap-1 xs:gap-2 mb-1 xs:mb-2 md:mb-4 text-gray-600 text-xs xs:text-sm">
-                        <svg className="w-3 h-3 xs:w-4 xs:h-4 text-amber-500" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                        </svg>
-                        <span>Cà Mau, Việt Nam</span>
+              {isMobile ? (
+                <div className="flex gap-2 min-h-auto">
+                  {filteredCuisines.map((cuisine) => (
+                    <div
+                      key={cuisine.id}
+                      className="group bg-white rounded-2xl shadow-md hover:shadow-xl active:scale-95 transition-all duration-200 overflow-hidden cursor-pointer" onClick={() => navigate(`/am-thuc/${cuisine.slug}`)}
+                    >
+                      <div className="aspect-[4/2] h-auto overflow-hidden">
+                        <img
+                          src={cuisine.image || "https://placehold.co/400x300/amber/white?text=Ẩm+Thực"}
+                          alt={cuisine.name}
+                          className="w-full h-full object-cover object-center rounded-t-xl group-hover:scale-105 transition-transform duration-300"
+                        />
                       </div>
-                      <p className="text-gray-600 mb-2 md:mb-5 line-clamp-2 xs:line-clamp-2 md:line-clamp-3 text-xs xs:text-sm md:text-base">
-                        {cuisine.description?.replace(/<[^>]*>?/gm, '') || "Món ăn đặc trưng của Cà Mau, mang đậm hương vị đất mũi phương Nam."}
-                      </p>
-                      <div className="flex justify-between items-center">
-                        <div className="flex -space-x-1 xs:-space-x-2">
-                          {[...Array(1)].map((_, i) => (
-                            <div key={i} className="w-6 h-6 rounded-full border-2 border-white overflow-hidden bg-amber-100 md:hidden">
-                              <img
-                                src={cuisine.gallery?.[i] || `https://placehold.co/100/amber/white?text=${i + 1}`}
-                                alt=""
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
-                          ))}
-                          <div className="hidden md:flex -space-x-2">
-                            {[...Array(3)].map((_, i) => (
-                              <div key={i} className="w-8 h-8 rounded-full border-2 border-white overflow-hidden bg-amber-100">
+                      <div className="p-1">
+                        <h3 className="text-xs font-bold text-gray-800 mb-1 line-clamp-1">
+                          {cuisine.name}
+                        </h3>
+                        <div className="flex items-center text-yellow-600 text-xs gap-1 mb-1">
+                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.967a1 1 0 00.95.69h4.174c.969 0 1.371 1.24.588 1.81l-3.38 2.455a1 1 0 00-.364 1.118l1.287 3.966c.3.922-.755 1.688-1.54 1.118l-3.381-2.454a1 1 0 00-1.175 0l-3.38 2.454c-.786.57-1.84-.196-1.54-1.118l1.286-3.966a1 1 0 00-.364-1.118L2.05 9.394c-.783-.57-.38-1.81.588-1.81h4.175a1 1 0 00.95-.69l1.286-3.967z" />
+                          </svg>
+                          <span>{cuisine.rating || "4.5"}</span>
+                          <span className="text-gray-400 mx-1">|</span>
+                          <span className="text-gray-600">{cuisine.views || "1,234"} lượt xem</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-8">
+                  {filteredCuisines.map((cuisine) => (
+                    <div
+                      key={cuisine.id}
+                      className="group relative bg-white rounded-xl md:rounded-2xl overflow-hidden shadow-md md:shadow-lg transition-all duration-300 hover:shadow-xl active:scale-95 md:active:scale-100 cursor-pointer"
+                      onClick={() => navigate(`/am-thuc/${cuisine.slug}`)}
+                    >
+                      <div className="aspect-[4/3] overflow-hidden">
+                        <img
+                          src={cuisine.image || "https://placehold.co/400x300/amber/white?text=Ẩm+Thực"}
+                          alt={cuisine.name}
+                          className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                        />
+                      </div>
+                      <div className="p-2 xs:p-3 md:p-6">
+                        <h3 className="text-base xs:text-lg md:text-xl font-bold text-gray-800 mb-1 xs:mb-2 md:mb-3 group-hover:text-amber-600 transition-colors line-clamp-1">
+                          {cuisine.name}
+                        </h3>
+                        <div className="flex items-center gap-1 xs:gap-2 mb-1 xs:mb-2 md:mb-4 text-gray-600 text-xs xs:text-sm">
+                          <svg className="w-3 h-3 xs:w-4 xs:h-4 text-amber-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                          </svg>
+                          <span>Cà Mau, Việt Nam</span>
+                        </div>
+                        <p className="text-gray-600 mb-2 md:mb-5 line-clamp-2 xs:line-clamp-2 md:line-clamp-3 text-xs xs:text-sm md:text-base">
+                          {cuisine.description?.replace(/<[^>]*>?/gm, '') || "Món ăn đặc trưng của Cà Mau, mang đậm hương vị đất mũi phương Nam."}
+                        </p>
+                        <div className="flex justify-between items-center">
+                          <div className="flex -space-x-1 xs:-space-x-2">
+                            {[...Array(1)].map((_, i) => (
+                              <div key={i} className="w-6 h-6 rounded-full border-2 border-white overflow-hidden bg-amber-100 md:hidden">
                                 <img
                                   src={cuisine.gallery?.[i] || `https://placehold.co/100/amber/white?text=${i + 1}`}
                                   alt=""
@@ -159,24 +191,35 @@ export default function CuisineList() {
                                 />
                               </div>
                             ))}
-                            {(cuisine.gallery?.length > 3 || true) && (
-                              <div className="w-8 h-8 rounded-full border-2 border-white bg-amber-500 flex items-center justify-center text-xs text-white font-medium">
-                                +{(cuisine.gallery?.length - 3) || 3}
-                              </div>
-                            )}
+                            <div className="hidden md:flex -space-x-2">
+                              {[...Array(3)].map((_, i) => (
+                                <div key={i} className="w-8 h-8 rounded-full border-2 border-white overflow-hidden bg-amber-100">
+                                  <img
+                                    src={cuisine.gallery?.[i] || `https://placehold.co/100/amber/white?text=${i + 1}`}
+                                    alt=""
+                                    className="w-full h-full object-cover"
+                                  />
+                                </div>
+                              ))}
+                              {(cuisine.gallery?.length > 3 || true) && (
+                                <div className="w-8 h-8 rounded-full border-2 border-white bg-amber-500 flex items-center justify-center text-xs text-white font-medium">
+                                  +{(cuisine.gallery?.length - 3) || 3}
+                                </div>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                        <div className="flex items-center gap-1 text-amber-500 group-hover:text-amber-600 font-medium text-xs xs:text-sm">
-                          <span>Xem</span>
-                          <svg className="w-4 h-4 xs:w-4 xs:h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                          </svg>
+                          <div className="flex items-center gap-1 text-amber-500 group-hover:text-amber-600 font-medium text-xs xs:text-sm">
+                            <span>Xem</span>
+                            <svg className="w-4 h-4 xs:w-4 xs:h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                            </svg>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>

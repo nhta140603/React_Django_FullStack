@@ -49,7 +49,7 @@ export default function ProfileSidebar({ avatar, name }) {
         <div className="relative group">
           <img
             className={`${isCollapsed ? 'w-12 h-12' : 'w-24 h-24'} rounded-full border-4 border-white object-cover shadow-inner transition-all duration-300`}
-            src={avatarUrl || defaultAvatar}
+            src={avatarUrl}
             alt="avatar"
           />
           <div className="absolute inset-0 bg-black bg-opacity-40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">

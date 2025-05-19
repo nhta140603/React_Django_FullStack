@@ -30,7 +30,7 @@ export default function HotelPage() {
   const [amenitiesList, setAmenitiesList] = useState([]);
 
   const [page, setPage] = React.useState(1)
-  const [pageSize, setPageSize] = useState(5)
+  const [pageSize, setPageSize] = useState(4)
   const [totalPages, setTotalPages] = useState(1)
 
 

@@ -58,69 +58,216 @@ export default function FestivalDescriptionEditPage() {
   const navigate = useNavigate();
   const [festival, setFestival] = useState(null);
   const [loading, setLoading] = useState(true);
-
   const [description, setDescription] = useState("");
-
+  const [originalDescription, setOriginalDescription] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [hasChanges, setHasChanges] = useState(false);
+  const [previewMode, setPreviewMode] = useState(false);
   useEffect(() => {
     getDetail("festivals", id)
       .then(data => {
         setFestival(data);
         setDescription(data.description || "");
+        setOriginalDescription(data.description || "")
       })
       .catch(() => toast.error("Không tìm thấy lễ hội!"))
       .finally(() => setLoading(false));
   }, [id]);
 
+  useEffect(() => {
+    setHasChanges(description !== originalDescription)
+  }, [description, originalDescription])
+
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (hasChanges) {
+        e.preventDefault();
+        e.returnValue = "Bạn có thay đổi chưa được lưu. Bạn có chắc muốn rời đi?";
+        return e.returnValue;
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [hasChanges]);
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!hasChanges) {
+      toast.info("Không có thay đổi để lưu");
+      return;
+    }
+    setSaving(true);
     try {
       await updateItem("festivals", id, {
         description,
       });
       toast.success("Cập nhật lễ hội thành công!");
+      setOriginalDescription(description);
+      setHasChanges(false);
       setTimeout(() => navigate(`/festivals`), 1200);
     } catch {
       toast.error("Có lỗi khi cập nhật!");
+    } finally {
+      setSaving(false);
     }
   };
-
+  const handleCancel = () => {
+    if (hasChanges) {
+      if (window.confirm("Bạn có thay đổi chưa được lưu. Bạn có chắc muốn hủy?")) {
+        navigate("/festivals");
+      }
+    } else {
+      navigate("/festivals");
+    }
+  };
+  const handleRestore = () => {
+    if (window.confirm("Bạn có chắc muốn khôi phục về nội dung ban đầu?")) {
+      setDescription(originalDescription);
+    }
+  };
   if (loading) return <div className="p-4">Đang tải...</div>;
   if (!festival) return <div className="p-4 text-red-500">Không tìm thấy lễ hội</div>;
 
   return (
-    <div className="max-w-6xl mx-auto bg-white rounded shadow p-6 mt-6">
-      <h1 className="text-xl font-bold mb-2">Chỉnh sửa lễ hội: {festival.title}</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="max-w-6xl mx-auto bg-white rounded-lg shadow-lg p-6 mt-6">
+      <div className="flex justify-between items-center mb-6">
         <div>
-          <label className="block font-medium mb-1">Mô tả chi tiết</label>
-          <ReactQuill
-            theme="snow"
-            value={description}
-            onChange={setDescription}
-            className="bg-white"
-            style={{ minHeight: 400, height: 400, marginBottom: 24 }}
-            modules={modules}
-            formats={formats}
-            placeholder="Nhập nội dung mô tả chi tiết cho lễ hội"
-          />
+          <h1 className="text-2xl font-bold text-gray-800">{festival.name}</h1>
+          <p className="text-gray-600">Chỉnh sửa mô tả chi tiết</p>
         </div>
-        <div className="flex gap-2 mt-16">
-          <button
-            type="submit"
-            className="bg-cyan-600 text-white px-4 py-2 rounded hover:bg-cyan-700"
-          >
-            Lưu lễ hội
-          </button>
+        <div className="flex items-center space-x-2">
+          <span className={`inline-flex h-3 w-3 rounded-full ${hasChanges ? 'bg-yellow-400' : 'bg-green-400'}`}></span>
+          <span className="text-sm text-gray-600">{hasChanges ? 'Có thay đổi chưa lưu' : 'Đã lưu'}</span>
+        </div>
+      </div>
+
+      <div className="bg-gray-50 rounded-lg p-3 mb-6 flex items-center justify-between">
+        <div className="flex items-center text-gray-600">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span className="text-sm">Chỉnh sửa mô tả chi tiết cho tour, có thể chèn hình ảnh và định dạng văn bản</span>
+        </div>
+        <div>
           <button
             type="button"
-            className="bg-gray-100 px-4 py-2 rounded"
-            onClick={() => navigate("/festivals")}
+            onClick={() => setPreviewMode(!previewMode)}
+            className="inline-flex items-center text-sm text-cyan-600 hover:text-cyan-800"
           >
+            {previewMode ? (
+              <>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                </svg>
+                Chế độ chỉnh sửa
+              </>
+            ) : (
+              <>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                Xem trước
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div>
+          {previewMode ? (
+            <div className="border rounded-lg p-6 min-h-[400px] bg-white prose max-w-none">
+              <div dangerouslySetInnerHTML={{ __html: description }} />
+            </div>
+          ) : (
+            <ReactQuill
+              theme="snow"
+              value={description}
+              onChange={setDescription}
+              className="bg-white rounded-lg"
+              style={{ minHeight: 400, marginBottom: 50 }}
+              modules={modules}
+              formats={formats}
+              placeholder="Nhập nội dung mô tả chi tiết cho tour..."
+            />
+          )}
+        </div>
+
+        <div className="flex flex-wrap gap-3 pt-8 border-t">
+          <button
+            type="submit"
+            disabled={saving || !hasChanges}
+            className={`inline-flex items-center px-4 py-2 rounded-md ${hasChanges ? 'bg-cyan-600 hover:bg-cyan-700 text-white' : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+              } transition-colors duration-200`}
+          >
+            {saving ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Đang lưu...
+              </>
+            ) : (
+              <>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                Lưu thay đổi
+              </>
+            )}
+          </button>
+
+          {hasChanges && (
+            <button
+              type="button"
+              onClick={handleRestore}
+              className="inline-flex items-center px-4 py-2 bg-amber-50 text-amber-700 hover:bg-amber-100 rounded-md transition-colors duration-200"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              Khôi phục
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={handleCancel}
+            className="inline-flex items-center px-4 py-2 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-md transition-colors duration-200"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
             Hủy
           </button>
         </div>
       </form>
-      <ToastContainer position="top-right" autoClose={2000} />
+
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+      <>
+        <style>
+          {`
+          .ql-toolbar.ql-snow {
+            position: sticky;
+            top: 64px;
+            z-index: 20;
+            background: #fff;
+            border:1
+          }
+        `}
+        </style>
+      </>
     </div>
   );
 }

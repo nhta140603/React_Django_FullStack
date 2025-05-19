@@ -45,21 +45,21 @@ const menuGroups = [
       { icon: <MdEventNote />, label: "Sự kiện & Bài viết", path: "/articles" },
     ]
   },
-  {
-    title: "Vận chuyển & Vé",
-    items: [
-      { icon: <FaBus />, label: "Phương tiện", path: "/vehicle" },
-      // { icon: <FaTicketAlt />, label: "Vé", path: "/tickets" },
-      { icon: <FaCar />, label: "Thuê xe", path: "/vehicle-rentals" },
-    ]
-  },
-  {
-    title: "Trải nghiệm cá nhân",
-    items: [
-      { icon: <FaRoute />, label: "Chuyến đi cá nhân", path: "/personal-trips" },
-      { icon: <FaUser />, label: "Đặt HDV cá nhân", path: "/personal-tour-guide-bookings" },
-    ]
-  },
+  // {
+  //   title: "Vận chuyển & Vé",
+  //   items: [
+  //     { icon: <FaBus />, label: "Phương tiện", path: "/vehicle" },
+  //     // { icon: <FaTicketAlt />, label: "Vé", path: "/tickets" },
+  //     { icon: <FaCar />, label: "Thuê xe", path: "/vehicle-rentals" },
+  //   ]
+  // },
+  // {
+  //   title: "Trải nghiệm cá nhân",
+  //   items: [
+  //     { icon: <FaRoute />, label: "Chuyến đi cá nhân", path: "/personal-trips" },
+  //     { icon: <FaUser />, label: "Đặt HDV cá nhân", path: "/personal-tour-guide-bookings" },
+  //   ]
+  // },
   {
     title: "Khác",
     items: [

@@ -185,30 +185,6 @@ export default function CuisineDetail() {
                         </div>
 
                         <div className="bg-white rounded-2xl shadow-xl p-6">
-                            <h3 className="text-xl font-bold text-gray-800 mb-4">Địa điểm thưởng thức</h3>
-
-                            <div className="space-y-4">
-                                {(cuisine.locations || [
-                                    { name: "Chợ đêm Cà Mau", address: "Trung tâm TP. Cà Mau" },
-                                    { name: "Nhà hàng Hải Sản Mũi Cà Mau", address: "Khu du lịch Mũi Cà Mau" },
-                                    { name: "Quán ăn gia đình Ba Hùng", address: "42 Trần Hưng Đạo, TP. Cà Mau" }
-                                ]).map((location, index) => (
-                                    <div key={index} className="flex items-start gap-3 pb-4 border-b border-gray-100 last:border-0">
-                                        <div className="flex-shrink-0 mt-1">
-                                            <svg className="w-5 h-5 text-amber-500" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                                            </svg>
-                                        </div>
-                                        <div>
-                                            <h4 className="font-medium text-gray-800">{location.name}</h4>
-                                            <p className="text-sm text-gray-500">{location.address}</p>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="bg-white rounded-2xl shadow-xl p-6">
                             <h3 className="text-xl font-bold text-gray-800 mb-4">Thông tin thêm</h3>
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between pb-2 border-b border-gray-100">

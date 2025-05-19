@@ -35,7 +35,7 @@ export default function DestinationPage() {
   const [selectedDestination, setSelectedDestination] = useState([]);
   const [selectedRowIds, setSelectedRowIds] = useState([]); 
   const [page, setPage] = useState(1)
-  const [pageSize, setPageSize] = useState(5)
+  const [pageSize, setPageSize] = useState(4)
   const [totalPages, setTotalPages] = useState(1)
 
   const fetchDestinations = async () => {

@@ -9,11 +9,11 @@ export async function loginUser(data) {
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include",
     body: JSON.stringify({
       username: data.username,
       password: data.password,
     }),
-    credentials: "include",
   });
 
   const result = await response.json();
@@ -33,6 +33,7 @@ export async function loginUser(data) {
 export async function getInfoUser() {
   const res = await fetch(`${API_URL}me/`, {
     method: "GET",
+    credentials: "include",
   });
   if (!res.ok) {
     throw new Error('Không thể lấy thông tin người dùng');
@@ -43,7 +44,6 @@ export async function getInfoUser() {
 export async function logoutUser() {
   const res = await fetch(`${API_URL}logout/`, {
     method: "POST",
-    credentials: "include"
   });
   if (!res.ok) {
     throw new Error('Không thể đăng xuất');

@@ -5,11 +5,11 @@ import Sidebar from "../components/Sidebar/Sidebar";
 
 function AdminLayout({ children }) {
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex min-h-screen bg-gray-50">
       <Sidebar />
       <div className="flex flex-col flex-1 min-w-0">
         <Header />
-        <main className="flex-1 p-8 bg-gray-100">{children}</main>
+        <main className="flex-1 p-2 bg-gray-50">{children}</main>
         <Footer />
       </div>
     </div>

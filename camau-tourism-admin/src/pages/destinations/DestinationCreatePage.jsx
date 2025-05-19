@@ -6,7 +6,6 @@ function DestinationCreatePage() {
     <AdminLayout>
         <DestinationCreate/>
     </AdminLayout>
-
   );
 }
 

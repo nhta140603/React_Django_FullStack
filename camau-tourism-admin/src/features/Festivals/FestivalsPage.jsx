@@ -22,7 +22,7 @@ export default function FestivalPage() {
   const [selectedFestival, setSelectedFestival] = useState(null);
   const [selectedRowIds, setSelectedRowIds] = useState([]);
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(4);
   const [totalPages, setTotalPages] = useState(1);
 
   const fetchFestivals = async () => {

@@ -5,7 +5,14 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useQuery } from "@tanstack/react-query";
 
-function EventHeroSection({ title, image }) {
+import {
+  Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger,
+} from "../../components/ui/sheet";
+import {
+  Accordion, AccordionContent, AccordionItem, AccordionTrigger,
+} from "../../components/ui/accordion";
+
+function EventHeroSection({ title, image, children }) {
   return (
     <div className="relative min-h-[180px] sm:min-h-[220px] md:min-h-[320px] rounded-2xl overflow-hidden shadow flex items-end">
       <img
@@ -14,14 +21,19 @@ function EventHeroSection({ title, image }) {
         className="absolute inset-0 object-cover w-full h-full z-0"
         style={{ filter: "brightness(0.7)" }}
       />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-5"></div>
-      <div className="relative z-10 px-3 py-6 sm:py-10 w-full">
-        <div className="inline-block bg-cyan-600 text-white text-xs px-2 py-0.5 rounded-full shadow mb-2 sm:mb-3">
-          Sự kiện nổi bật
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10"></div>
+      <div className="relative z-20 px-3 py-4 sm:py-10 w-full">
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="inline-block bg-cyan-600 text-white text-xs px-2 py-0.5 rounded-full shadow mb-2 sm:mb-3">
+              Sự kiện nổi bật
+            </div>
+            <h1 className="text-white text-2xl sm:text-3xl md:text-5xl font-extrabold drop-shadow-lg mb-0.5 sm:mb-1">
+              {title}
+            </h1>
+          </div>
+          {children}
         </div>
-        <h1 className="text-white text-2xl sm:text-3xl md:text-5xl font-extrabold drop-shadow-lg mb-0.5 sm:mb-1">
-          {title}
-        </h1>
       </div>
     </div>
   );
@@ -89,8 +101,8 @@ function CountdownTimer({ eventDate }) {
 
 function EventInfoCard({ icon, title, value }) {
   return (
-    <div className="flex items-center p-3 sm:p-4 bg-white rounded-xl shadow-md hover:shadow-lg transition-all">
-      <div className="bg-cyan-100 p-2 rounded-full mr-3 text-cyan-700">{icon}</div>
+    <div className="flex items-center p-3 sm:p-4 bg-white rounded-xl shadow-md hover:shadow-lg transition-all mb-2">
+      <div className="bg-cyan-100 p-2 rounded-full mr-3 text-cyan-700 ">{icon}</div>
       <div>
         <h3 className="text-xs sm:text-sm text-gray-500">{title}</h3>
         <p className="font-medium text-gray-800 text-sm sm:text-base break-words">{value}</p>
@@ -99,8 +111,72 @@ function EventInfoCard({ icon, title, value }) {
   );
 }
 
+function EventMobileSheet({ event, formattedDate, address, handleAddToCalendar, handleShareEvent }) {
+  return (
+    <SheetContent side="bottom" className="p-0 rounded-t-xl">
+      <SheetHeader className="px-4 pt-4 pb-1">
+        <SheetTitle className="text-xl">Thông tin sự kiện</SheetTitle>
+      </SheetHeader>
+      <div className="px-4 pb-4">
+        <div className="flex flex-col gap-3">
+          <EventInfoCard
+            icon={
+              <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="10" x2="21" y2="10" />
+              </svg>
+            }
+            title="Thời gian"
+            value={formattedDate}
+          />
+          <EventInfoCard
+            icon={
+              <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+            }
+            title="Địa điểm"
+            value={address || "Đang cập nhật"}
+          />
+          <div className="flex gap-3 mt-1">
+            <button
+              onClick={handleAddToCalendar}
+              className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg shadow text-sm transition-colors"
+            >
+              <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="10" x2="21" y2="10" />
+              </svg>
+              Lịch
+            </button>
+            <button
+              onClick={handleShareEvent}
+              className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg shadow text-sm transition-colors"
+            >
+              <svg width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <circle cx="18" cy="5" r="3" />
+                <circle cx="6" cy="12" r="3" />
+                <circle cx="18" cy="19" r="3" />
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+              </svg>
+              Share
+            </button>
+          </div>
+        </div>
+      </div>
+    </SheetContent>
+  );
+}
+
 export default function FestivalDetail() {
   const { id, slug } = useParams();
+  const [openSheet, setOpenSheet] = useState(false);
 
   const {
     data: event,
@@ -219,11 +295,141 @@ export default function FestivalDetail() {
   return (
     <div className="min-h-screen pb-8 bg-gray-50">
       <div className="max-w-2xl md:max-w-7xl mx-auto px-2 sm:px-3 md:px-7">
-        <div className="py-2 sm:py-4 md:py-0">
-          <EventHeroSection title={event.title} image={eventImage} />
+
+        <div className="py-2 sm:py-4 md:py-0 relative">
+          <EventHeroSection title={event.title} image={eventImage}>
+            <div className="block md:hidden">
+              <Sheet open={openSheet} onOpenChange={setOpenSheet}>
+                <SheetTrigger asChild>
+                  <button
+                    className="ml-2 flex items-center px-3 py-2 bg-white/80 border border-cyan-100 rounded-full shadow text-cyan-700 text-xs font-bold hover:bg-cyan-50 backdrop-blur"
+                  >
+                    <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" className="mr-1" viewBox="0 0 24 24">
+                      <circle cx="12" cy="12" r="10" />
+                      <line x1="12" y1="8" x2="12" y2="12" />
+                      <line x1="12" y1="16" x2="12.01" y2="16" />
+                    </svg>
+                    Thông tin
+                  </button>
+                </SheetTrigger>
+                <EventMobileSheet
+                  event={event}
+                  formattedDate={formattedDate}
+                  address={address}
+                  handleAddToCalendar={handleAddToCalendar}
+                  handleShareEvent={handleShareEvent}
+                />
+              </Sheet>
+            </div>
+          </EventHeroSection>
         </div>
 
-        <div className="mt-4 sm:mt-6rounded-2xl p-2 sm:p-4 md:p-8">
+        <div className="md:hidden mt-3">
+          <Accordion type="multiple" defaultValue={["time", "desc"]} className="rounded-xl overflow-hidden">
+            <AccordionItem value="time">
+              <AccordionTrigger>
+                <span className="font-semibold text-cyan-800 flex items-center gap-2">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                    <line x1="16" y1="2" x2="16" y2="6" />
+                    <line x1="8" y1="2" x2="8" y2="6" />
+                    <line x1="3" y1="10" x2="21" y2="10" />
+                  </svg>
+                  Thời gian & địa điểm
+                </span>
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="py-2">
+                  <EventInfoCard
+                    icon={<svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2" /><line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" /></svg>}
+                    title="Thời gian"
+                    value={formattedDate}
+                  />
+                  <EventInfoCard
+                    icon={<svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" /><circle cx="12" cy="10" r="3" /></svg>}
+                    title="Địa điểm"
+                    value={address || "Đang cập nhật"}
+                  />
+                </div>
+                <CountdownTimer eventDate={formattedDate} />
+              </AccordionContent>
+            </AccordionItem>
+            <AccordionItem value="desc">
+              <AccordionTrigger>
+                <span className="font-semibold text-cyan-800 flex items-center gap-2">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                  Chi tiết sự kiện
+                </span>
+              </AccordionTrigger>
+              <AccordionContent>
+                <div className="px-1">
+                  <div
+                    className="prose max-w-none prose-img:rounded-xl prose-headings:text-cyan-700 prose-a:text-cyan-600 prose-a:underline prose-table:rounded-lg prose-table:shadow text-sm"
+                    dangerouslySetInnerHTML={{
+                      __html: event.description || "<p>Chưa có thông tin chi tiết.</p>",
+                    }}
+                  />
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+            {mapSrc &&
+              <AccordionItem value="map">
+                <AccordionTrigger>
+                  <span className="font-semibold text-cyan-800 flex items-center gap-2">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                    </svg>
+                    Vị trí sự kiện
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <div className="rounded-xl overflow-hidden shadow mb-2">
+                    <div className="w-full h-[160px]">
+                      <iframe
+                        src={mapSrc}
+                        className="w-full h-full min-h-[160px] border-0"
+                        frameBorder="0"
+                        allowFullScreen
+                        aria-hidden="false"
+                        tabIndex="0"
+                        title="Google Map"
+                        loading="lazy"
+                      />
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            }
+            <AccordionItem value="note">
+              <AccordionTrigger>
+                <span className="font-semibold text-cyan-800 flex items-center gap-2">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                    <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Lưu ý khi tham gia
+                </span>
+              </AccordionTrigger>
+              <AccordionContent>
+                <ul className="text-xs text-cyan-700 space-y-2 p-2">
+                  <li className="flex items-start gap-1">
+                    <svg className="w-4 h-4 text-cyan-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <span>Kiểm tra thời gian sự kiện trước khi đi</span>
+                  </li>
+                  <li className="flex items-start gap-1">
+                    <svg className="w-4 h-4 text-cyan-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+                    <span>Đến sớm để có chỗ tốt</span>
+                  </li>
+                  <li className="flex items-start gap-1">
+                    <svg className="w-4 h-4 text-cyan-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <span>Sự kiện có thể thay đổi nếu có thông báo</span>
+                  </li>
+                </ul>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
+
+        <div className="hidden md:block mt-4 sm:mt-6rounded-2xl p-2 sm:p-4 md:p-8">
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-2 sm:gap-5 border-b pb-4 sm:pb-8">
             <div className="flex-1">
               <div className="flex items-center gap-1 sm:gap-2 mb-2 sm:mb-3">
@@ -269,9 +475,7 @@ export default function FestivalDetail() {
             </div>
           </div>
 
-          {/* Main Content */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2 sm:gap-6 mt-4 sm:mt-8">
-            {/* Left/Main Info */}
             <div className="md:col-span-2">
               <div className="mb-5 sm:mb-8">
                 <h2 className="text-base sm:text-xl font-bold text-cyan-900 mb-2 sm:mb-4 flex items-center">

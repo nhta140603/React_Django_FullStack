@@ -66,7 +66,7 @@ cloudinary.config(
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
-CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOW_ALL_ORIGINS = True
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=7),
@@ -131,12 +131,15 @@ MIDDLEWARE = [
 ]
 # set quyền đăng nhập cho host reactjs
 CORS_ALLOW_CREDENTIALS = True
+
 CORS_ALLOWED_ORIGINS = [
-    "https://be6ac867-8044-4b2c-9030-8ac6aee21321.e1-us-east-azure.choreoapps.dev",
-    "http://localhost:5173"
+    "http://localhost:5173",
+    "http://localhost:5174",
 ]
-SESSION_COOKIE_SECURE = False
-CSRF_COOKIE_SECURE = False
+
+
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
 ROOT_URLCONF = 'camau_tourism_backend.urls'
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -164,20 +167,29 @@ WSGI_APPLICATION = 'camau_tourism_backend.wsgi.application'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.getenv("DB_NAME"),
+#         'USER': os.getenv("DB_USER"),
+#         'PASSWORD': os.getenv("DB_PWD"),
+#         'HOST': os.getenv("DB_HOST"),
+#         'PORT': os.getenv("DB_PORT"),
+#         'OPTIONS': {
+#             'sslmode': 'require',
+#         }
+#     }
+# }
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv("DB_NAME"),
-        'USER': os.getenv("DB_USER"),
-        'PASSWORD': os.getenv("DB_PWD"),
-        'HOST': os.getenv("DB_HOST"),
-        'PORT': os.getenv("DB_PORT"),
-        'OPTIONS': {
-            'sslmode': 'require',
-        }
+        'NAME': 'DuLich_CaMau',
+        'USER': 'postgres',
+        'PASSWORD': '123',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators

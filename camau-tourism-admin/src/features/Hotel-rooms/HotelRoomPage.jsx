@@ -8,8 +8,8 @@ import GenericForm from "../../components/EditForm";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CurrencyInput from 'react-currency-input-field';
-import AmenitiesSelector from "../../components/AmenitiesSelector"; // -- MỚI --
-import { fetchAllPages } from '../../utils/fetchAllPages'; // -- MỚI --
+import AmenitiesSelector from "../../components/AmenitiesSelector";
+import { fetchAllPages } from '../../utils/fetchAllPages';
 
 export default function HotelRoomPage() {
   const [hotelroom, setHotels] = useState({ count: 0, results: [] });
@@ -26,10 +26,9 @@ export default function HotelRoomPage() {
   const [hotelsOption, setHotelsOption] = useState([]);
 
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
+  const [pageSize, setPageSize] = useState(4);
   const [totalPages, setTotalPages] = useState(1);
 
-  // -- MỚI: Danh sách tiện ích phòng --
   const [amenitiesList, setAmenitiesList] = useState([]);
 
   useEffect(() => {

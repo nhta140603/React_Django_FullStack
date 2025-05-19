@@ -10,8 +10,6 @@ import {
 import Modal from "../../components/Modal";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
-// Bổ sung các icon bị thiếu
 const AMENITY_ICONS = {
   "fa-wifi": FaWifi,
   "fa-car": FaCar,
@@ -43,7 +41,6 @@ const AMENITY_ICONS = {
   "fa-ban-smoking": FaSmokingBan,
 };
 import { FaElevator } from "react-icons/fa6";
-// Danh sách icon cho select và lựa chọn trực tiếp
 const ICON_OPTIONS = [
   { label: "Wifi miễn phí", value: "fa-wifi", icon: FaWifi, description: "Kết nối Internet tốc độ cao miễn phí toàn khách sạn" },
   { label: "Nhà hàng", value: "fa-utensils", icon: FaUtensils, description: "Phục vụ các món ăn đa dạng, buffet sáng mỗi ngày" },
@@ -84,21 +81,16 @@ export default function HotelAmenityPage() {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [editData, setEditData] = useState(null);
-
-  // Modal xóa
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [deletingAmenity, setDeletingAmenity] = useState(null);
   const [page, setPage] = React.useState(1)
-  const [pageSize, setPageSize] = useState(8)
+  const [pageSize, setPageSize] = useState(6)
   const [totalPages, setTotalPages] = useState(1)
-  // Tìm kiếm
   const [search, setSearch] = useState("");
 
-  // State cho icon đang chọn trong form
   const [selectedIcon, setSelectedIcon] = useState("");
 
-  // Lấy danh sách tiện ích
   const fetchAmenities = async () => {
     setLoading(true);
     const data = await getPage("hotel-amenities", page, pageSize);
@@ -111,7 +103,6 @@ export default function HotelAmenityPage() {
     fetchAmenities();
   }, [page, pageSize]);
 
-  // Reset icon khi mở modal
   useEffect(() => {
     if (modalOpen) {
       if (editData && editData.icon) setSelectedIcon(editData.icon);
@@ -119,7 +110,6 @@ export default function HotelAmenityPage() {
     }
   }, [modalOpen, editData]);
 
-  // Thêm/sửa tiện ích
   const handleSave = async (e) => {
     e.preventDefault();
     const name = e.target.name.value.trim();
@@ -146,7 +136,6 @@ export default function HotelAmenityPage() {
     }
   };
 
-  // Hiển thị tiện ích đã lọc theo search
   const filteredAmenities = useMemo(() => {
     if (!search.trim()) return amenities;
     const s = search.trim().toLowerCase();
@@ -156,7 +145,6 @@ export default function HotelAmenityPage() {
     );
   }, [amenities, search]);
 
-  // Xóa tiện ích
   const handleDelete = async () => {
     if (!deletingAmenity) return;
     setDeleting(true);
@@ -173,7 +161,6 @@ export default function HotelAmenityPage() {
     }
   };
 
-  // DataTable columns
   const columns = [
     {
       key: "icon",
@@ -200,7 +187,6 @@ export default function HotelAmenityPage() {
     },
   ];
 
-  // DataTable actions
   const actions = [
     {
       key: "edit",
@@ -369,7 +355,6 @@ export default function HotelAmenityPage() {
         />
       </div>
           {filteredAmenities.count > 0 && <Pagination />}
-      {/* Modal Thêm/Sửa */}
       {modalOpen && (
         <Modal
           onClose={() => {
@@ -442,7 +427,6 @@ export default function HotelAmenityPage() {
         </Modal>
       )}
 
-      {/* Modal xác nhận xóa */}
       {deleteOpen && (
         <Modal
           onClose={() => {

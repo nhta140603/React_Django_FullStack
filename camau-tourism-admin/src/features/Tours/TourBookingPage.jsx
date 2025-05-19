@@ -31,7 +31,7 @@ export default function TourBookingPage() {
   const [tours, setTours] = useState([]);
 
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(4);
   const [totalPages, setTotalPages] = useState(1);
 
   const [filterStatus, setFilterStatus] = useState("all");

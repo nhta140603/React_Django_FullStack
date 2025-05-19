@@ -9,7 +9,6 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function RoomTypePage() {
-  // Thêm state cho hotels & khách sạn đang chọn
   const [hotels, setHotels] = useState([]);
   const [selectedHotelId, setSelectedHotelId] = useState("");
 
@@ -25,14 +24,13 @@ export default function RoomTypePage() {
 
   const [selectedRows, setSelectedRows] = useState([]);
 
-  // Lấy danh sách khách sạn
   useEffect(() => {
     async function fetchHotels() {
       try {
         const data = await getList("hotels");
         setHotels(data);
         if (data.length > 0) {
-          setSelectedHotelId(data[0].id); // Chọn mặc định khách sạn đầu tiên
+          setSelectedHotelId(data[0].id); 
         }
       } catch (err) {
         toast.error("Không thể tải danh sách khách sạn");
@@ -41,7 +39,6 @@ export default function RoomTypePage() {
     fetchHotels();
   }, []);
 
-  // Lấy danh sách loại phòng theo khách sạn đã chọn
   async function fetchRoomTypes(hotelId) {
     if (!hotelId) {
       setRoomTypes([]);
@@ -50,7 +47,6 @@ export default function RoomTypePage() {
     try {
       setLoading(true);
       setError(null);
-      // Giả sử backend hỗ trợ filter ?hotel=<id>
       const data = await getList(`room-types?hotel=${hotelId}`);
       setRoomTypes(data);
     } catch (err) {
@@ -90,7 +86,7 @@ export default function RoomTypePage() {
 
   const handleAdd = () => {
     setEditModalOpen(true);
-    setSelectedRoomTypeEdit(null); // form sẽ nhận initialValues là {}
+    setSelectedRoomTypeEdit(null);
   };
 
   function validate(values) {
@@ -117,8 +113,8 @@ export default function RoomTypePage() {
         await createItem("room-types", payload);
         toast.success("Thêm loại phòng thành công!");
       }
-      await fetchRoomTypes(payload.hotel); // Lấy lại danh sách loại phòng theo hotel mới
-      setSelectedHotelId(payload.hotel); // Đặt lại khách sạn đang lọc
+      await fetchRoomTypes(payload.hotel); 
+      setSelectedHotelId(payload.hotel);
       handleEditModalClose();
     } catch (err) {
       toast.error(isEdit ? "Cập nhật thất bại!" : "Thêm loại phòng thất bại!");

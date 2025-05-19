@@ -41,9 +41,7 @@ function WeatherPostCast() {
     const [weather, setWeather] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // Hàm chọn icon dựa trên mã condition code và thời gian
     const getWeatherIcon = (code, isDay) => {
-        // Mã condition từ WeatherAPI
         if (code === 1000) {
             return isDay ? <WiDaySunny className="text-yellow-400 text-5xl md:text-6xl drop-shadow-md" /> : 
                           <WiNightClear className="text-blue-200 text-5xl md:text-6xl drop-shadow-md" />;
@@ -58,7 +56,6 @@ function WeatherPostCast() {
         }
     };
 
-    // Lấy màu nền dựa trên nhiệt độ
     const getBackgroundColor = (temp) => {
         if (temp >= 32) return 'bg-gradient-to-br from-orange-400 to-orange-600';
         if (temp >= 28) return 'bg-gradient-to-br from-yellow-400 to-orange-400';
@@ -92,7 +89,6 @@ function WeatherPostCast() {
     const dateStr = now.toLocaleDateString('vi-VN');
     const bgColor = getBackgroundColor(current.temp_c);
 
-    // Đánh giá chất lượng không khí dựa trên các giá trị
     let airQualityStatus = "Tốt";
     let airQualityColor = "text-green-400";
     if (current.humidity > 85 || current.cloud > 80) {

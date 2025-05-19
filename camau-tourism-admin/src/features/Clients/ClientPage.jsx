@@ -15,19 +15,15 @@ const getDefaultAvatar = (gender) => {
 };
 
 export default function ClientPage() {
-  // State chính
   const [clients, setClients] = useState({count: 0, results: []});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Modal chi tiết
   const [detailOpen, setDetailOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState(null);
 
-  // Đổi trạng thái hoạt động
   const [activeLoadingId, setActiveLoadingId] = useState(null);
 
-  // Modal xóa
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [deleteError, setDeleteError] = useState(null);
@@ -35,7 +31,7 @@ export default function ClientPage() {
   const [clientToDelete, setClientToDelete] = useState(null);
 
   const [page, setPage] = React.useState(1)
-  const [pageSize, setPageSize] = useState(5)
+  const [pageSize, setPageSize] = useState(4)
   const [totalPages, setTotalPages] = useState(1)
 
   const [confirmStatusOpen, setConfirmStatusOpen] = useState(false);

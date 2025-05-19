@@ -95,40 +95,11 @@ export default function DestinationDetailPage() {
               <span className="bg-cyan-50 px-3 py-1 rounded-xl shadow-sm text-cyan-700">
                 Giờ mở cửa: {openHour}
               </span>
-              <span className="bg-yellow-50 px-3 py-1 rounded-xl shadow-sm text-yellow-700">
-                Giá vé: {ticket}
-              </span>
-              <span className="bg-green-50 px-3 py-1 rounded-xl shadow-sm text-green-700">
-                Mùa đẹp: {bestSeason}
-              </span>
             </div>
-          </div>
-          <div className="flex flex-col gap-2 items-start mt-2 md:mt-0">
-            {phone && (
-              <a
-                href={`tel:${phone}`}
-                className="flex items-center gap-1 text-cyan-600 hover:underline font-semibold"
-              >
-                <svg className="w-5 h-5 text-cyan-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M22 16.92V21a1 1 0 01-1.09 1A19.91 19.91 0 013 5.09 1 1 0 014 4h4.09a1 1 0 011 .76l1.21 4.21a1 1 0 01-.27 1L8.21 11.21a16 16 0 006.59 6.59l1.24-1.24a1 1 0 011-.27l4.21 1.21a1 1 0 01.76 1z" /></svg>
-                {phone}
-              </a>
-            )}
-            {website && (
-              <a
-                href={website}
-                className="flex items-center gap-1 text-blue-700 hover:underline font-semibold"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20" /></svg>
-                Website
-              </a>
-            )}
           </div>
         </div>
         <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-10">
           <div className="md:col-span-2">
-            {/* Gallery (Slider) */}
             <div className="relative h-[210px] md:h-[290px] rounded-2xl overflow-hidden shadow-lg group mb-6">
               {images.length ? (
                 <>

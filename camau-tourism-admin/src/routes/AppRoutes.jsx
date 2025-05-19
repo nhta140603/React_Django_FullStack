@@ -52,6 +52,7 @@ function AppRoutes() {
 
             <Route path="/cuisines" element={<CuisineListPage />} />
             <Route path="/cuisines-create" element={<CuisineCreatePage />} />
+            <Route path="/cuisines-edit/:id" element={<CuisineCreatePage />} />
             <Route path="/room-bookings" element={<RoomBookingListPage />} />
             <Route path="/destinations" element={<DestinationsListPage />} />
 

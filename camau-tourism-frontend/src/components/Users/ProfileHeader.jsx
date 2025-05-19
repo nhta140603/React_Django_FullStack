@@ -46,7 +46,7 @@ export default function ProfileHeader({ avatar, name, bio, onAvatarChange }) {
   return (
     <div className="flex flex-col items-center gap-4 relative">
       <div className="relative group">
-        <Avatar src={avatar} />
+        <Avatar src={`https://res.cloudinary.com/deavaowp3/${avatar}`} />
         <button
           type="button"
           title="Thay đổi ảnh đại diện"
