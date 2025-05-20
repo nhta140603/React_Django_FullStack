@@ -7,7 +7,6 @@ import Hotels from '../pages/Hotels';
 import Login from '../pages/LoginPage';
 import Register from '../pages/RegisterPage';
 import PersonalTrip from '../pages/PersonalTrips';
-
 import UserInfo from '../pages/User-profile';
 import UserTours from '../pages/User-tours'
 import UserBookingHotel from '../pages/User-booking';
@@ -58,11 +57,11 @@ function AppRoutes() {
           </Route>
 
           <Route element={<ProtectedRoute />}>
-          <Route path="/*" element={<ProfileLayout />}>
-            <Route path="trang-ca-nhan" element={<UserInfo />} />
-            <Route path="cac-chuyen-di" element={<UserTours />} />
-            <Route path="cac-don-dat-phong" element={<UserBookingHotel />} />
-          </Route>
+            <Route path="/*" element={<ProfileLayout />}>
+              <Route path="trang-ca-nhan" element={<UserInfo />} />
+              <Route path="cac-chuyen-di" element={<UserTours />} />
+              <Route path="cac-don-dat-phong" element={<UserBookingHotel />} />
+            </Route>
           </Route>
         </Routes>
       </Router>

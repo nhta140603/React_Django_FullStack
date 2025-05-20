@@ -61,18 +61,18 @@ export default function ProfileInfoForm({ user, onSave }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-gradient-to-br from-blue-50 via-emerald-50 to-yellow-50 rounded-xl shadow-xl p-8 border border-teal-100"
+      className="bg-gradient-to-br from-blue-50 via-emerald-50 to-yellow-50 rounded-xl shadow-xl p-4 sm:p-8 border border-teal-100 max-h-[90vh] overflow-y-auto"
     >
-      <div className="bg-gradient-to-r from-teal-600 to-blue-500 text-white rounded-lg py-4 px-6 mb-8 shadow-md">
-        <h3 className="text-2xl font-bold flex items-center gap-3">
-          <FaUser className="text-yellow-300" /> Cập nhật thông tin cá nhân
+      <div className="bg-gradient-to-r from-teal-600 to-blue-500 text-white rounded-lg py-3 px-4 sm:py-4 sm:px-6 mb-6 sm:mb-8 shadow-md">
+        <h3 className="text-xl sm:text-2xl font-bold flex items-center gap-2 sm:gap-3">
+          <FaUser className="text-yellow-300" /> Cập nhật thông tin
         </h3>
-        <p className="text-blue-100 mt-2 text-sm">Điền đầy đủ thông tin để cập nhật hồ sơ của bạn</p>
+        <p className="text-blue-100 mt-1 sm:mt-2 text-xs sm:text-sm">Điền đầy đủ thông tin để cập nhật hồ sơ</p>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="flex flex-col gap-2">
-          <label className="font-semibold text-gray-700 flex items-center gap-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+        <div className="flex flex-col gap-1 sm:gap-2">
+          <label className="font-semibold text-gray-700 flex items-center gap-2 text-sm sm:text-base">
             <FaUser className="text-teal-500" /> Họ
           </label>
           <input
@@ -85,8 +85,8 @@ export default function ProfileInfoForm({ user, onSave }) {
             autoComplete="off"
           />
         </div>
-        <div className="flex flex-col gap-2">
-          <label className="font-semibold text-gray-700 flex items-center gap-2">
+        <div className="flex flex-col gap-1 sm:gap-2">
+          <label className="font-semibold text-gray-700 flex items-center gap-2 text-sm sm:text-base">
             <FaUser className="text-teal-500" /> Tên
           </label>
           <input
@@ -99,8 +99,8 @@ export default function ProfileInfoForm({ user, onSave }) {
             autoComplete="off"
           />
         </div>
-        <div className="flex flex-col gap-2">
-          <label className="font-semibold text-gray-700 flex items-center gap-2">
+        <div className="flex flex-col gap-1 sm:gap-2">
+          <label className="font-semibold text-gray-700 flex items-center gap-2 text-sm sm:text-base">
             <FaEnvelope className="text-blue-500" /> Email
           </label>
           <div className="relative">
@@ -118,8 +118,8 @@ export default function ProfileInfoForm({ user, onSave }) {
           </div>
           <p className="text-xs text-gray-500 italic">Email không thể thay đổi</p>
         </div>
-        <div className="flex flex-col gap-2">
-          <label className="font-semibold text-gray-700 flex items-center gap-2">
+        <div className="flex flex-col gap-1 sm:gap-2">
+          <label className="font-semibold text-gray-700 flex items-center gap-2 text-sm sm:text-base">
             <FaVenusMars className="text-pink-500" /> Giới tính
           </label>
           <select
@@ -134,8 +134,8 @@ export default function ProfileInfoForm({ user, onSave }) {
             ))}
           </select>
         </div>
-        <div className="flex flex-col gap-2">
-          <label className="font-semibold text-gray-700 flex items-center gap-2">
+        <div className="flex flex-col gap-1 sm:gap-2">
+          <label className="font-semibold text-gray-700 flex items-center gap-2 text-sm sm:text-base">
             <FaBirthdayCake className="text-orange-500" /> Ngày sinh
           </label>
           <input
@@ -146,8 +146,8 @@ export default function ProfileInfoForm({ user, onSave }) {
             onChange={handleChange}
           />
         </div>
-        <div className="flex flex-col gap-2">
-          <label className="font-semibold text-gray-700 flex items-center gap-2">
+        <div className="flex flex-col gap-1 sm:gap-2">
+          <label className="font-semibold text-gray-700 flex items-center gap-2 text-sm sm:text-base">
             <FaPhone className="text-green-500" /> Số điện thoại
           </label>
           <input
@@ -159,8 +159,8 @@ export default function ProfileInfoForm({ user, onSave }) {
             placeholder="0123 456 789"
           />
         </div>
-        <div className="flex flex-col gap-2 md:col-span-2">
-          <label className="font-semibold text-gray-700 flex items-center gap-2">
+        <div className="flex flex-col gap-1 sm:gap-2 md:col-span-2">
+          <label className="font-semibold text-gray-700 flex items-center gap-2 text-sm sm:text-base">
             <FaMapMarkerAlt className="text-red-500" /> Địa chỉ
           </label>
           <input
@@ -172,8 +172,8 @@ export default function ProfileInfoForm({ user, onSave }) {
             placeholder="TP Cà Mau, Cà Mau"
           />
         </div>
-        <div className="md:col-span-2 flex flex-col gap-2">
-          <label className="font-semibold text-gray-700 flex items-center gap-2">
+        <div className="md:col-span-2 flex flex-col gap-1 sm:gap-2">
+          <label className="font-semibold text-gray-700 flex items-center gap-2 text-sm sm:text-base">
             <FaExclamationTriangle className="text-orange-500" /> Liên hệ khẩn cấp
             <span className="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full ml-2">Tùy chọn</span>
           </label>
@@ -189,17 +189,17 @@ export default function ProfileInfoForm({ user, onSave }) {
       </div>
       
       {error && (
-        <div className="mt-4 p-3 bg-red-100 border-l-4 border-red-500 text-red-700 rounded">
+        <div className="mt-3 sm:mt-4 p-2 sm:p-3 bg-red-100 border-l-4 border-red-500 text-red-700 rounded text-sm">
           <p className="font-medium">Lỗi:</p>
           <p>{error}</p>
         </div>
       )}
       
-      <div className="flex justify-end mt-8">
+      <div className="flex justify-end mt-6 sm:mt-8">
         <button
           type="submit"
           disabled={loading}
-          className="bg-gradient-to-r from-teal-500 to-emerald-400 hover:from-teal-600 hover:to-emerald-500 text-white font-bold px-8 py-3 rounded-full shadow-lg transition flex items-center gap-2 disabled:opacity-70"
+          className="bg-gradient-to-r from-teal-500 to-emerald-400 hover:from-teal-600 hover:to-emerald-500 text-white font-bold px-5 sm:px-8 py-2 sm:py-3 rounded-full shadow-lg transition flex items-center gap-2 disabled:opacity-70 text-sm sm:text-base"
         >
           {loading ? (
             <>
@@ -216,7 +216,7 @@ export default function ProfileInfoForm({ user, onSave }) {
       <style>
         {`
           .input-style {
-            @apply w-full px-4 py-3 rounded-lg border border-gray-300 focus:border-teal-500 focus:ring focus:ring-teal-200 focus:ring-opacity-50 outline-none shadow-sm bg-white transition;
+            @apply w-full px-3 sm:px-4 py-2 sm:py-3 rounded-lg border border-gray-300 focus:border-teal-500 focus:ring focus:ring-teal-200 focus:ring-opacity-50 outline-none shadow-sm bg-white transition text-sm sm:text-base;
           }
         `}
       </style>

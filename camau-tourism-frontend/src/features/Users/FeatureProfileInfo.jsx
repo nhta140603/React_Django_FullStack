@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import MainLayout from "../../layouts/MainLayout";
-import ProfileSidebar from "../../components/Users/ProfileSidebar";
 import ProfileMain from "../../components/Users/ProfileMain";
 import { getInfoUser, updateInfoUser } from "../../api/user_api";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -14,7 +13,6 @@ export default function UserProfile() {
     staleTime: 5 * 60 * 1000,
     retry: 2,
   });
-  const [selectedTab, setSelectedTab] = useState("trang-ca-nhan");
 
   const updateMutation = useMutation({
     mutationFn: updateInfoUser,
@@ -41,7 +39,7 @@ export default function UserProfile() {
   if (!userData) return null;
 
   return (
-    <main className="flex-1 p-2 bg-[#f5f7fb]">
+    <main className="flex-1 p-4 bg-[#f5f7fb]">
       <ProfileMain
         userData={userData}
         onSaveInfo={handleSaveInfo}

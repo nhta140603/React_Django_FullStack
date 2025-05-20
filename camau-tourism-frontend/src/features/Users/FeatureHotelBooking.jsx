@@ -34,6 +34,7 @@ export default function BookingsPage() {
     const [sortDirection, setSortDirection] = useState("asc");
     const [selectedBooking, setSelectedBooking] = useState(null);
     const [error, setError] = useState(null);
+    const [showFilters, setShowFilters] = useState(false);
     const mapSrc =
         selectedBooking?.latitude && selectedBooking?.longitude
             ? `https://www.google.com/maps?q=${selectedBooking.latitude},${selectedBooking.longitude}&z=16&output=embed`
@@ -113,6 +114,7 @@ export default function BookingsPage() {
             toast.error("Hủy phòng thất bại");
         }
     };
+    
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
     };
@@ -128,14 +130,36 @@ export default function BookingsPage() {
     return (
         <div className="flex-1 p-2 bg-[#f5f7fb]">
             {selectedTab === "dat-phong" && (
-                <main className="flex-1 p-6">
-                    <div className="mb-8">
-                        <h1 className="text-3xl font-bold text-gray-800">Đặt phòng của tôi</h1>
+                <main className="flex-1 p-3 md:p-6">
+                    <div className="mb-4 md:mb-8">
+                        <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Đặt phòng của tôi</h1>
                     </div>
 
-                    <div className="bg-white rounded-xl shadow-sm p-5 mb-6">
+                    {/* Mobile search bar with filter toggle */}
+                    <div className="md:hidden mb-4">
+                        <div className="relative mb-3">
+                            <input
+                                type="text"
+                                placeholder="Tìm kiếm theo tên khách sạn, phòng..."
+                                className="w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                            <FaSearch className="absolute left-3 top-3.5 text-gray-400" />
+                        </div>
+                        <button 
+                            onClick={() => setShowFilters(!showFilters)}
+                            className="w-full bg-blue-50 text-blue-600 py-2 rounded-lg font-medium flex items-center justify-center gap-2"
+                        >
+                            <FaFilter />
+                            {showFilters ? "Ẩn bộ lọc" : "Hiện bộ lọc"}
+                        </button>
+                    </div>
+
+                    {/* Filter section that toggles on mobile */}
+                    <div className={`${showFilters ? 'block' : 'hidden'} md:block bg-white rounded-xl shadow-sm p-4 md:p-5 mb-6`}>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div className="relative">
+                            <div className="hidden md:block relative">
                                 <input
                                     type="text"
                                     placeholder="Tìm kiếm theo tên khách sạn, phòng..."
@@ -185,54 +209,55 @@ export default function BookingsPage() {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-4 text-white shadow-md">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-blue-100 mb-1 text-sm">Tổng số đặt phòng</p>
-                                    <p className="text-2xl font-bold">{bookings.length}</p>
+                    {/* Stats cards - 2 per row on mobile */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6">
+                        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-3 md:p-4 text-white shadow-md">
+                            <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+                                <div className="bg-blue-400 bg-opacity-30 p-2 md:p-3 rounded-full mb-2 md:mb-0 inline-flex self-start">
+                                    <FaSuitcase className="text-lg md:text-2xl" />
                                 </div>
-                                <div className="bg-blue-400 bg-opacity-30 p-3 rounded-full">
-                                    <FaSuitcase className="text-2xl" />
+                                <div className="md:text-right">
+                                    <p className="text-blue-100 text-xs md:text-sm mb-1">Tổng số đặt phòng</p>
+                                    <p className="text-xl md:text-2xl font-bold">{bookings.length}</p>
                                 </div>
                             </div>
                         </div>
-                        <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-4 text-white shadow-md">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-green-100 mb-1 text-sm">Đã xác nhận</p>
-                                    <p className="text-2xl font-bold">
+                        <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-3 md:p-4 text-white shadow-md">
+                            <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+                                <div className="bg-green-400 bg-opacity-30 p-2 md:p-3 rounded-full mb-2 md:mb-0 inline-flex self-start">
+                                    <FaCheckCircle className="text-lg md:text-2xl" />
+                                </div>
+                                <div className="md:text-right">
+                                    <p className="text-green-100 text-xs md:text-sm mb-1">Đã xác nhận</p>
+                                    <p className="text-xl md:text-2xl font-bold">
                                         {bookings.filter(b => b.status === "confirmed").length}
                                     </p>
                                 </div>
-                                <div className="bg-green-400 bg-opacity-30 p-3 rounded-full">
-                                    <FaCheckCircle className="text-2xl" />
-                                </div>
                             </div>
                         </div>
-                        <div className="bg-gradient-to-br from-teal-500 to-teal-600 rounded-xl p-4 text-white shadow-md">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-teal-100 mb-1 text-sm">Đang diễn ra</p>
-                                    <p className="text-2xl font-bold">
+                        <div className="bg-gradient-to-br from-teal-500 to-teal-600 rounded-xl p-3 md:p-4 text-white shadow-md">
+                            <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+                                <div className="bg-teal-400 bg-opacity-30 p-2 md:p-3 rounded-full mb-2 md:mb-0 inline-flex self-start">
+                                    <FaHotel className="text-lg md:text-2xl" />
+                                </div>
+                                <div className="md:text-right">
+                                    <p className="text-teal-100 text-xs md:text-sm mb-1">Đang diễn ra</p>
+                                    <p className="text-xl md:text-2xl font-bold">
                                         {bookings.filter(b => b.status === "active").length}
                                     </p>
                                 </div>
-                                <div className="bg-teal-400 bg-opacity-30 p-3 rounded-full">
-                                    <FaHotel className="text-2xl" />
-                                </div>
                             </div>
                         </div>
-                        <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-4 text-white shadow-md">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-purple-100 mb-1 text-sm">Sắp tới</p>
-                                    <p className="text-2xl font-bold">
+                        <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-3 md:p-4 text-white shadow-md">
+                            <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+                                <div className="bg-purple-400 bg-opacity-30 p-2 md:p-3 rounded-full mb-2 md:mb-0 inline-flex self-start">
+                                    <FaCalendarAlt className="text-lg md:text-2xl" />
+                                </div>
+                                <div className="md:text-right">
+                                    <p className="text-purple-100 text-xs md:text-sm mb-1">Sắp tới</p>
+                                    <p className="text-xl md:text-2xl font-bold">
                                         {bookings.filter(b => new Date(b.check_in) > new Date() && b.status !== "canceled").length}
                                     </p>
-                                </div>
-                                <div className="bg-purple-400 bg-opacity-30 p-3 rounded-full">
-                                    <FaCalendarAlt className="text-2xl" />
                                 </div>
                             </div>
                         </div>
@@ -243,11 +268,11 @@ export default function BookingsPage() {
                             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
                         </div>
                     ) : error ? (
-                        <div className="bg-white rounded-xl shadow p-8 text-center">
-                            <div className="text-red-500 mb-4 text-6xl flex justify-center">
+                        <div className="bg-white rounded-xl shadow p-6 md:p-8 text-center">
+                            <div className="text-red-500 mb-4 text-4xl md:text-6xl flex justify-center">
                                 <FaExclamationCircle />
                             </div>
-                            <h3 className="text-xl font-medium text-gray-700 mb-2">Đã xảy ra lỗi</h3>
+                            <h3 className="text-lg md:text-xl font-medium text-gray-700 mb-2">Đã xảy ra lỗi</h3>
                             <p className="text-gray-500 mb-4">{error}</p>
                             <button
                                 className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
@@ -257,11 +282,11 @@ export default function BookingsPage() {
                             </button>
                         </div>
                     ) : filteredAndSortedBookings.length === 0 ? (
-                        <div className="bg-white rounded-xl shadow p-8 text-center">
-                            <div className="text-gray-500 mb-4 text-6xl flex justify-center">
+                        <div className="bg-white rounded-xl shadow p-6 md:p-8 text-center">
+                            <div className="text-gray-500 mb-4 text-4xl md:text-6xl flex justify-center">
                                 <FaBed />
                             </div>
-                            <h3 className="text-xl font-medium text-gray-700 mb-2">Không tìm thấy đặt phòng nào</h3>
+                            <h3 className="text-lg md:text-xl font-medium text-gray-700 mb-2">Không tìm thấy đặt phòng nào</h3>
                             <p className="text-gray-500 mb-4">
                                 Bạn chưa đặt phòng nào hoặc không có đặt phòng nào khớp với tiêu chí tìm kiếm
                             </p>
@@ -270,14 +295,15 @@ export default function BookingsPage() {
                             </button>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 gap-6">
+                        <div className="grid grid-cols-1 gap-4 md:gap-6">
                             {filteredAndSortedBookings.map((booking) => (
                                 <div
                                     key={booking.id}
                                     className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow"
                                 >
+                                    {/* Mobile design with stacked layout */}
                                     <div className="md:flex">
-                                        <div className="md:w-1/3 max-h-[250px] relative">
+                                        <div className="md:w-1/3 h-[180px] md:max-h-[250px] relative">
                                             <img
                                                 src={booking.room.image_url}
                                                 alt={booking.room.name}
@@ -293,93 +319,91 @@ export default function BookingsPage() {
                                                 <span>{statusLabels[booking.status]}</span>
                                             </div>
                                         </div>
-                                        <div className="p-6 md:w-2/3">
+                                        <div className="p-4 md:p-6 md:w-2/3">
                                             <div className="flex justify-between items-start mb-3">
                                                 <div>
-                                                    <h3 className="text-xl font-bold text-gray-800 mb-1">
-                                                        {booking.name || "Khách sạn"}
+                                                    <h3 className="text-lg md:text-xl font-bold text-gray-800 mb-1">
+                                                        {booking.name || booking.room.hotel?.name || "Khách sạn"}
                                                     </h3>
                                                     <p className="text-gray-600 mb-1">Phòng: {booking.room.name}</p>
                                                     <p className="text-gray-500 mb-3 text-sm">Mã đặt phòng: #{booking.id}</p>
                                                 </div>
-                                                <div className="flex gap-2">
-                                                    <button
-                                                        onClick={() => setSelectedBooking(booking)}
-                                                        className="bg-blue-500 text-white px-3 py-1 rounded-md text-sm hover:bg-blue-600 transition-colors flex items-center gap-1"
-                                                    >
-                                                        <FaEye /> Chi tiết
-                                                    </button>
-                                                </div>
+                                                <button
+                                                    onClick={() => setSelectedBooking(booking)}
+                                                    className="bg-blue-500 text-white px-2 py-1 md:px-3 md:py-1 rounded-md text-sm hover:bg-blue-600 transition-colors flex items-center gap-1"
+                                                >
+                                                    <FaEye /> <span className="hidden md:inline">Chi tiết</span>
+                                                </button>
                                             </div>
-                                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                                                <div className="flex items-center gap-2">
-                                                    <FaCalendarAlt className="text-blue-500" />
-                                                    <div>
+                                            
+                                            {/* Mobile grid - 2 items per row */}
+                                            <div className="grid grid-cols-2 gap-3 mb-4">
+                                                <div className="bg-gray-50 p-2 rounded-lg">
+                                                    <div className="flex items-center gap-2 mb-1">
+                                                        <FaCalendarAlt className="text-blue-500" />
                                                         <p className="text-xs text-gray-500">Nhận phòng</p>
-                                                        <p className="font-medium">{formatDate(booking.check_in)}</p>
                                                     </div>
+                                                    <p className="font-medium text-sm">{formatDate(booking.check_in)}</p>
                                                 </div>
-                                                <div className="flex items-center gap-2">
-                                                    <FaCalendarAlt className="text-blue-500" />
-                                                    <div>
+                                                <div className="bg-gray-50 p-2 rounded-lg">
+                                                    <div className="flex items-center gap-2 mb-1">
+                                                        <FaCalendarAlt className="text-blue-500" />
                                                         <p className="text-xs text-gray-500">Trả phòng</p>
-                                                        <p className="font-medium">{formatDate(booking.check_out)}</p>
                                                     </div>
+                                                    <p className="font-medium text-sm">{formatDate(booking.check_out)}</p>
                                                 </div>
-                                                <div className="flex items-center gap-2">
-                                                    <FaUser className="text-blue-500" />
-                                                    <div>
+                                                <div className="bg-gray-50 p-2 rounded-lg">
+                                                    <div className="flex items-center gap-2 mb-1">
+                                                        <FaUser className="text-blue-500" />
                                                         <p className="text-xs text-gray-500">Người liên hệ</p>
-                                                        <p className="font-medium">{booking.contact_name}</p>
                                                     </div>
+                                                    <p className="font-medium text-sm truncate">{booking.contact_name}</p>
                                                 </div>
-                                                <div className="flex items-center gap-2">
-                                                    <FaMoneyBillWave className="text-blue-500" />
-                                                    <div>
+                                                <div className="bg-gray-50 p-2 rounded-lg">
+                                                    <div className="flex items-center gap-2 mb-1">
+                                                        <FaMoneyBillWave className="text-blue-500" />
                                                         <p className="text-xs text-gray-500">Tổng tiền</p>
-                                                        <p className="font-medium">{formatCurrency(booking.total_amount)}</p>
                                                     </div>
+                                                    <p className="font-medium text-sm">{formatCurrency(booking.total_amount)}</p>
                                                 </div>
                                             </div>
-                                            <div className="flex flex-wrap justify-between items-center border-t pt-4 text-sm">
-                                                <div className="text-gray-600">
+                                            
+                                            {/* Status indicator */}
+                                            <div className="flex flex-wrap justify-between items-center border-t pt-3 mt-2 text-sm">
+                                                <div className="text-gray-600 text-xs md:text-sm">
                                                     Đã đặt vào: {formatDate(booking.created_at)}
                                                 </div>
                                                 <div className="mt-2 md:mt-0">
                                                     {booking.status === "pending" && (
-                                                        <div className="flex gap-2">
-                                                            <div className="bg-yellow-50 text-yellow-700 px-3 py-1 rounded flex items-center gap-1">
-                                                                <FaCreditCard />
-                                                                Thanh toán: {formatCurrency(booking.paid_amount)}/
-                                                                {formatCurrency(booking.total_amount)}
-                                                            </div>
+                                                        <div className="bg-yellow-50 text-yellow-700 px-2 py-1 rounded text-xs flex items-center gap-1">
+                                                            <FaCreditCard />
+                                                            Thanh toán: {formatCurrency(booking.paid_amount)}/{formatCurrency(booking.total_amount)}
                                                         </div>
                                                     )}
                                                     {booking.status === "confirmed" && (
-                                                        <div className="bg-green-50 text-green-700 px-3 py-1 rounded flex items-center gap-1">
+                                                        <div className="bg-green-50 text-green-700 px-2 py-1 rounded text-xs flex items-center gap-1">
                                                             <FaCheckCircle />
                                                             Đã thanh toán đầy đủ
                                                         </div>
                                                     )}
                                                     {booking.status === "canceled" && (
-                                                        <div className="bg-red-50 text-red-700 px-3 py-1 rounded flex items-center gap-1">
+                                                        <div className="bg-red-50 text-red-700 px-2 py-1 rounded text-xs flex items-center gap-1">
                                                             <FaExclamationCircle />
                                                             Đã hủy {booking.canceled_at && `(${formatDate(booking.canceled_at)})`}
                                                         </div>
                                                     )}
                                                     {booking.status === "active" && (
-                                                        <div className="bg-teal-50 text-teal-700 px-3 py-1 rounded flex items-center gap-1">
+                                                        <div className="bg-teal-50 text-teal-700 px-2 py-1 rounded text-xs flex items-center gap-1">
                                                             <FaHotel />
                                                             Đang lưu trú
                                                         </div>
                                                     )}
                                                     {booking.status === "completed" && (
-                                                        <div className="bg-blue-50 text-blue-700 px-3 py-1 rounded flex items-center gap-1">
+                                                        <div className="bg-blue-50 text-blue-700 px-2 py-1 rounded text-xs flex items-center gap-1">
                                                             <FaCheckCircle />
                                                             Đã hoàn thành
                                                         </div>
                                                     )}
-
                                                 </div>
                                             </div>
                                         </div>
@@ -389,38 +413,39 @@ export default function BookingsPage() {
                         </div>
                     )}
 
+                    {/* Modal remains the same but with more mobile-friendly styles */}
                     {selectedBooking && (
-                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                            <div className="bg-white rounded-xl shadow-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
-                                <div className="p-6">
-                                    <div className="flex justify-between items-center mb-6">
-                                        <h2 className="text-2xl font-bold text-gray-800">Chi tiết đặt phòng</h2>
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 md:p-4 z-50 overflow-y-auto">
+                            <div className="bg-white rounded-xl shadow-xl w-full max-w-6xl max-h-[90vh] overflow-y-auto">
+                                <div className="p-4 md:p-6">
+                                    <div className="flex justify-between items-center mb-4 md:mb-6">
+                                        <h2 className="text-xl md:text-2xl font-bold text-gray-800">Chi tiết đặt phòng</h2>
                                         <button
                                             onClick={() => setSelectedBooking(null)}
-                                            className="text-gray-500 hover:text-gray-700"
+                                            className="text-gray-500 hover:text-gray-700 p-2"
                                         >
                                             ✕
                                         </button>
                                     </div>
-                                    <div className="mb-6">
+                                    <div className="mb-4 md:mb-6">
                                         <img
                                             src={selectedBooking.room.image_url}
                                             alt={selectedBooking.room.name}
-                                            className="w-full h-64 object-cover rounded-xl mb-4"
+                                            className="w-full h-48 md:h-64 object-cover rounded-xl mb-4"
                                         />
                                         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-2">
                                             <div>
-                                                <h3 className="text-xl font-bold text-gray-800 mb-1">{selectedBooking.room.hotel?.name}</h3>
+                                                <h3 className="text-lg md:text-xl font-bold text-gray-800 mb-1">{selectedBooking.room.hotel?.name}</h3>
                                                 <p className="text-gray-600 mb-2">Phòng: {selectedBooking.room.name}</p>
                                                 <p className="text-gray-500 mb-2 text-sm">Mã đặt phòng: #{selectedBooking.id}</p>
                                             </div>
-                                            <div className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm ${statusColors[selectedBooking.status]} bg-opacity-10`}>
+                                            <div className={`mt-2 md:mt-0 inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm ${statusColors[selectedBooking.status]} bg-opacity-10`}>
                                                 <FaCircle className="text-xs" />
                                                 <span className="font-medium">{statusLabels[selectedBooking.status]}</span>
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-4 md:mb-6">
                                         <div>
                                             <h4 className="font-bold text-gray-700 mb-3 flex items-center gap-2">
                                                 <FaCalendarAlt className="text-blue-500" />
@@ -458,7 +483,7 @@ export default function BookingsPage() {
                                                 </div>
                                             </div>
 
-                                            <h4 className="font-bold text-gray-700 mb-3 mt-6 flex items-center gap-2">
+                                            <h4 className="font-bold text-gray-700 mb-3 mt-4 md:mt-6 flex items-center gap-2">
                                                 <FaUser className="text-blue-500" />
                                                 Thông tin liên hệ
                                             </h4>
@@ -520,7 +545,7 @@ export default function BookingsPage() {
                                                 )}
                                             </div>
 
-                                            <h4 className="font-bold text-gray-700 mb-3 mt-6 flex items-center gap-2">
+                                            <h4 className="font-bold text-gray-700 mb-3 mt-4 md:mt-6 flex items-center gap-2">
                                                 <FaHotel className="text-blue-500" />
                                                 Thông tin địa điểm
                                             </h4>
@@ -546,21 +571,21 @@ export default function BookingsPage() {
                                         </div>
                                     </div>
 
-                                    <div className="border-t pt-6 flex justify-between">
-                                        <div>
+                                    <div className="border-t pt-4 md:pt-6 flex flex-col md:flex-row justify-between">
+                                        <div className="mb-3 md:mb-0">
                                             <p className="text-sm text-gray-500">
                                                 Đã đặt vào: {formatDate(selectedBooking.created_at)}
                                             </p>
                                         </div>
-                                        <div className="flex gap-3">
+                                        <div className="flex flex-col md:flex-row gap-2 md:gap-3">
                                             <button
                                                 onClick={() => setSelectedBooking(null)}
-                                                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                                                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm"
                                             >
                                                 Đóng
                                             </button>
                                             {selectedBooking.status === "pending" && (
-                                                <button className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 flex items-center gap-2">
+                                                <button className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 flex items-center justify-center gap-2 text-sm">
                                                     <FaCreditCard /> Thanh toán
                                                 </button>
                                             )}
@@ -568,7 +593,7 @@ export default function BookingsPage() {
                                                 new Date(selectedBooking.check_in) < new Date() && (
                                                     <button
                                                         onClick={handleCancelBooking}
-                                                        className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">
+                                                        className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 text-sm">
                                                         Hủy đặt phòng
                                                     </button>
                                                 )

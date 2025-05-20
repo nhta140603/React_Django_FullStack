@@ -16,15 +16,11 @@ const fetchWithAuth = async (url, options = {}, _retry = false) => {
   if (!(options.body instanceof FormData) && !headers['Content-Type']) {
     headers['Content-Type'] = 'application/json';
   }
-
   const res = await fetch(url, {
     ...options,
     headers,
     credentials: 'include'
   });
-  if (res.status === 401) {
-    return null;
-  }
   if (res.status === 401 && !_retry) {
     const refreshRes = await fetch(`${API_URL}refresh/`, {
       method: "POST",

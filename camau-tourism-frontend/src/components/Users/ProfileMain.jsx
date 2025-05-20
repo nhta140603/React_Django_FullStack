@@ -6,6 +6,7 @@ import ProfileHeader from "./ProfileHeader";
 import UserInfoCards from "./UserInfoCards";
 import { toast } from "react-toastify";
 import { updateAvatar } from "../../api/user_api";
+
 export default function ProfileMain({ userData, onSaveInfo, onAvatarUploaded }) {
   const [modalOpen, setModalOpen] = useState(false);
   const handleEditClick = () => setModalOpen(true);
@@ -21,14 +22,14 @@ export default function ProfileMain({ userData, onSaveInfo, onAvatarUploaded }) 
     }
   };
   return (
-    <div className="relative max-w-3xl mx-auto bg-white/90 rounded-xl shadow-2xl p-8 mt-8">
+    <div className="relative max-w-3xl mx-auto bg-white/90 rounded-xl shadow-2xl p-2 sm:p-8">
       <div className="absolute inset-0 bg-gradient-to-br from-blue-200 via-emerald-100 to-yellow-100 rounded-xl -z-10"></div>
       <div className="flex justify-end">
         <button
           onClick={handleEditClick}
-          className="flex items-center gap-2 px-4 py-2 mb-2 bg-teal-500 hover:bg-teal-700 text-white rounded-full font-semibold shadow transition"
+          className="flex items-center gap-1 sm:gap-2 px-3 py-1.5 sm:px-4 sm:py-2 mb-2 bg-teal-500 hover:bg-teal-700 text-white rounded-full text-sm sm:text-base font-semibold shadow transition"
         >
-          <FaEdit /> Chỉnh sửa thông tin
+          <FaEdit /> <span className="hidden xs:inline">Chỉnh sửa thông tin</span><span className="xs:hidden">Chỉnh sửa</span>
         </button>
       </div>
       <Modal open={modalOpen} onClose={handleCloseModal}>
