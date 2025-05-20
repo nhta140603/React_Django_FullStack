@@ -11,15 +11,15 @@ const LoginPage = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleLogin = async (form) => {
+  const handleLogin = async (form, rememberMe) => {
     setErrorMessage("");
     setSuccessMessage("");
     try {
-      const response = await loginUser(form);
-      login({ id: response.id, username: response.username });
+    const response = await loginUser(form, rememberMe);
+    login({ id: response.id, username: response.username });
       setSuccessMessage("Đăng nhập thành công!");
       setTimeout(() => {
-        navigate("/login");
+        navigate("/");
       }, 1000);
     } catch (err) {
       if (err.message && err.message.includes("fetch")) {

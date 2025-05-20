@@ -1,5 +1,6 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { getInfoUser } from "../api/user_api"; 
+import { getInfoUser } from "../api/user_api";
+import {useAuth} from "../contexts/AuthContext" 
 import { useQuery } from "@tanstack/react-query";
 const Spinner = () => (
   <div style={{
@@ -45,17 +46,12 @@ const Spinner = () => (
 );
 
 const ProtectedRoute = () => {
-  const { isLoading, isError, data } = useQuery({
-    queryKey: ['userInfo'],
-    queryFn: getInfoUser,
-    staleTime: 10 * 60 * 1000,
-    cacheTime: 30 * 60 * 1000, 
-    retry: false,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-  });
-  if (isLoading) return <Spinner />;
-  if (isError || !data) return <Navigate to="/login" replace />;
+  const { user, loading } = useAuth();
+
+  if (loading) return <Spinner />;
+
+  if (!user) return <Navigate to="/login" replace />;
+
   return <Outlet />;
 };
 

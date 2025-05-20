@@ -1,19 +1,10 @@
-import { useQuery } from "@tanstack/react-query";
 import { Navigate, Outlet } from "react-router-dom";
-import { getInfoUser } from "../api/user_api";
+import { useAuth } from "../contexts/AuthContext";
 
 const PublicRoute = () => {
-  const { isLoading, isError, data } = useQuery({
-    queryKey: ['userInfo'],
-    queryFn: getInfoUser,
-    staleTime: 10 * 60 * 1000,
-    cacheTime: 30 * 60 * 1000, 
-    retry: false,
-    refetchOnMount: false,
-    refetchOnWindowFocus: false,
-  });
+  const { user, loading } = useAuth();
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="flex flex-col justify-center items-center h-screen bg-white/80">
         <div className="w-10 h-10 border-4 border-t-blue-500 border-gray-200 rounded-full animate-spin"></div>
@@ -22,7 +13,7 @@ const PublicRoute = () => {
     );
   }
 
-  if (!isError && data) return <Navigate to="/" replace />;
+  if (user) return <Navigate to="/" replace />;
   return <Outlet />;
 };
 

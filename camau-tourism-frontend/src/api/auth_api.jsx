@@ -32,6 +32,7 @@ export async function loginUser(data) {
     body: JSON.stringify({
       username: data.username,
       password: data.password,
+      remember_me: data.rememberMe,
     }),
     credentials: "include",
   });

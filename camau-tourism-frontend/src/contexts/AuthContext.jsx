@@ -1,33 +1,45 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { getInfoUser } from '../api/user_api';
-import {logoutUser} from '../api/auth_api'
+import { logoutUser } from '../api/auth_api';
 
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true)
-  useEffect(() => {
-    getInfoUser()
-      .then(profile => setUser(profile))
-      .catch(() => setUser(null))
-      .finally(() => setLoading(false));
-  }, []);
+  const [loading, setLoading] = useState(true);
 
-  const login = async (loginData) => {
-    await getInfoUser()
-      .then(profile => setUser(profile))
-      .catch(() => setUser(null));
+useEffect(() => {
+  const hasLogin = localStorage.getItem("has_login");
+  if (!hasLogin) {
+    setUser(null);
+    setLoading(false);
+    return;
+  }
+  getInfoUser()
+    .then(profile => setUser(profile))
+    .catch(() => setUser(null))
+    .finally(() => setLoading(false));
+}, []);
+
+  const login = async () => {
+    try {
+      const profile = await getInfoUser();
+      setUser(profile);
+      localStorage.setItem("has_login", "1");
+    } catch {
+      setUser(null);
+      localStorage.removeItem("has_login");
+    }
   };
 
-const logout = async () => {
-  try {
-    await logoutUser();
-    setUser(null);
-  } catch (err) {
-    alert(err.message);
-  }
-};
+  const logout = async () => {
+    try {
+      await logoutUser();
+    } finally {
+      setUser(null);
+      localStorage.removeItem("has_login");
+    }
+  };
 
   return (
     <AuthContext.Provider value={{ user, login, logout, loading }}>

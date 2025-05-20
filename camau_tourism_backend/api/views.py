@@ -4,6 +4,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.shortcuts import get_object_or_404
 from .models import *
@@ -44,22 +45,48 @@ class UserLoginView(generics.GenericAPIView):
             serializer.is_valid(raise_exception=True)
             user = serializer.validated_data
             token = RefreshToken.for_user(user)
+            access_token_lifetime = 15 * 60
+            refresh_token_lifetime = 7 * 24 * 60 * 60
             response = Response({"id": user.id, "username": user.username}, status=200)
             response.set_cookie(
                 key="accessToken",
                 value=str(token.access_token),
                 httponly=True,
                 secure=True,
-                samesite="Lax"
+                samesite="Lax",
+                max_age=access_token_lifetime
             )
             response.set_cookie(
                 key="refreshToken",
                 value=str(token),
                 httponly=True,
                 secure=True,
-                samesite="Lax"
+                samesite="Lax",
+                max_age=refresh_token_lifetime
             )
             return response
+
+class TokenRefreshView(APIView):
+    permission_classes = [AllowAny]
+    def post(self, request):
+        refresh_token = request.COOKIES.get('refreshToken')
+        if not refresh_token:
+            return Response({'detail': 'Thiếu Refresh Token'}, status=401)
+        try:
+            token = RefreshToken(refresh_token)
+            access_token = token.access_token
+            response = Response({'access': str(access_token)}, status=200)
+            response.set_cookie(
+                key="accessToken",
+                value=str(access_token),
+                httponly=True,
+                secure=True,
+                samesite="Lax",
+                max_age=15*60
+            )
+            return response
+        except TokenError:
+            return Response({'detail': 'Token không hợp lệ'}, status=401)
 
 class SocialLoginAPIView(APIView):
     permission_classes = [permissions.AllowAny]
@@ -99,7 +126,7 @@ class SocialLoginAPIView(APIView):
 class UserLogoutView(APIView):
     permission_classes = [AllowAny]
     def post(self, request, *args, **kwargs):
-        response = Response({"detail": "Đăng xuất thành côngs."}, status=200)
+        response = Response({"detail": "Đăng xuất thành công."}, status=200)
         response.delete_cookie("accessToken")
         response.delete_cookie("refreshToken")
         return response

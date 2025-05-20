@@ -59,14 +59,13 @@ function Header() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Reset drawer state when closed
   useEffect(() => {
     if (!methodAuthOpen) {
       setTimeout(() => {
         setShowSocialLogin(true);
         setLoginForm({ username: "", password: "" });
         setLoginError("");
-      }, 300); // Delay to ensure animation completes first
+      }, 300); 
     }
   }, [methodAuthOpen]);
 

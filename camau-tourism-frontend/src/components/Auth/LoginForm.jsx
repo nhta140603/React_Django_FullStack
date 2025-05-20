@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import {socialLogin} from "../../api/auth_api"
+import { socialLogin } from "../../api/auth_api"
 const LoginForm = ({ onSubmit, errorMessage, successMessage }) => {
   const [form, setForm] = useState({ username: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
@@ -14,18 +14,18 @@ const LoginForm = ({ onSubmit, errorMessage, successMessage }) => {
 
   const handleSubmit = e => {
     e.preventDefault();
-    
+
     if (!form.username || !form.password) {
       setShake(true);
       setTimeout(() => setShake(false), 500);
       return;
     }
-    
+
     setIsLoading(true);
-    
+
     setTimeout(() => {
       setIsLoading(false);
-      onSubmit?.(form);
+      onSubmit?.(form, rememberMe);
     }, 1500);
   };
 
@@ -48,7 +48,7 @@ const LoginForm = ({ onSubmit, errorMessage, successMessage }) => {
           <h3 className="text-2xl font-bold text-gray-800 mb-2">Chào mừng trở lại!</h3>
           <p className="text-gray-600">Đăng nhập để tiếp tục hành trình của bạn</p>
         </div>
-        
+
         <form
           onSubmit={handleSubmit}
           className="space-y-5"
@@ -76,21 +76,16 @@ const LoginForm = ({ onSubmit, errorMessage, successMessage }) => {
               <div className="absolute inset-0 border-2 border-transparent rounded-xl pointer-events-none group-hover:border-indigo-200 group-focus-within:border-indigo-300 transition-all duration-300"></div>
             </div>
           </div>
-          
-          <div className={`mb-5 ${shake ? 'animate-shake' : ''}`}>
-            <div className="flex justify-between items-center mb-2">
-              <label className="block font-medium text-gray-700">
-                <span className="flex items-center">
-                  <svg className="w-5 h-5 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 0a2 2 0 002 2h8a2 2 0 002-2v-6a2 2 0 00-2-2h-1V7a4 4 0 10-8 0v2a2 2 0 00-2 2v6z"></path>
-                  </svg>
-                  Mật khẩu
-                </span>
-              </label>
-              <Link to="/forgot-password" className="text-sm text-indigo-600 hover:text-indigo-800 transition-colors duration-200 font-medium">
-                Quên mật khẩu?
-              </Link>
-            </div>
+
+          <div className={`mb-2 ${shake ? 'animate-shake' : ''}`}>
+            <label className="block font-medium text-gray-700 mb-2">
+              <span className="flex items-center">
+                <svg className="w-5 h-5 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 0a2 2 0 002 2h8a2 2 0 002-2v-6a2 2 0 00-2-2h-1V7a4 4 0 10-8 0v2a2 2 0 00-2 2v6z"></path>
+                </svg>
+                Mật khẩu
+              </span>
+            </label>
             <div className="relative group">
               <input
                 type={showPassword ? "text" : "password"}
@@ -105,6 +100,7 @@ const LoginForm = ({ onSubmit, errorMessage, successMessage }) => {
                 type="button"
                 onClick={toggleShowPassword}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-indigo-600 transition-colors duration-200"
+                tabIndex={-1}
               >
                 {showPassword ? (
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -119,15 +115,20 @@ const LoginForm = ({ onSubmit, errorMessage, successMessage }) => {
               </button>
               <div className="absolute inset-0 border-2 border-transparent rounded-xl pointer-events-none group-hover:border-indigo-200 group-focus-within:border-indigo-300 transition-all duration-300"></div>
             </div>
+            <div className="flex justify-between items-center mt-2 min-h-[20px]">
+              <div>
+                {errorMessage && (
+                  <p className="text-red-500 text-sm font-medium">{errorMessage}</p>
+                )}
+              </div>
+              <Link
+                to="/forgot-password"
+                className="text-sm text-indigo-600 hover:text-indigo-800 transition-colors duration-200 font-medium"
+              >
+                Quên mật khẩu?
+              </Link>
+            </div>
           </div>
-        <div className="mb-1 min-h-[20px]">
-          {errorMessage && (
-            <p className="text-red-500 text-sm font-medium">{errorMessage}</p>
-          )}
-          {successMessage && (
-            <p className="text-green-500 text-sm font-medium">{successMessage}</p>
-          )}
-        </div>
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center">
               <input
@@ -143,7 +144,7 @@ const LoginForm = ({ onSubmit, errorMessage, successMessage }) => {
               </label>
             </div>
           </div>
-          
+
           <button
             type="submit"
             disabled={isLoading}
@@ -164,7 +165,7 @@ const LoginForm = ({ onSubmit, errorMessage, successMessage }) => {
             <div className="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent to-white opacity-20 group-hover:animate-shine"></div>
           </button>
         </form>
-        
+
         <div className="mt-6 relative">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-gray-300"></div>
@@ -173,33 +174,33 @@ const LoginForm = ({ onSubmit, errorMessage, successMessage }) => {
             <span className="px-2 bg-white text-gray-500">hoặc đăng nhập với</span>
           </div>
         </div>
-        
+
         <div className="mt-6 grid grid-cols-3 gap-3">
-          <button 
+          <button
             className="py-2.5 px-4 border border-gray-300 rounded-xl shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200 flex items-center justify-center">
             <svg className="w-5 h-5" fill="#4285F4" viewBox="0 0 24 24">
-              <path d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"/>
+              <path d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z" />
             </svg>
           </button>
           <button className="py-2.5 px-4 border border-gray-300 rounded-xl shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200 flex items-center justify-center">
             <svg className="w-5 h-5" fill="#1877F2" viewBox="0 0 24 24">
-              <path d="M23.998 12c0-6.628-5.372-12-11.999-12C5.372 0 0 5.372 0 12c0 5.988 4.388 10.952 10.124 11.852v-8.384H7.078v-3.469h3.046V9.356c0-3.008 1.792-4.669 4.532-4.669 1.313 0 2.686.234 2.686.234v2.953H15.83c-1.49 0-1.955.925-1.955 1.874V12h3.328l-.532 3.469h-2.796v8.384c5.736-.9 10.124-5.864 10.124-11.853z"/>
+              <path d="M23.998 12c0-6.628-5.372-12-11.999-12C5.372 0 0 5.372 0 12c0 5.988 4.388 10.952 10.124 11.852v-8.384H7.078v-3.469h3.046V9.356c0-3.008 1.792-4.669 4.532-4.669 1.313 0 2.686.234 2.686.234v2.953H15.83c-1.49 0-1.955.925-1.955 1.874V12h3.328l-.532 3.469h-2.796v8.384c5.736-.9 10.124-5.864 10.124-11.853z" />
             </svg>
           </button>
           <button className="py-2.5 px-4 border border-gray-300 rounded-xl shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200 flex items-center justify-center">
             <svg className="w-5 h-5" fill="#000000" viewBox="0 0 24 24">
-              <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.17 2.33-.88 3.56-.8 1.47.13 2.57.69 3.28 1.75-3.14 1.93-2.29 5.95.68 7.39-.68 1.85-1.65 3.76-2.6 4.83zm-3.1-18c.05 2.22-1.65 3.94-3.84 3.77-.18-2.07 1.69-3.93 3.84-3.77z"/>
+              <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.17 2.33-.88 3.56-.8 1.47.13 2.57.69 3.28 1.75-3.14 1.93-2.29 5.95.68 7.39-.68 1.85-1.65 3.76-2.6 4.83zm-3.1-18c.05 2.22-1.65 3.94-3.84 3.77-.18-2.07 1.69-3.93 3.84-3.77z" />
             </svg>
           </button>
         </div>
-        
+
         <div className="text-center mt-6 text-gray-600">
           Chưa có tài khoản?{" "}
           <Link to="/register" className="text-indigo-600 hover:text-indigo-800 font-semibold transition-colors duration-200">
             Đăng ký ngay
           </Link>
         </div>
-        
+
         <div className="mt-8 text-xs text-center text-gray-500">
           Bằng việc đăng nhập, bạn đồng ý với{" "}
           <a href="#" className="text-indigo-600 hover:underline">Điều khoản dịch vụ</a>
