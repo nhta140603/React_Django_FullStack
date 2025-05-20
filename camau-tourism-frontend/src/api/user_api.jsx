@@ -85,3 +85,9 @@ export async function createRoomBooking(resource, data){
     body: isFormData ? data : JSON.stringify(data)
   })
 }
+
+export async function cancelRoomBooking(id) {
+  return fetchWithAuth(`${API_URL}room-booking/${id}/cancel/`, {
+    method: "POST",
+  });
+}

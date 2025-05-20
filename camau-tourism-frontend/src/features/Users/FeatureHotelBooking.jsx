@@ -6,7 +6,7 @@ import {
 } from "react-icons/fa";
 import ProfileSidebar from "../../components/Users/ProfileSidebar";
 import { toast, ToastContainer } from 'react-toastify';
-import { getList } from "../../api/user_api";
+import { getList, cancelRoomBooking } from "../../api/user_api";
 
 const statusColors = {
     confirmed: "text-green-500",
@@ -50,7 +50,6 @@ export default function BookingsPage() {
                 setBookings(data);
                 setError(null);
             } catch (err) {
-                console.error("Error fetching bookings:", err);
                 setError("Không thể tải dữ liệu đặt phòng. Vui lòng thử lại sau.");
             } finally {
                 setLoading(false);
@@ -101,6 +100,19 @@ export default function BookingsPage() {
         return new Date(dateString).toLocaleDateString('vi-VN', options);
     };
 
+    const handleCancelBooking = async () => {
+        if (!selectedBooking) return;
+        try {
+            await cancelRoomBooking(selectedBooking.id);
+            toast.success("Hủy phòng thành công");
+            setSelectedBooking(null);
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000)
+        } catch (err) {
+            toast.error("Hủy phòng thất bại");
+        }
+    };
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
     };
@@ -111,10 +123,6 @@ export default function BookingsPage() {
         const diffTime = Math.abs(end - start);
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         return diffDays;
-    };
-
-    const handleDownloadVoucher = () => {
-        toast.success("Voucher đặt phòng sẽ được tải về (demo)!");
     };
 
     return (
@@ -301,14 +309,6 @@ export default function BookingsPage() {
                                                     >
                                                         <FaEye /> Chi tiết
                                                     </button>
-                                                    {booking.status === "confirmed" && (
-                                                        <button
-                                                            onClick={handleDownloadVoucher}
-                                                            className="bg-green-500 text-white px-3 py-1 rounded-md text-sm hover:bg-green-600 transition-colors flex items-center gap-1"
-                                                        >
-                                                            <FaFileDownload /> Voucher
-                                                        </button>
-                                                    )}
                                                 </div>
                                             </div>
                                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
@@ -379,6 +379,7 @@ export default function BookingsPage() {
                                                             Đã hoàn thành
                                                         </div>
                                                     )}
+
                                                 </div>
                                             </div>
                                         </div>
@@ -558,25 +559,20 @@ export default function BookingsPage() {
                                             >
                                                 Đóng
                                             </button>
-                                            {selectedBooking.status === "confirmed" && (
-                                                <button
-                                                    onClick={handleDownloadVoucher}
-                                                    className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 flex items-center gap-2"
-                                                >
-                                                    <FaFileDownload /> Tải voucher
-                                                </button>
-                                            )}
                                             {selectedBooking.status === "pending" && (
                                                 <button className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 flex items-center gap-2">
                                                     <FaCreditCard /> Thanh toán
                                                 </button>
                                             )}
                                             {(selectedBooking.status === "confirmed" || selectedBooking.status === "pending") &&
-                                                new Date(selectedBooking.check_in) > new Date() && (
-                                                    <button className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">
+                                                new Date(selectedBooking.check_in) < new Date() && (
+                                                    <button
+                                                        onClick={handleCancelBooking}
+                                                        className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600">
                                                         Hủy đặt phòng
                                                     </button>
-                                                )}
+                                                )
+                                            }
                                         </div>
                                     </div>
                                 </div>

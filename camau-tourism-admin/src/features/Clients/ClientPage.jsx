@@ -7,7 +7,7 @@ import Modal from "../../components/Modal";
 import DataTableToolbar from '../../components/DataTableToolbar';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import { Switch } from "../../components/ui/switch"
 const getDefaultAvatar = (gender) => {
   if (gender === "Nam") return "/default-avatar-male.png";
   if (gender === "Nữ") return "/default-avatar-female.png";
@@ -76,13 +76,26 @@ export default function ClientPage() {
   );
 
   const handleToggleActive = async (client) => {
-    setActiveLoadingId(client.id);
+    const newStatus = !client.user.is_active;
+    let payload = { ...client };
     try {
-      await updateItem("users", client.user.id, {
-        is_active: !client.user.is_active,
+      await updateItem("users", payload.id, {
+        ...payload,
+        is_active: newStatus,
       });
-      toast.success("Cập nhật trạng thái thành công!");
-      fetchClients();
+      setClients(prev => ({
+        ...prev,
+        results: prev.results.map(t => 
+          t.id === payload.id
+            ? { ...t, user: { ...t.user, is_active: newStatus } }
+            : t
+        )
+      }))
+        toast.success(
+            newStatus
+              ? `Tài khoản "${payload.id}" đã được mở lại thành công!`
+              : `Tài khoản "${payload.id}" đã được tạm ngưng!`
+          );
     } catch (err) {
       toast.error("Không thể cập nhật trạng thái!");
     } finally {
@@ -95,7 +108,6 @@ export default function ClientPage() {
     setDetailOpen(true);
   };
 
-  // Xóa
   const handleDelete = (client) => {
     setDeleteError(null);
     setDeleteInput("");
@@ -190,19 +202,15 @@ export default function ClientPage() {
       key: "status",
       title: "Trạng thái",
       render: (client) => (
-        <button
-          onClick={() => openConfirmToggleActive(client)}
-          disabled={activeLoadingId === client.id}
-          className={`px-3 py-1 rounded-full text-xs font-bold transition-colors duration-200 flex items-center gap-1
-            ${client.user.is_active
-              ? "bg-green-100 text-green-700 hover:bg-green-200"
-              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-            }`}
-        >
-          {activeLoadingId === client.id
-            ? "Đang cập nhật..."
-            : statusBadge(client.user.is_active)}
-        </button>
+        <div className="flex items-center">
+          <Switch
+            checked={client.user?.is_active}
+            onCheckedChange={() => handleToggleActive(client)}
+          />
+          <span className={`ml-2 text-sm ${client.user?.is_active ? "text-green-600" : "text-gray-500"}`}>
+            {client.user?.is_active ? "Hoạt động" : "Vô hiệu hóa"}
+          </span>
+        </div>
       ),
     },
     {

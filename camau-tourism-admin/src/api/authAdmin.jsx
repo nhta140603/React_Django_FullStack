@@ -44,6 +44,7 @@ export async function getInfoUser() {
 export async function logoutUser() {
   const res = await fetch(`${API_URL}logout/`, {
     method: "POST",
+    credentials: "include",
   });
   if (!res.ok) {
     throw new Error('Không thể đăng xuất');

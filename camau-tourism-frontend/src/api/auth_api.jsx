@@ -65,3 +65,19 @@ export async function logoutUser() {
   }
   return true;
 }
+
+export async function socialLogin(provider, token) {
+  const response = await fetch(`${API_URL}social-login/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ provider, token }),
+    credentials: "include",  
+  });
+  const result = await response.json();
+  if (!response.ok) {
+    throw new Error(result.detail || "Đăng nhập xã hội thất bại");
+  }
+  return result;
+}

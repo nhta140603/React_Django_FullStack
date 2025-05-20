@@ -26,6 +26,7 @@ export function AdminAuthProvider({ children }) {
 const logoutAdmin = async () => {
   try {
     await logoutUser();
+    window.location.reload()
   } catch (e) {
     throw new Error(e.messages || `Có lỗi xảy ra`)
   }

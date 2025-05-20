@@ -61,6 +61,41 @@ class UserLoginView(generics.GenericAPIView):
             )
             return response
 
+class SocialLoginAPIView(APIView):
+    permission_classes = [permissions.AllowAny]
+    def post(self, request):
+        provider = request.data.get("provider")
+        token = request.data.get("token")
+        if provider == "google":
+            google_url = f"https://oauth2.googleapis.com/tokeninfo?id_token={token}"
+            r = requests.get(google_url)
+            if r.status_code != 200:
+                return Response({"detail": "Invalid Google token"}, status=status.HTTP_400_BAD_REQUEST)
+            data = r.json()
+            email = data.get("email")
+            name = data.get("name")
+        elif provider == "facebook":
+            fb_url = f"https://graph.facebook.com/me?fields=id,name,email&access_token={token}"
+            r = requests.get(fb_url)
+            if r.status_code != 200:
+                return Response({"detail": "Invalid Facebook token"}, status=status.HTTP_400_BAD_REQUEST)
+            data = r.json()
+            email = data.get("email")
+            name = data.get("name")
+        else:
+            return Response({"detail": "Provider không hợp lệ"}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not email:
+            return Response({"detail": "Email không tìm thấy trong dữ liệu social"}, status=status.HTTP_400_BAD_REQUEST)
+        user, created = User.objects.get_or_create(email=email, defaults={"username": email.split("@")[0], "first_name": name})
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            "id": user.id,
+            "username": user.username,
+            "accessToken": str(refresh.access_token),
+            "refreshToken": str(refresh),
+        })
+
 class UserLogoutView(APIView):
     permission_classes = [AllowAny]
     def post(self, request, *args, **kwargs):
@@ -328,12 +363,20 @@ class RoomBookingViewSet(viewsets.ModelViewSet):
     serializer_class = RoomBookingSerializer
     queryset = RoomBooking.objects.none()
     def get_queryset(self):
-        return RoomBooking.objects.filter(client=self.request.user)
+        return RoomBooking.objects.filter(client=self.request.user.client)
 
     def perform_create(self, serializer):
-        serializer.save(client=self.request.user)
+        serializer.save(client=self.request.user.client)
 
     def create(self, request, *args, **kwargs):
         print('>>> request.data:', request.data)
         return super().create(request, *args, **kwargs)
-
+    @action(detail=True, methods=['post'])
+    def cancel(self, request, pk=None):
+        booking = self.get_object()
+        if booking.status == 'canceled':
+            return Response({'detail': 'Đặt phòng đã bị hủy trước đó.'}, status=status.HTTP_400_BAD_REQUEST)
+        booking.status = 'canceled'
+        booking.canceled_at = timezone.now()
+        booking.save()
+        return Response({'detail': 'Hủy đặt phòng thành công!'}, status=status.HTTP_200_OK)

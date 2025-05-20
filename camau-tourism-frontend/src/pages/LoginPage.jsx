@@ -19,7 +19,7 @@ const LoginPage = () => {
       login({ id: response.id, username: response.username });
       setSuccessMessage("Đăng nhập thành công!");
       setTimeout(() => {
-        navigate("/");
+        navigate("/login");
       }, 1000);
     } catch (err) {
       if (err.message && err.message.includes("fetch")) {
@@ -39,18 +39,13 @@ const LoginPage = () => {
   };
 
   return (
-    <AuthLayout title="Đăng nhập">
-      <div className="mb-4">
-        {errorMessage && (
-          <p className="text-red-500 text-sm font-medium">{errorMessage}</p>
-        )}
-        {successMessage && (
-          <p className="text-green-500 text-sm font-medium">{successMessage}</p>
-        )}
-      </div>
-      <LoginForm onSubmit={handleLogin} />
+    <AuthLayout>
+      <LoginForm 
+        onSubmit={handleLogin} 
+        errorMessage={errorMessage} 
+        successMessage={successMessage} 
+      />
     </AuthLayout>
-    
   );
 };
 

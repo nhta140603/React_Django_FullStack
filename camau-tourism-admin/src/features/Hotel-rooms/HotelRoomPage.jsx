@@ -130,12 +130,10 @@ export default function HotelRoomPage() {
     return true;
   }
 
-  // -- Xử lý tiện ích phòng khi submit --
   const handleEditSubmit = async (values) => {
     if (!validate(values)) return;
     let isEdit = !!selectedHotelRoomEdit;
 
-    // CHỈNH SỬA: amenities sang array id
     if (values.amenities && Array.isArray(values.amenities)) {
       values.amenities = values.amenities.map(Number);
     }
