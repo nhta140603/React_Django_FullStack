@@ -28,4 +28,6 @@ urlpatterns = [
     path("payment/momo/ipn", MomoCallbackView.as_view(), name="momo-ipn"),
     path('logout/', UserLogoutView.as_view(), name='user-logout'),
     path('social-login/', SocialLoginAPIView.as_view(), name='social-login'),
+    path('<str:entity>/<int:pk>/reviews/', ReviewListCreateAPIView.as_view(), name='entity-reviews'),
+    path('<str:entity>/<int:pk>/comments/', CommentListCreateAPIView.as_view(), name='entity-comments'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

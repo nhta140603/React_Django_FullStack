@@ -1,29 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { getDetail } from "../../api/user_api";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getDetail, postReview } from "../../api/user_api";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-function HeroSection({ name, images }) {
-  return (
-    <div className="relative min-h-[280px] md:min-h-[350px] rounded-3xl overflow-hidden shadow-lg flex items-end">
-      <img
-        src={images[0] || "/demo-destination-1.jpg"}
-        alt={name}
-        className="absolute inset-0 object-cover w-full h-full z-0"
-        style={{ filter: "brightness(0.74)" }}
-      />
-      <div className="relative z-10 px-6 py-10 md:py-16 w-full">
-        <h1 className="text-white text-3xl md:text-5xl font-extrabold drop-shadow-lg mb-1">{name}</h1>
-      </div>
-    </div>
-  );
-}
+import ReviewList from "../../components/Review_Rating/ReviewList"
+import ReviewForm from "../../components/Review_Rating/ReviewForm"
 
 export default function DestinationDetailPage() {
   const { slug } = useParams();
   const [currentImg, setCurrentImg] = useState(0);
+  const [reviewsExpanded, setReviewsExpanded] = useState(false);
+  const queryClient = useQueryClient();
+
   const {
     data: destination,
     isLoading,
@@ -35,6 +25,16 @@ export default function DestinationDetailPage() {
     retry: false,
     onError: () => toast.error("Không tìm thấy địa điểm!"),
   });
+
+  const handleReviewAdded = () => {
+    setReviewsExpanded(true);
+    setTimeout(() => {
+      document.getElementById('reviews-section')?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }, 100);
+  };
 
   if (isLoading)
     return (
@@ -68,37 +68,17 @@ export default function DestinationDetailPage() {
       ? `https://maps.google.com/maps?q=${encodeURIComponent(address)}&z=16&output=embed`
       : null);
   const description = destination.description || "";
-  const phone = destination.phone || "";
-  const website = destination.website || "";
-  const openHour = destination.open_hour || "07:00 - 17:00";
-  const ticket = destination.ticket || "Miễn phí";
-  const bestSeason = destination.best_season || "Tháng 12 - 4";
-
   return (
-    <div className=" min-h-screen pb-10">
-      <div className="max-w-7xl mx-auto p-3 md:p-7 bg-white rounded-3xl ">
-        <HeroSection name={destination.name} images={images} />
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5 border-b pb-4 mt-8 md:mt-12">
+    <div className="min-h-screen pb-10">
+      <div className="max-w-7xl mx-auto p-3 md:p-7 bg-white rounded-3xl">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5 border-b pb-4 md:mt-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="inline-block bg-cyan-600 text-white text-xs px-3 py-1 rounded-full shadow">
-                Địa điểm nổi bật
-              </span>
-              {destination.rating && (
-                <span className="flex items-center text-yellow-500 ml-2">
-                  <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.973a1 1 0 00.95.69h4.18c.969 0 1.371 1.24.588 1.81l-3.388 2.46a1 1 0 00-.364 1.118l1.287 3.973c.3.921-.755 1.688-1.538 1.118l-3.388-2.46a1 1 0 00-1.175 0l-3.388 2.46c-.783.57-1.838-.197-1.538-1.118l1.287-3.973a1 1 0 00-.364-1.118l-3.388-2.46c-.783-.57-.38-1.81.588-1.81h4.18a1 1 0 00.95-.69l1.286-3.973z" /></svg>
-                  <span className="font-semibold">{destination.rating}</span>
-                </span>
-              )}
-            </div>
-            <div className="flex flex-wrap gap-3 mt-3 text-sm">
-              <span className="bg-cyan-50 px-3 py-1 rounded-xl shadow-sm text-cyan-700">
-                Giờ mở cửa: {openHour}
-              </span>
+                <h1 className="font-semibold text-4xl">{destination.name}</h1>
             </div>
           </div>
         </div>
-        <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-10">
+        <div className="mt-5 grid grid-cols-1 md:grid-cols-3 gap-10">
           <div className="md:col-span-2">
             <div className="relative h-[210px] md:h-[290px] rounded-2xl overflow-hidden shadow-lg group mb-6">
               {images.length ? (
@@ -153,6 +133,49 @@ export default function DestinationDetailPage() {
                 className="prose max-w-none prose-img:rounded-xl prose-img:shadow-md prose-a:text-cyan-600 prose-a:underline prose-table:rounded-lg prose-table:shadow"
                 dangerouslySetInnerHTML={{ __html: description }}
               />
+            </div>
+            <div id="reviews-section" className="mt-8 pt-4">
+              <div className="flex justify-between items-center mb-3">
+                <h2 className="text-lg font-bold text-cyan-900">Đánh giá về địa điểm</h2>
+                <button
+                  onClick={() => setReviewsExpanded(!reviewsExpanded)}
+                  className="text-cyan-600 hover:text-cyan-800 flex items-center text-sm"
+                >
+                  {reviewsExpanded ? 'Thu gọn' : 'Xem tất cả'}
+                  <svg
+                    className={`ml-1 w-4 h-4 transition-transform ${reviewsExpanded ? 'rotate-180' : ''}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+              </div>
+
+              <ReviewForm entityType="destination" entityId={destination.id || slug} onReviewAdded={handleReviewAdded}/>
+
+              <div className={`mt-4 transition-all duration-300 overflow-hidden ${reviewsExpanded ? 'max-h-[2000px]' : 'max-h-[600px]'}`}>
+                <ReviewList entityType="destination" entityId={destination.id || slug} />
+              </div>
+
+              {!reviewsExpanded && (
+                <div className="h-20 bg-gradient-to-t from-white to-transparent w-full -mt-20 relative pointer-events-none"></div>
+              )}
+
+              {!reviewsExpanded && (
+                <div className="text-center mt-2">
+                  <button
+                    onClick={() => setReviewsExpanded(true)}
+                    className="text-cyan-600 hover:text-cyan-800 text-sm font-medium inline-flex items-center"
+                  >
+                    Xem tất cả đánh giá
+                    <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                </div>
+              )}
             </div>
           </div>
           <div className="relative">

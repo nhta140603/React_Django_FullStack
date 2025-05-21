@@ -2,9 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getDetail } from "../../api/user_api";
-
+import ReviewForm from "../../components/Review_Rating/ReviewForm"
+import ReviewList from "../../components/Review_Rating/ReviewList"
 export default function CuisineDetail() {
     const { slug } = useParams();
+    const [currentImg, setCurrentImg] = useState(0);
+    const [reviewsExpanded, setReviewsExpanded] = useState(false);
     const navigate = useNavigate();
     const {
         data: cuisine,
@@ -31,7 +34,15 @@ export default function CuisineDetail() {
         setActiveImage(image);
         setShowImageViewer(true);
     };
-
+    const handleReviewAdded = () => {
+        setReviewsExpanded(true);
+        setTimeout(() => {
+            document.getElementById('reviews-section')?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }, 100);
+    };
     if (isLoading) {
         return (
             <div className="flex flex-col items-center py-28 text-cyan-600 font-bold text-xl">
@@ -147,6 +158,49 @@ export default function CuisineDetail() {
                                         "<p>Món ăn đặc trưng của Cà Mau, mang đậm hương vị của đất mũi phương Nam với nguyên liệu tươi ngon từ biển và rừng.</p>"
                                 }}
                             />
+                        </div>
+                        <div id="reviews-section" className="mt-8 pt-4">
+                            <div className="flex justify-between items-center mb-3">
+                                <h2 className="text-lg font-bold text-cyan-900">Đánh giá về địa điểm</h2>
+                                <button
+                                    onClick={() => setReviewsExpanded(!reviewsExpanded)}
+                                    className="text-cyan-600 hover:text-cyan-800 flex items-center text-sm"
+                                >
+                                    {reviewsExpanded ? 'Thu gọn' : 'Xem tất cả'}
+                                    <svg
+                                        className={`ml-1 w-4 h-4 transition-transform ${reviewsExpanded ? 'rotate-180' : ''}`}
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <ReviewForm entityType="food" entityId={cuisine.id || slug} onReviewAdded={handleReviewAdded} />
+
+                            <div className={`mt-4 transition-all duration-300 overflow-hidden ${reviewsExpanded ? 'max-h-[2000px]' : 'max-h-[600px]'}`}>
+                                <ReviewList entityType="food" entityId={cuisine.id || slug} />
+                            </div>
+
+                            {!reviewsExpanded && (
+                                <div className="h-20 bg-gradient-to-t from-white to-transparent w-full -mt-20 relative pointer-events-none"></div>
+                            )}
+
+                            {!reviewsExpanded && (
+                                <div className="text-center mt-2">
+                                    <button
+                                        onClick={() => setReviewsExpanded(true)}
+                                        className="text-cyan-600 hover:text-cyan-800 text-sm font-medium inline-flex items-center"
+                                    >
+                                        Xem tất cả đánh giá
+                                        <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
 

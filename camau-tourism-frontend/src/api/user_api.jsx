@@ -101,3 +101,72 @@ export async function cancelRoomBooking(id) {
     method: "POST",
   });
 }
+
+export const postReview = (entityType, entityId, data) => {
+  switch (entityType) {
+    case "destination":
+      return postDestinationReview(entityId, data);
+    case "food":
+      return postFoodReview(entityId, data);
+    case "hotel":
+      return postHotelReview(entityId, data);
+    default:
+      throw new Error("Unknown entity type");
+  }
+};
+export function postComment(entity, entityId, data) {
+  const isFormData = data instanceof FormData;
+  return fetchWithAuth(`${API_URL}${entity}/${entityId}/comments/`, {
+    method: "POST",
+    body: isFormData ? data : JSON.stringify(data)
+  });
+}
+
+export function getComments(entityType, entityId) {
+  return fetchWithAuth(`${API_URL}${entityType}/${entityId}/comments/`, {
+    method: "GET",
+  });
+}
+
+export const getReviews = (entityType, entityId) => {
+  switch (entityType) {
+    case "destination":
+      return getDestinationReviews(entityId);
+    case "food":
+      return getFoodReviews(entityId);
+    case "hotel":
+      return getHotelReviews(entityId);
+    default:
+      throw new Error("Unknown entity type");
+  }
+};
+
+export function postDestinationReview(destinationId, data) {
+  return fetchWithAuth(`${API_URL}destination/${destinationId}/reviews/`, {
+    method: "POST",
+    body: data,
+  });
+}
+export function getDestinationReviews(destinationId) {
+  return fetchWithAuth(`${API_URL}destination/${destinationId}/reviews/`);
+}
+
+export function postFoodReview(foodId, data) {
+  return fetchWithAuth(`${API_URL}food/${foodId}/reviews/`, {
+    method: "POST",
+    body: data,
+  });
+}
+export function getFoodReviews(foodId) {
+  return fetchWithAuth(`${API_URL}food/${foodId}/reviews/`);
+}
+
+export function postHotelReview(hotelId, data) {
+  return fetchWithAuth(`${API_URL}hotel/${hotelId}/reviews/`, {
+    method: "POST",
+    body: data,
+  });
+}
+export function getHotelReviews(hotelId) {
+  return fetchWithAuth(`${API_URL}hotel/${hotelId}/reviews/`);
+}

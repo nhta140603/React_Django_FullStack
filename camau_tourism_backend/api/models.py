@@ -4,7 +4,9 @@ from django.contrib.postgres.fields import ArrayField
 from ckeditor.fields import RichTextField
 from django.utils.text import slugify
 from cloudinary.models import CloudinaryField
-
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.fields import GenericRelation
 class Client(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     avatar = CloudinaryField('image', folder='avatars', blank=True, null=True)
@@ -36,7 +38,6 @@ class Destination(models.Model):
     type = models.CharField(max_length=100, blank=True, null=True)
     open_time = models.TimeField(blank=True, null=True)
     close_time = models.TimeField(blank=True, null=True)
-    ticket_price = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
     latitude = models.FloatField(blank=True, null=True)
     longitude = models.FloatField(blank=True, null=True)
     website = models.URLField(blank=True, null=True)
@@ -44,6 +45,8 @@ class Destination(models.Model):
     image_url = CloudinaryField('image', folder='destinations', blank=True, null=True)
     is_featured = models.BooleanField(default=False)
     slug = models.SlugField(unique= False, blank=True)
+    comments = GenericRelation('Comment')
+    ratings = GenericRelation('Rating')
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
@@ -136,11 +139,12 @@ class Hotel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     slug = models.SlugField(unique= False, blank=True)
+    comments = GenericRelation('Comment')
+    ratings = GenericRelation('Rating')
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
-
 
 class HotelRoom(models.Model):
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name="rooms")
@@ -289,34 +293,6 @@ class Festival(models.Model):
             self.slug = slugify(self.title)
         super().save(*args, **kwargs)
 
-
-class Promotion(models.Model):
-    title = models.CharField(max_length=255)
-    description = models.TextField()
-    discount_percent = models.IntegerField()
-    promo_code = models.CharField(max_length=50)
-    start_date = models.DateField()
-    end_date = models.DateField()
-    image_url = models.URLField(blank=True, null=True)
-    usage_limit = models.IntegerField(default=0)
-    used_count = models.IntegerField(default=0)
-    min_order_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
-    is_active = models.BooleanField(default=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-class PromotionTour(models.Model):
-    promotion = models.ForeignKey(Promotion, on_delete=models.CASCADE)
-    tour = models.ForeignKey(Tour, on_delete=models.CASCADE)
-
-class PromotionHotel(models.Model):
-    promotion = models.ForeignKey(Promotion, on_delete=models.CASCADE)
-    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
-
-class PromotionTransportation(models.Model):
-    promotion = models.ForeignKey(Promotion, on_delete=models.CASCADE)
-    transportation = models.ForeignKey(Transportation, on_delete=models.CASCADE)
-
 class Blog(models.Model):
     author = models.ForeignKey(Client, on_delete=models.SET_NULL, null=True)
     title = models.CharField(max_length=255)
@@ -395,8 +371,39 @@ class Cuisine(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     slug = models.SlugField(max_length=255, unique=True, blank=True, null=True)
+    comments = GenericRelation('Comment')
+    ratings = GenericRelation('Rating')
     def save(self, *args, **kwargs):
         if not self.slug:
             from django.utils.text import slugify
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
+
+class Rating(models.Model):
+    client = models.ForeignKey('Client', on_delete=models.CASCADE)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
+    rating = models.PositiveSmallIntegerField()
+    comment = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        unique_together = ('client', 'content_type', 'object_id') 
+    def __str__(self):
+        return f"Rating {self.rating} by {self.client} on {self.content_object}"
+    
+class Comment(models.Model):
+    client = models.ForeignKey('Client', on_delete=models.CASCADE)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
+    image = CloudinaryField('image', folder='comment', blank=True, null=True)
+    content = models.TextField()
+    parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name='replies')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_public = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"Comment by {self.client} on {self.content_object}"

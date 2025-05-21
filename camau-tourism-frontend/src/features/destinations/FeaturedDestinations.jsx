@@ -1,10 +1,8 @@
 import React, { useState, useMemo } from "react";
-import DestinationCard from "../../components/DestinationCard";
 import { getList } from "../../api/user_api";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 
-// BottomSheet mobile filter
 function MobileFilterSheet({ open, onClose, search, setSearch, typeOptions, selectedType, setSelectedType }) {
   return (
     <div className={`fixed inset-0 z-50 ${open ? '' : 'pointer-events-none'}`}>
@@ -15,7 +13,6 @@ function MobileFilterSheet({ open, onClose, search, setSearch, typeOptions, sele
           <button className="text-gray-500 text-2xl" onClick={onClose}>&times;</button>
         </div>
         <div className="p-4">
-          {/* Search */}
           <div className="mb-4">
             <label htmlFor="search-mobile" className="block text-xs font-bold text-gray-600 mb-1">Tìm kiếm</label>
             <div className="relative">
@@ -43,7 +40,6 @@ function MobileFilterSheet({ open, onClose, search, setSearch, typeOptions, sele
               )}
             </div>
           </div>
-          {/* Type filter */}
           <div>
             <label className="block text-xs font-bold text-gray-600 mb-1">Loại địa điểm</label>
             <div className="flex flex-wrap gap-2">
@@ -74,7 +70,6 @@ function MobileFilterSheet({ open, onClose, search, setSearch, typeOptions, sele
   );
 }
 
-// Skeleton card nhỏ gọn hơn cho mobile
 function SkeletonDestinationCard() {
   return (
     <div className="rounded-xl overflow-hidden shadow-lg animate-pulse bg-gray-100 flex flex-col h-full min-w-[170px] max-w-[210px]">
@@ -141,7 +136,6 @@ export default function DestinationList() {
         </p>
       </div>
 
-      {/* Desktop filter */}
       <div className="hidden md:block mb-5">
         <div className="bg-white rounded-xl shadow p-4 border border-cyan-100 flex gap-6 items-center">
           <div className="flex-1">
@@ -177,7 +171,6 @@ export default function DestinationList() {
         </div>
       </div>
 
-      {/* MOBILE: FAB filter */}
       <button
         className="fixed md:hidden bottom-4 right-4 z-30 bg-cyan-600 text-white rounded-full shadow-lg p-4 flex items-center justify-center focus:outline-none active:bg-cyan-700 transition-colors"
         style={{ boxShadow: "0 6px 24px 0 rgba(0,0,0,0.11)" }}
@@ -197,7 +190,6 @@ export default function DestinationList() {
         setSelectedType={type => { setSelectedType(type); setIsMobileFilterOpen(false); }}
       />
 
-      {/* Loading Skeleton */}
       {isLoading && (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 mb-8">
           {Array.from({ length: 4 }).map((_, i) => (
@@ -206,7 +198,6 @@ export default function DestinationList() {
         </div>
       )}
 
-      {/* Error Message */}
       {error && (
         <div className="text-center bg-red-50 text-red-600 py-6 px-4 rounded-xl shadow-sm border border-red-100 mb-6">
           <svg className="w-12 h-12 mx-auto text-red-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -215,7 +206,6 @@ export default function DestinationList() {
         </div>
       )}
 
-      {/* Destinations Grid */}
       <div className="space-y-8">
         {Object.entries(destinationsByType).map(([type, destList]) => {
           if (selectedType && type !== selectedType) return null;
@@ -226,7 +216,6 @@ export default function DestinationList() {
 
           return (
             <div key={type} className="animate-fadeInUp">
-              {/* Type Header */}
               <div className="relative overflow-hidden rounded-xl mb-3 group">
                 <div className="bg-gradient-to-r from-cyan-100 to-blue-200 flex justify-between items-center px-3 py-2 sm:px-5 sm:py-3 shadow-lg border-l-4 sm:border-l-8 border-cyan-400 rounded-xl">
                   <div className="flex items-center gap-2 z-10 relative">
@@ -249,7 +238,6 @@ export default function DestinationList() {
                   <div className="absolute inset-0 bg-gradient-to-r from-cyan-400/10 to-blue-400/10 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-500"></div>
                 </div>
               </div>
-              {/* Mobile: horizontal scroll */}
               <div className="sm:hidden overflow-x-auto pb-2 scrollbar-hide">
                 <div className="flex space-x-3 pl-2 w-max">
                   {filteredGroup.map((dest, idx) => (
@@ -288,7 +276,6 @@ export default function DestinationList() {
                   ))}
                 </div>
               </div>
-              {/* Desktop: grid  */}
               <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                 {filteredGroup.slice(0, 4).map((dest, idx) => (
                   <div
@@ -358,7 +345,6 @@ export default function DestinationList() {
         )}
       </div>
 
-      {/* Back to top - thu nhỏ trên mobile */}
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         className="fixed bottom-20 right-4 md:bottom-6 md:right-6 p-2 bg-cyan-600 text-white rounded-full shadow-lg hover:bg-cyan-700 transition-colors duration-300 z-50"

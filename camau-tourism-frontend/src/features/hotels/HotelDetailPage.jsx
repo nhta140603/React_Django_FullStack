@@ -22,6 +22,8 @@ import { vi } from 'date-fns/locale/vi';
 import { registerLocale, setDefaultLocale } from "react-datepicker";
 registerLocale('vi', vi);
 import "react-datepicker/dist/react-datepicker.css";
+import ReviewForm from "../../components/Review_Rating/ReviewForm";
+import ReviewList from "../../components/Review_Rating/ReviewList";
 
 export default function HotelDetailPage() {
   const navigate = useNavigate();
@@ -45,7 +47,16 @@ export default function HotelDetailPage() {
     paymentMethod: "credit_card"
   });
 
-
+  const [reviewsExpanded, setReviewsExpanded] = useState(false);
+    const handleReviewAdded = () => {
+    setReviewsExpanded(true);
+    setTimeout(() => {
+      document.getElementById('reviews-section')?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }, 100);
+  };
   const {
     data: hotel,
     isLoading: loadingHotel,
@@ -574,7 +585,6 @@ export default function HotelDetailPage() {
               </div>
             )}
 
-            {/* Info & Amenities Tab Content */}
             {activeTab === "info" && (
               <div>
                 <div className="mb-6">
@@ -671,7 +681,6 @@ export default function HotelDetailPage() {
               </div>
             )}
 
-            {/* Location Tab Content */}
             {activeTab === "location" && (
               <div>
                 <h3 className="text-base md:text-lg font-semibold mb-3 md:mb-4 text-gray-800">Vị trí khách sạn</h3>
@@ -693,92 +702,49 @@ export default function HotelDetailPage() {
             )}
 
             {activeTab === "reviews" && (
-              <div>
-                <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
-                  <div>
-                    <h3 className="text-base md:text-lg font-semibold mb-1 text-gray-800">Đánh giá từ khách hàng</h3>
-                    <div className="flex items-center">
-                      <div className="flex text-yellow-400 mr-2">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <FaStar key={i} className={i < 4 ? "" : "text-gray-300"} />
-                        ))}
-                      </div>
-                      <span className="font-medium">4.2/5</span>
-                      <span className="text-gray-500 text-sm ml-2">(124 đánh giá)</span>
-                    </div>
-                  </div>
-                  <button className="mt-3 md:mt-0 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition text-sm font-medium">
-                    Viết đánh giá
-                  </button>
-                </div>
-
-                <div className="space-y-4">
-                  {/* Sample reviews - would be dynamically populated from API */}
-                  <div className="border-b pb-4">
-                    <div className="flex justify-between items-start mb-2">
-                      <div className="flex items-center">
-                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-medium mr-3">MT</div>
-                        <div>
-                          <div className="font-medium">Minh Tuấn</div>
-                          <div className="text-xs text-gray-500">Đã đánh giá vào 12/05/2025</div>
-                        </div>
-                      </div>
-                      <div className="flex text-yellow-400">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <FaStar key={i} className={i < 5 ? "" : "text-gray-300"} size={14} />
-                        ))}
-                      </div>
-                    </div>
-                    <p className="text-sm text-gray-700">
-                      Khách sạn tuyệt vời với dịch vụ 5 sao. Phòng rộng rãi, sạch sẽ và có view đẹp. Nhân viên thân thiện và phục vụ chu đáo. Bể bơi và nhà hàng đều rất tốt. Sẽ quay lại trong lần tới!
-                    </p>
-                  </div>
-
-                  <div className="border-b pb-4">
-                    <div className="flex justify-between items-start mb-2">
-                      <div className="flex items-center">
-                        <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-medium mr-3">HP</div>
-                        <div>
-                          <div className="font-medium">Hương Phạm</div>
-                          <div className="text-xs text-gray-500">Đã đánh giá vào 05/05/2025</div>
-                        </div>
-                      </div>
-                      <div className="flex text-yellow-400">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <FaStar key={i} className={i < 4 ? "" : "text-gray-300"} size={14} />
-                        ))}
-                      </div>
-                    </div>
-                    <p className="text-sm text-gray-700">
-                      Vị trí khách sạn thuận tiện, gần biển và nhiều địa điểm tham quan. Phòng sạch sẽ, tuy nhiên hơi ồn vào buổi tối. Bữa sáng khá đa dạng và ngon miệng. Nhân viên phục vụ tốt và nhiệt tình.
-                    </p>
-                  </div>
-
-                  <div className="border-b pb-4">
-                    <div className="flex justify-between items-start mb-2">
-                      <div className="flex items-center">
-                        <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center text-red-600 font-medium mr-3">TL</div>
-                        <div>
-                          <div className="font-medium">Thanh Long</div>
-                          <div className="text-xs text-gray-500">Đã đánh giá vào 28/04/2025</div>
-                        </div>
-                      </div>
-                      <div className="flex text-yellow-400">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <FaStar key={i} className={i < 3 ? "" : "text-gray-300"} size={14} />
-                        ))}
-                      </div>
-                    </div>
-                    <p className="text-sm text-gray-700">
-                      Nhân viên phục vụ tốt nhưng phòng cũ hơn so với hình ảnh trên website. Điều hòa hoạt động không hiệu quả và wifi thường xuyên bị ngắt kết nối. Vị trí khá xa trung tâm nên không thuận tiện lắm.
-                    </p>
-                  </div>
-
-                  <button className="w-full py-2 border border-blue-500 text-blue-600 rounded-lg hover:bg-blue-50 transition font-medium text-sm">
-                    Xem thêm đánh giá
-                  </button>
-                </div>
+            <div id="reviews-section" className="mt-8 pt-4">
+              <div className="flex justify-between items-center mb-3">
+                <h2 className="text-lg font-bold text-cyan-900">Đánh giá về địa điểm</h2>
+                <button
+                  onClick={() => setReviewsExpanded(!reviewsExpanded)}
+                  className="text-cyan-600 hover:text-cyan-800 flex items-center text-sm"
+                >
+                  {reviewsExpanded ? 'Thu gọn' : 'Xem tất cả'}
+                  <svg
+                    className={`ml-1 w-4 h-4 transition-transform ${reviewsExpanded ? 'rotate-180' : ''}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
               </div>
+
+              <ReviewForm entityType="hotel" entityId={hotel.id || slug} onReviewAdded={handleReviewAdded}/>
+
+              <div className={`mt-4 transition-all duration-300 overflow-hidden ${reviewsExpanded ? 'max-h-[2000px]' : 'max-h-[600px]'}`}>
+                <ReviewList entityType="hotel" entityId={hotel.id || slug} />
+              </div>
+
+              {!reviewsExpanded && (
+                <div className="h-20 bg-gradient-to-t from-white to-transparent w-full -mt-20 relative pointer-events-none"></div>
+              )}
+
+              {!reviewsExpanded && (
+                <div className="text-center mt-2">
+                  <button
+                    onClick={() => setReviewsExpanded(true)}
+                    className="text-cyan-600 hover:text-cyan-800 text-sm font-medium inline-flex items-center"
+                  >
+                    Xem tất cả đánh giá
+                    <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                </div>
+              )}
+            </div>
             )}
           </div>
         </div>

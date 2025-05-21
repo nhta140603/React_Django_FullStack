@@ -44,9 +44,12 @@ class LoginSerializer(serializers.Serializer):
         return user
 
 class UserSerializer(serializers.ModelSerializer):
+    full_name = serializers.SerializerMethodField()
     class Meta:
         model = User
-        fields = ['email', 'first_name', 'last_name']
+        fields = ['email', 'first_name', 'last_name', 'full_name']
+    def get_full_name(self, obj):
+        return f"{obj.first_name} {obj.last_name}".strip()
 
 class ClientSerializers(serializers.ModelSerializer):
     user = UserSerializer()
@@ -182,3 +185,16 @@ class RoomBookingSerializer(serializers.ModelSerializer):
         return obj.room.hotel.address if  obj.room.hotel.address else None
     def get_name(self, obj):
         return obj.room.hotel.name if obj.room.hotel.name else None
+    
+
+class RatingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Rating
+        fields = ['id', 'client', 'rating', 'comment', 'created_at', 'updated_at']
+
+class CommentSerializer(serializers.ModelSerializer):
+    client = serializers.PrimaryKeyRelatedField(read_only=True)
+    full_name = serializers.CharField(source='client.user.get_full_name', read_only=True)
+    class Meta:
+        model = Comment
+        fields = ['id', 'client', 'content', 'full_name', 'image', 'parent', 'created_at', 'updated_at', 'is_public']

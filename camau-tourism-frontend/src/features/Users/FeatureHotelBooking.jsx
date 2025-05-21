@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import {
     FaCalendarAlt, FaBed, FaMoneyBillWave, FaSuitcase, FaExclamationCircle, FaSearch,
-    FaFilter, FaSortAmountDown, FaSortAmountUp, FaEye, FaFileDownload, FaCircle,
+    FaFilter, FaSortAmountDown, FaSortAmountUp, FaEye, FaCircle,
     FaHotel, FaCreditCard, FaCheckCircle, FaPhoneAlt, FaUser
 } from "react-icons/fa";
-import ProfileSidebar from "../../components/Users/ProfileSidebar";
 import { toast, ToastContainer } from 'react-toastify';
 import { getList, cancelRoomBooking } from "../../api/user_api";
 
@@ -25,7 +24,6 @@ const statusLabels = {
 };
 
 export default function BookingsPage() {
-    const [selectedTab, setSelectedTab] = useState("dat-phong");
     const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
@@ -129,13 +127,11 @@ export default function BookingsPage() {
 
     return (
         <div className="flex-1 p-2 bg-[#f5f7fb]">
-            {selectedTab === "dat-phong" && (
                 <main className="flex-1 p-3 md:p-6">
                     <div className="mb-4 md:mb-8">
                         <h1 className="text-2xl md:text-3xl font-bold text-gray-800">Đặt phòng của tôi</h1>
                     </div>
 
-                    {/* Mobile search bar with filter toggle */}
                     <div className="md:hidden mb-4">
                         <div className="relative mb-3">
                             <input
@@ -156,7 +152,6 @@ export default function BookingsPage() {
                         </button>
                     </div>
 
-                    {/* Filter section that toggles on mobile */}
                     <div className={`${showFilters ? 'block' : 'hidden'} md:block bg-white rounded-xl shadow-sm p-4 md:p-5 mb-6`}>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div className="hidden md:block relative">
@@ -209,7 +204,6 @@ export default function BookingsPage() {
                         </div>
                     </div>
 
-                    {/* Stats cards - 2 per row on mobile */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6">
                         <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-3 md:p-4 text-white shadow-md">
                             <div className="flex flex-col md:flex-row md:items-center md:justify-between">
@@ -301,7 +295,6 @@ export default function BookingsPage() {
                                     key={booking.id}
                                     className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-shadow"
                                 >
-                                    {/* Mobile design with stacked layout */}
                                     <div className="md:flex">
                                         <div className="md:w-1/3 h-[180px] md:max-h-[250px] relative">
                                             <img
@@ -336,7 +329,6 @@ export default function BookingsPage() {
                                                 </button>
                                             </div>
                                             
-                                            {/* Mobile grid - 2 items per row */}
                                             <div className="grid grid-cols-2 gap-3 mb-4">
                                                 <div className="bg-gray-50 p-2 rounded-lg">
                                                     <div className="flex items-center gap-2 mb-1">
@@ -368,7 +360,6 @@ export default function BookingsPage() {
                                                 </div>
                                             </div>
                                             
-                                            {/* Status indicator */}
                                             <div className="flex flex-wrap justify-between items-center border-t pt-3 mt-2 text-sm">
                                                 <div className="text-gray-600 text-xs md:text-sm">
                                                     Đã đặt vào: {formatDate(booking.created_at)}
@@ -413,7 +404,6 @@ export default function BookingsPage() {
                         </div>
                     )}
 
-                    {/* Modal remains the same but with more mobile-friendly styles */}
                     {selectedBooking && (
                         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 md:p-4 z-50 overflow-y-auto">
                             <div className="bg-white rounded-xl shadow-xl w-full max-w-6xl max-h-[90vh] overflow-y-auto">
@@ -606,7 +596,6 @@ export default function BookingsPage() {
                     )}
                     <ToastContainer position="top-right" autoClose={3000} />
                 </main>
-            )}
         </div>
     );
 }

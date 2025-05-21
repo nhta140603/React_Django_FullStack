@@ -92,7 +92,7 @@ export default function FilterSidebar({ onFilter }) {
   }, [priceInRange, hotelRatingStar, price, amenities]);
 
   return (
-    <aside className="w-full md:w-80 bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col sticky top-4 h-fit overflow-hidden">
+    <aside className="w-full md:w-80 bg-white rounded-xl shadow-sm border border-gray-100 flex flex-col sticky top-[68px] z-20 h-fit overflow-hidden">
       <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-4">
         <h3 className="font-bold text-lg">Bộ lọc tìm kiếm</h3>
         <p className="text-sm text-blue-100">Tìm nơi lưu trú phù hợp nhất với bạn</p>

@@ -145,11 +145,6 @@ class ArticlesViewSet(viewsets.ModelViewSet):
     serializer_class = ArticlesSerializer
     parser_classes = [MultiPartParser, JSONParser, FormParser]
 
-class PromotionViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsAdminOrReadOnly]
-    queryset = Promotion.objects.all()
-    serializer_class = PromotionSerializer
-
 class BlogViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminOrReadOnly]
     queryset = Blog.objects.all()

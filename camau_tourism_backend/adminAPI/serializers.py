@@ -188,26 +188,6 @@ class ArticlesSerializer(serializers.ModelSerializer):
         data['cover_image_url'] = instance.cover_image_url.url if instance.cover_image_url else None
         return data
 
-class PromotionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Promotion
-        fields = '__all__'
-
-class PromotionTourSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PromotionTour
-        fields = '__all__'
-
-class PromotionHotelSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PromotionHotel
-        fields = '__all__'
-
-class PromotionTransportationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PromotionTransportation
-        fields = '__all__'
-
 class BlogSerializer(serializers.ModelSerializer):
     class Meta:
         model = Blog

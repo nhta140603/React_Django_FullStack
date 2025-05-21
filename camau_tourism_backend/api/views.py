@@ -407,3 +407,48 @@ class RoomBookingViewSet(viewsets.ModelViewSet):
         booking.canceled_at = timezone.now()
         booking.save()
         return Response({'detail': 'Hủy đặt phòng thành công!'}, status=status.HTTP_200_OK)
+
+
+class ReviewListCreateAPIView(generics.ListCreateAPIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    serializer_class = RatingSerializer
+
+    def get_queryset(self):
+        entity = self.kwargs['entity']
+        obj_id = self.kwargs['pk']
+        model = {'destination': Destination, 'hotel': Hotel, 'food': Cuisine}[entity]
+        content_type = ContentType.objects.get_for_model(model)
+        return Rating.objects.filter(content_type=content_type, object_id=obj_id)
+
+    def perform_create(self, serializer):
+        entity = self.kwargs['entity']
+        obj_id = self.kwargs['pk']
+        model = {'destination': Destination, 'hotel': Hotel, 'food': Cuisine}[entity]
+        content_type = ContentType.objects.get_for_model(model)
+        serializer.save(
+            client=self.request.user.client,
+            content_type=content_type,
+            object_id=obj_id
+        )
+
+class CommentListCreateAPIView(generics.ListCreateAPIView):
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    serializer_class = CommentSerializer
+
+    def get_queryset(self):
+        entity = self.kwargs['entity']
+        obj_id = self.kwargs['pk']
+        model = {'destination': Destination, 'hotel': Hotel, 'food': Cuisine}[entity]
+        content_type = ContentType.objects.get_for_model(model)
+        return Comment.objects.filter(content_type=content_type, object_id=obj_id, parent=None)
+
+    def perform_create(self, serializer):
+        entity = self.kwargs['entity']
+        obj_id = self.kwargs['pk']
+        model = {'destination': Destination, 'hotel': Hotel, 'food': Cuisine}[entity]
+        content_type = ContentType.objects.get_for_model(model)
+        serializer.save(
+            client=self.request.user.client,
+            content_type=content_type,
+            object_id=obj_id
+        )
