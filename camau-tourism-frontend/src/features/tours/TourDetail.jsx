@@ -426,7 +426,6 @@ const TourDetail = () => {
     );
   }
 
-  // Desktop FAQ block (giữ nguyên)
   function DesktopFAQ() {
     const faqs = [
       {

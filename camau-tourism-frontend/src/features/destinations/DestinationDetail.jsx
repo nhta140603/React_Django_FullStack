@@ -1,10 +1,9 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useLayoutEffect } from "react";
 import { useParams } from "react-router-dom";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getDetail, postReview } from "../../api/user_api";
+import { useQuery } from "@tanstack/react-query";
+import { getDetail } from "../../api/user_api";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
 import ReviewList from "../../components/Review_Rating/ReviewList"
 import ReviewForm from "../../components/Review_Rating/ReviewForm"
 
@@ -12,19 +11,25 @@ export default function DestinationDetailPage() {
   const { slug } = useParams();
   const [currentImg, setCurrentImg] = useState(0);
   const [reviewsExpanded, setReviewsExpanded] = useState(false);
-  const queryClient = useQueryClient();
+  const [extraExpand, setExtraExpand] = useState(false);
+  const [descMaxHeight, setDescMaxHeight] = useState(300);
+  const descRef = useRef();
 
   const {
-    data: destination,
-    isLoading,
-    isError,
-    error,
-  } = useQuery({
-    queryKey: ["destination-detail", slug],
-    queryFn: () => getDetail("destinations", slug),
-    retry: false,
-    onError: () => toast.error("Không tìm thấy địa điểm!"),
-  });
+    data: destination, isLoading, isError, } = useQuery({
+      queryKey: ["destination-detail", slug],
+      queryFn: () => getDetail("destinations", slug),
+      retry: false,
+      onError: () => toast.error("Không tìm thấy địa điểm!"),
+    });
+
+  useLayoutEffect(() => {
+    if (extraExpand && descRef.current) {
+      setDescMaxHeight(descRef.current.scrollHeight);
+    } else {
+      setDescMaxHeight(300);
+    }
+  }, [extraExpand, destination?.description]);
 
   const handleReviewAdded = () => {
     setReviewsExpanded(true);
@@ -67,14 +72,22 @@ export default function DestinationDetailPage() {
     : (hasAddress
       ? `https://maps.google.com/maps?q=${encodeURIComponent(address)}&z=16&output=embed`
       : null);
-  const description = destination.description || "";
+
+  function limitChar(html, max = 360) {
+    if (!html) return "";
+    const temp = document.createElement("div");
+    temp.innerHTML = html;
+    const text = temp.textContent || temp.innerText || "";
+    return text.length > max ? `${text.slice(0, max)}...` : text;
+  }
+
   return (
     <div className="min-h-screen pb-10">
       <div className="max-w-7xl mx-auto p-3 md:p-7 bg-white rounded-3xl">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5 border-b pb-4 md:mt-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
-                <h1 className="font-semibold text-4xl">{destination.name}</h1>
+              <h1 className="font-semibold text-4xl">{destination.name}</h1>
             </div>
           </div>
         </div>
@@ -130,9 +143,30 @@ export default function DestinationDetailPage() {
             <div>
               <h2 className="text-lg font-bold text-cyan-900 mb-3">Chi tiết địa điểm</h2>
               <div
-                className="prose max-w-none prose-img:rounded-xl prose-img:shadow-md prose-a:text-cyan-600 prose-a:underline prose-table:rounded-lg prose-table:shadow"
-                dangerouslySetInnerHTML={{ __html: description }}
+                ref={descRef}
+                className="prose max-w-none prose-img:rounded-xl prose-img:shadow-md prose-a:text-cyan-600 prose-a:underline prose-table:rounded-lg prose-table:shadow transition-all duration-500 overflow-hidden"
+                style={{
+                  maxHeight: `${descMaxHeight}px`
+                }}
+                dangerouslySetInnerHTML={{
+                  __html: extraExpand
+                    ? (destination.description || "")
+                    : limitChar(destination.description || "")
+                }}
               />
+              {!extraExpand && (
+                <div className="h-20 bg-gradient-to-t from-white to-transparent w-full -mt-20 relative pointer-events-none"></div>
+              )}
+              <div className="text-center mt-2">
+                <button
+                  onClick={() => setExtraExpand(!extraExpand)}
+                  className="text-cyan-600 hover:text-cyan-800 text-sm font-medium inline-flex items-center transition-all duration-200">
+                  {!extraExpand ? `Xem tất cả` : `Thu gọn`}
+                  <svg className={`ml-1 w-4 h-4 transition-all duration-200 ${extraExpand ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+                  </svg>
+                </button>
+              </div>
             </div>
             <div id="reviews-section" className="mt-8 pt-4">
               <div className="flex justify-between items-center mb-3">
@@ -153,7 +187,7 @@ export default function DestinationDetailPage() {
                 </button>
               </div>
 
-              <ReviewForm entityType="destination" entityId={destination.id || slug} onReviewAdded={handleReviewAdded}/>
+              <ReviewForm entityType="destination" entityId={destination.id || slug} onReviewAdded={handleReviewAdded} />
 
               <div className={`mt-4 transition-all duration-300 overflow-hidden ${reviewsExpanded ? 'max-h-[2000px]' : 'max-h-[600px]'}`}>
                 <ReviewList entityType="destination" entityId={destination.id || slug} />

@@ -1,26 +1,46 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQueries } from "@tanstack/react-query";
 import React from "react";
-import { getComments } from "../../api/user_api";
+import { getComments, getRatings } from "../../api/user_api";
 
 export default function ReviewList({ entityType, entityId }) {
-  const { data, isLoading, isError } = useQuery({
-    queryKey: [`${entityType}-comments`, entityId],
-    queryFn: () => getComments(entityType, entityId),
-    retry: 1,
+  const results = useQueries({
+    queries: [
+      {
+        queryKey: [`${entityType}-comments`, entityId],
+        queryFn: () => getComments(entityType, entityId),
+        retry: 1,
+      },
+      {
+        queryKey: [`${entityType}-ratings`, entityId],
+        queryFn: () => getRatings(entityType, entityId),
+        retry: 1,
+      }
+    ]
   });
 
+  const isLoading = results.some(r => r.isLoading);
+  const isError = results.some(r => r.isError);
+
+  const comments = results[0]?.data || [];
+  const ratings = results[1]?.data || [];
+
   const reviews = React.useMemo(() => {
-    if (!data) return [];
-    return data.map((item) => ({
-      id: item.id,
-      comment: item.content,
-      user: {
-        name: item.full_name,
-      },
-      images: item?.image ? [`http://res.cloudinary.com/deavaowp3/${item?.image}`] : [],
-      created_at: item.created_at,
-    }));
-  }, [data]);
+    if (!comments) return [];
+    return comments.map((item) => {
+      const ratingObj = ratings.find(r => r.id === item.id || r.user_id === item.user_id);
+      return {
+        id: item.id,
+        comment: item.content,
+        user: {
+          name: item.full_name,
+        },
+        rating: ratingObj?.rating || 0,
+        images: item?.image ? [`http://res.cloudinary.com/deavaowp3/${item?.image}`] : [],
+        created_at: item.created_at,
+      };
+    });
+  }, [comments, ratings]);
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-24">
@@ -44,6 +64,7 @@ export default function ReviewList({ entityType, entityId }) {
       </div>
     );
   }
+
   return (
     <div className="space-y-4">
       {reviews.map((review) => (
@@ -63,7 +84,7 @@ export default function ReviewList({ entityType, entityId }) {
                   ))}
                 </div>
                 <span className="text-xs text-gray-500 ml-auto">
-                  {new Date(review.created_at).toLocaleDateString('vi-VN')}
+                  {new Date(review.created_at).toLocaleString('vi-VN')}
                 </span>
               </div>
 
@@ -72,7 +93,7 @@ export default function ReviewList({ entityType, entityId }) {
               </div>
               {review.images && review.images.length > 0 && (
                 <div className="mt-2 flex flex-wrap">
-                  {review.images.length === 1 && reviews.images !== null ? (
+                  {review.images.length === 1 ? (
                     <div
                       className="relative cursor-pointer rounded-lg overflow-hidden"
                       onClick={() => window.open(review.images[0], "_blank")}

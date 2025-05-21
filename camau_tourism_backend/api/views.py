@@ -188,13 +188,18 @@ class TourViewSet(viewsets.ModelViewSet):
 
 class DestinationViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
-    queryset = Destination.objects.all()
     serializer_class = DestinationSerializer
     lookup_field = 'slug'
+    queryset = Destination.objects.none()
+    def get_queryset(self):
+        return Destination.objects.annotate(
+            average_rating=Avg('ratings__rating'),
+            review_count=Count('ratings')
+        )
 
 class HotelViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
-    queryset = Hotel.objects.all()
+    queryset = Hotel.objects.none()
     serializer_class = HotelSerializer
     lookup_field = 'slug'
     @action(detail=True, methods=['get'], url_path='rooms')
@@ -203,6 +208,11 @@ class HotelViewSet(viewsets.ModelViewSet):
         rooms = hotel.rooms.all()
         serializer = HotelRoomSerializer(rooms, many = True)
         return Response(serializer.data)
+    def get_queryset(self):
+        return Hotel.objects.annotate(
+            average_rating=Avg('ratings__rating'),
+            review_count=Count('ratings')
+        )
 
 class FestivalViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
@@ -409,39 +419,48 @@ class RoomBookingViewSet(viewsets.ModelViewSet):
         return Response({'detail': 'Hủy đặt phòng thành công!'}, status=status.HTTP_200_OK)
 
 
-class ReviewListCreateAPIView(generics.ListCreateAPIView):
+class RatingListCreateAPIView(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     serializer_class = RatingSerializer
-
     def get_queryset(self):
         entity = self.kwargs['entity']
         obj_id = self.kwargs['pk']
         model = {'destination': Destination, 'hotel': Hotel, 'food': Cuisine}[entity]
         content_type = ContentType.objects.get_for_model(model)
         return Rating.objects.filter(content_type=content_type, object_id=obj_id)
-
     def perform_create(self, serializer):
         entity = self.kwargs['entity']
         obj_id = self.kwargs['pk']
         model = {'destination': Destination, 'hotel': Hotel, 'food': Cuisine}[entity]
         content_type = ContentType.objects.get_for_model(model)
-        serializer.save(
-            client=self.request.user.client,
+        client = self.request.user.client
+        existing = Rating.objects.filter(
+            client=client,
             content_type=content_type,
             object_id=obj_id
-        )
+        ).first()
+        rating = self.request.data.get('rating', 5)
+        if existing:
+            existing.rating = rating or 5
+            existing.save()
+            serializer.instance = existing
+        else:
+            serializer.save(
+                client=client,
+                content_type=content_type,
+                object_id=obj_id,
+                rating=rating or 5
+            )
 
 class CommentListCreateAPIView(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
     serializer_class = CommentSerializer
-
     def get_queryset(self):
         entity = self.kwargs['entity']
         obj_id = self.kwargs['pk']
         model = {'destination': Destination, 'hotel': Hotel, 'food': Cuisine}[entity]
         content_type = ContentType.objects.get_for_model(model)
         return Comment.objects.filter(content_type=content_type, object_id=obj_id, parent=None)
-
     def perform_create(self, serializer):
         entity = self.kwargs['entity']
         obj_id = self.kwargs['pk']

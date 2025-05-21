@@ -86,6 +86,8 @@ class TourSerializer(serializers.ModelSerializer):
             return obj.image.url
 
 class DestinationSerializer(serializers.ModelSerializer):
+    average_rating = serializers.SerializerMethodField()
+    review_count = serializers.SerializerMethodField()
     class Meta:
         model = Destination
         fields = '__all__'
@@ -93,6 +95,10 @@ class DestinationSerializer(serializers.ModelSerializer):
         data = super().to_representation(instance)
         data['image_url'] = instance.image_url.url if instance.image_url else None
         return data
+    def get_average_rating(self, obj):
+        return obj.average_rating
+    def get_review_count(self, obj):
+        return obj.review_count
 
 class ArticlesSerializer(serializers.ModelSerializer):
     cover_image_url = serializers.SerializerMethodField()
@@ -114,7 +120,6 @@ class CuisineSerializer(serializers.ModelSerializer):
         if obj.image:
             return obj.image.url
 
-
 class HotelRoomSerializer(serializers.ModelSerializer):
     image_url = serializers.SerializerMethodField()
     class Meta:
@@ -127,6 +132,8 @@ class HotelRoomSerializer(serializers.ModelSerializer):
 class HotelSerializer(serializers.ModelSerializer):
     image_cover = serializers.SerializerMethodField()
     min_price = serializers.SerializerMethodField()
+    average_rating = serializers.SerializerMethodField()
+    review_count = serializers.SerializerMethodField()
     class Meta:
         model = Hotel
         fields ='__all__'
@@ -137,6 +144,10 @@ class HotelSerializer(serializers.ModelSerializer):
         rooms = obj.rooms.all()
         min_room = rooms.order_by('price').first()
         return min_room.price if min_room else None
+    def get_average_rating(self, obj):
+        return obj.average_rating
+    def get_review_count(self, obj):
+        return obj.review_count
     
 class HotelAmenitySerializer(serializers.ModelSerializer):
      class Meta:
@@ -188,9 +199,10 @@ class RoomBookingSerializer(serializers.ModelSerializer):
     
 
 class RatingSerializer(serializers.ModelSerializer):
+    client = serializers.PrimaryKeyRelatedField(read_only=True)
     class Meta:
         model = Rating
-        fields = ['id', 'client', 'rating', 'comment', 'created_at', 'updated_at']
+        fields = ['id', 'client', 'rating', 'created_at', 'updated_at']
 
 class CommentSerializer(serializers.ModelSerializer):
     client = serializers.PrimaryKeyRelatedField(read_only=True)

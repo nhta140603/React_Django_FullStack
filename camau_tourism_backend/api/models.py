@@ -7,6 +7,7 @@ from cloudinary.models import CloudinaryField
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.fields import GenericRelation
+from django.db.models import Avg, Count
 class Client(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     avatar = CloudinaryField('image', folder='avatars', blank=True, null=True)
@@ -51,6 +52,18 @@ class Destination(models.Model):
         if not self.slug:
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
+    @property
+    def get_average_rating(self, obj):
+        value = getattr(obj, 'avg_rating', None)
+        if value is not None:
+            return round(value, 1) if value is not None else 0.0
+        return obj.average_rating
+    @property
+    def get_review_count(self, obj):
+        value = getattr(obj, 'num_reviews', None)
+        if value is not None:
+            return value
+        return obj.review_count
 
 class Tour(models.Model):
     name = models.CharField(max_length=255)
@@ -145,6 +158,18 @@ class Hotel(models.Model):
         if not self.slug:
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
+    @property
+    def get_average_rating(self, obj):
+        value = getattr(obj, 'avg_rating', None)
+        if value is not None:
+            return round(value, 1) if value is not None else 0.0
+        return obj.average_rating
+    @property
+    def get_review_count(self, obj):
+        value = getattr(obj, 'num_reviews', None)
+        if value is not None:
+            return value
+        return obj.review_count
 
 class HotelRoom(models.Model):
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name="rooms")
@@ -385,7 +410,6 @@ class Rating(models.Model):
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
     rating = models.PositiveSmallIntegerField()
-    comment = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta:

@@ -46,12 +46,12 @@ export default function HotelCard({ hotel, view = "list" }) {
           </div>
           <div className="flex items-center gap-2 mt-2 mb-2">
             <div className="font-bold text-sky-600 text-sm">
-              {hotel.rating?.toFixed(1) || "8.0"}
+              {(hotel.average_rating?.toFixed(1)) || "Chưa có"}
             </div>
             <span className="text-xs text-gray-500">
-              ({hotel.reviews || "0"} đánh giá)
+              ({hotel.review_count || "0"} đánh giá)
             </span>
-            <span className="text-xs text-gray-500">{hotel.ratingText || "Rất tốt"}</span>
+            {/* <span className="text-xs text-gray-500">{hotel.ratingText || "Rất tốt"}</span> */}
           </div>
           <div className="text-right">
             {hotel.price && (
@@ -110,12 +110,11 @@ export default function HotelCard({ hotel, view = "list" }) {
         </div>
         <div className="flex items-center gap-2 mt-2">
           <div className="font-bold text-sky-600 text-base">
-            {hotel.rating?.toFixed(1) || "8.0"}
+            {(hotel.average_rating?.toFixed(1)) || "8.0"}
           </div>
           <span className="text-xs text-gray-500">
-            ({hotel.reviews || "0"} đánh giá)
+            ({hotel.review_count || "0"} đánh giá)
           </span>
-          <span className="text-xs text-gray-500">{hotel.ratingText || "Rất tốt"}</span>
         </div>
       </div>
 

@@ -70,6 +70,82 @@ function MobileFilterSheet({ open, onClose, search, setSearch, typeOptions, sele
   );
 }
 
+function StarRating({ rating, reviewCount, small = false }) {
+  const stars = [];
+  const fullStars = Math.floor(rating);
+  const halfStar = rating % 1 >= 0.5;
+  const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+  
+  const starSize = small ? "w-3 h-3" : "w-4 h-4";
+  
+  // Full stars
+  for (let i = 0; i < fullStars; i++) {
+    stars.push(
+      <svg key={`full-${i}`} className={`${starSize} text-amber-400`} fill="currentColor" viewBox="0 0 20 20">
+        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.799-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+      </svg>
+    );
+  }
+  
+  // Half star
+  if (halfStar) {
+    stars.push(
+      <svg key="half" className={`${starSize} text-amber-400`} viewBox="0 0 20 20">
+        <defs>
+          <linearGradient id="halfGradient">
+            <stop offset="50%" stopColor="#FBBF24" />
+            <stop offset="50%" stopColor="#D1D5DB" />
+          </linearGradient>
+        </defs>
+        <path fill="url(#halfGradient)" d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.799-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+      </svg>
+    );
+  }
+  
+  // Empty stars
+  for (let i = 0; i < emptyStars; i++) {
+    stars.push(
+      <svg key={`empty-${i}`} className={`${starSize} text-gray-300`} fill="currentColor" viewBox="0 0 20 20">
+        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.799-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+      </svg>
+    );
+  }
+  
+  return (
+    <div className="flex items-center">
+      <div className="flex items-center mr-1">
+        {stars}
+      </div>
+      <span className={`${small ? "text-xs" : "text-sm"} font-medium text-gray-600`}>
+        {rating ? rating.toFixed(1) : "0.0"}
+        {reviewCount !== undefined && (
+          <span className="text-gray-400 ml-1">
+            ({reviewCount})
+          </span>
+        )}
+      </span>
+    </div>
+  );
+}
+
+function RatingBadge({ rating }) {
+  let bgColor;
+  if (rating >= 4.5) bgColor = "bg-green-500";
+  else if (rating >= 4) bgColor = "bg-green-400";
+  else if (rating >= 3.5) bgColor = "bg-amber-400";
+  else if (rating >= 3) bgColor = "bg-amber-500";
+  else bgColor = "bg-red-400";
+  
+  return (
+    <div className={`${bgColor} text-white text-xs font-bold px-2 py-1 rounded flex items-center`}>
+      <svg className="w-3 h-3 mr-0.5" fill="currentColor" viewBox="0 0 20 20">
+        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118l-2.799-2.034c-.784-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+      </svg>
+      {rating.toFixed(1)}
+    </div>
+  );
+}
+
 function SkeletonDestinationCard() {
   return (
     <div className="rounded-xl overflow-hidden shadow-lg animate-pulse bg-gray-100 flex flex-col h-full min-w-[170px] max-w-[210px]">
@@ -78,6 +154,12 @@ function SkeletonDestinationCard() {
         <div className="h-4 bg-gray-300 rounded w-2/3 mb-2"></div>
         <div className="h-3 bg-gray-200 rounded w-5/6 mb-1"></div>
         <div className="h-3 bg-gray-200 rounded w-3/4 mb-2"></div>
+        <div className="flex space-x-1 mb-2">
+          {[...Array(5)].map((_, i) => (
+            <div key={i} className="w-3 h-3 rounded-full bg-gray-200"></div>
+          ))}
+          <div className="w-8 h-3 bg-gray-200 rounded ml-1"></div>
+        </div>
         <div className="mt-auto h-7 w-full bg-cyan-200/60 rounded-xl"></div>
       </div>
     </div>
@@ -257,12 +339,20 @@ export default function DestinationList() {
                         <div className="absolute top-1 right-1 bg-cyan-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-lg">
                           {dest.type}
                         </div>
+                        {dest.average_rating > 0 && (
+                          <div className="absolute bottom-1 left-1">
+                            <RatingBadge rating={dest.average_rating || 0} />
+                          </div>
+                        )}
                       </div>
                       <div className="p-2">
                         <h3 className="font-bold text-sm text-cyan-800 line-clamp-1 mb-1">{dest.name}</h3>
                         <div className="flex items-center text-gray-500 text-xs mb-1">
                           <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                           <span className="line-clamp-1">{dest.address || 'Cà Mau'}</span>
+                        </div>
+                        <div className="mb-1.5">
+                          <StarRating rating={dest.average_rating || 0} reviewCount={dest.review_count || 0} small={true} />
                         </div>
                         <p className="text-gray-600 text-xs line-clamp-2 mb-2">
                           {dest.description || 'Địa điểm du lịch hấp dẫn tại Cà Mau'}
@@ -301,12 +391,24 @@ export default function DestinationList() {
                           </span>
                         )}
                       </div>
+                      {dest.average_rating > 0 && (
+                        <div className="absolute bottom-2 left-2">
+                          <div className="bg-white/90 backdrop-blur-sm px-2 py-1 rounded-lg shadow-md flex items-center">
+                            <RatingBadge rating={dest.average_rating || 0} />
+                          </div>
+                        </div>
+                      )}
                     </div>
                     <div className="p-4 flex-1 flex flex-col">
-                      <h3 className="font-bold text-lg text-cyan-800 mb-1 line-clamp-1 group-hover:text-cyan-600 transition-colors">{dest.name}</h3>
-                      <div className="flex items-center text-gray-500 text-sm mb-2">
+                      <div className="flex justify-between items-start mb-1">
+                        <h3 className="font-bold text-lg text-cyan-800 line-clamp-1 group-hover:text-cyan-600 transition-colors">{dest.name}</h3>
+                      </div>
+                      <div className="flex items-center text-gray-500 text-sm mb-1">
                         <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                         <span className="line-clamp-1">{dest.address || 'Cà Mau'}</span>
+                      </div>
+                      <div className="mb-2 mt-1">
+                        <StarRating rating={dest.average_rating || 0} reviewCount={dest.review_count || 0} />
                       </div>
                       <p className="text-gray-600 text-sm line-clamp-2 mb-3">
                         {dest.description || 'Địa điểm du lịch hấp dẫn tại Cà Mau'}

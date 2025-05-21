@@ -489,13 +489,18 @@ export default function HotelListPage() {
                 </div>
               </div>
             </div>
-            <div className="flex flex-col items-end">
+            {/* <div className="flex flex-col items-end">
               <div className="bg-green-50 text-green-700 px-2 py-0.5 rounded text-sm font-medium flex items-center">
-                {hotel.rating || '8.4'}
-                <span className="text-xs text-green-600 ml-1">Tuyệt vời</span>
+                {hotel.average_rating ? hotel.average_rating.toFixed(1) : '8.4'}
+                <span className="text-xs text-green-600 ml-1">
+                  {hotel.average_rating >= 9.0 ? 'Xuất sắc' : 
+                  hotel.average_rating >= 8.0 ? 'Tuyệt vời' : 
+                  hotel.average_rating >= 7.0 ? 'Rất tốt' : 
+                  hotel.average_rating >= 6.0 ? 'Tốt' : 'Bình thường'}
+                </span>
               </div>
               <div className="text-gray-500 text-sm">({hotel.review_count || '208'} đánh giá)</div>
-            </div>
+            </div> */}
           </div>
 
           <div className="mt-2 text-gray-700 text-sm flex items-start gap-1">

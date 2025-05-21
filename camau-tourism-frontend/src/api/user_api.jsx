@@ -114,6 +114,21 @@ export const postReview = (entityType, entityId, data) => {
       throw new Error("Unknown entity type");
   }
 };
+
+export function postRating(entity, entityId, data) {
+  const isFormData = data instanceof FormData;
+  return fetchWithAuth(`${API_URL}${entity}/${entityId}/ratings/`, {
+    method: "POST",
+    body: isFormData ? data : JSON.stringify(data)
+  });
+}
+
+export function getRatings(entityType, entityId) {
+  return fetchWithAuth(`${API_URL}${entityType}/${entityId}/ratings/`, {
+    method: "GET",
+  });
+}
+
 export function postComment(entity, entityId, data) {
   const isFormData = data instanceof FormData;
   return fetchWithAuth(`${API_URL}${entity}/${entityId}/comments/`, {
