@@ -378,7 +378,6 @@ const TourDetail = () => {
     );
   }
 
-  // Mobile FAQ accordion
   function MobileFAQ() {
     const faqs = [
       {
@@ -564,9 +563,25 @@ const TourDetail = () => {
               viewport={{ once: true }}
               className="bg-white rounded-2xl shadow-md overflow-hidden mb-6"
             >
-              <div className="p-4 md:p-8">
-                <h2 className="text-xl md:text-3xl font-bold text-gray-800 mb-4 md:mb-6">Giới thiệu về tour</h2>
-                <div className="prose prose-sm md:prose-lg max-w-none text-gray-600" dangerouslySetInnerHTML={{ __html: description }} />
+              <div className="p-5 md:p-8 rounded-lg shadow-sm border border-gray-100">
+                <h2 className="text-2xl md:text-3xl font-bold text-indigo-800 mb-5 relative inline-block">
+                  Giới thiệu về tour
+                  <span className="absolute left-0 -bottom-1 w-1/3 h-1 bg-yellow-400 rounded-full"></span>
+                </h2>
+
+                <div className="prose prose-lg max-w-none text-gray-700 leading-relaxed">
+                  <div
+                    className="tour-description"
+                    dangerouslySetInnerHTML={{ __html: description }}
+                  />
+                </div>
+
+                <div className="mt-6 pt-4 border-t border-gray-200 flex items-center text-sm text-indigo-600">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span>Thông tin chi tiết được cập nhật mới nhất</span>
+                </div>
               </div>
             </motion.div>
 
@@ -588,14 +603,12 @@ const TourDetail = () => {
               </div>
             </motion.div>
 
-            {/* FAQ for mobile */}
             <div className="mt-8 md:hidden">
               <h2 className="text-xl text-left font-bold text-gray-800 mb-4">Câu hỏi thường gặp</h2>
               <MobileFAQ />
             </div>
           </div>
 
-          {/* Right: Đặt tour (desktop only) */}
           <div className="hidden md:block md:col-span-1">
             <motion.div
               initial={{ opacity: 0, y: 20 }}

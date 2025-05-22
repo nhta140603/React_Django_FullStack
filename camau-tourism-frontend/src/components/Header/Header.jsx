@@ -116,11 +116,12 @@ function Header() {
 
   return (
     <header className={classNames(
-      "transition-all duration-300 text-white sticky top-0 z-50 h-[60px]",
+      "transition-all duration-300 text-white sticky top-0 z-50",
       scrolled
         ? "bg-blue-600/95 backdrop-blur-lg shadow-md"
         : "bg-blue-600/95 backdrop-blur-lg shadow-md"
     )}>
+      <div className='mx-auto max-w-7xl'>
       <div className="flex lg:hidden justify-between items-center px-3 py-2 relative">
 
         <button
@@ -342,94 +343,100 @@ function Header() {
         </ul>
       </div>
 
-      <div className="hidden lg:flex justify-between items-center max-w-[1310px] mx-auto px-6 py-2">
-        <Link to="/" className="flex items-center gap-2 group">
-          <img src={logo} alt="logo" className="h-10 w-10 rounded-full shadow-md border-2 border-white" />
-          <span className="text-2xl font-black bg-gradient-to-br from-white to-cyan-200 bg-clip-text text-transparent">
-            Cà Mau <span className="text-yellow-300">Tourism</span>
-          </span>
-        </Link>
-        <nav>
-          <ul className="flex space-x-6 font-medium text-base items-center">
-            {menuItems.map((item, index) => (
-              <li key={index}>
-                <Link
-                  to={item.path}
-                  className="relative py-2 px-1 hover:text-cyan-200 transition-colors duration-300 group"
-                >
-                  <span>{item.name}</span>
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-cyan-300 transition-all duration-300 group-hover:w-full"></span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-        <div className="flex items-center gap-3">
-          {loading ? (
-            <div className="w-24 h-8 bg-blue-400/30 rounded-full animate-pulse"></div>
-          ) : !user ? (
-            <div className="flex items-center gap-2">
-              <Link
-                to="/login"
-                className="px-4 py-2 rounded-full bg-cyan-500 hover:bg-cyan-400 text-blue-900 font-bold shadow transition-all duration-300 hover:shadow-lg hover:scale-105"
-              >
-                Đăng nhập
-              </Link>
-              <Link
-                to="/register"
-                className="px-4 py-2 rounded-full border-2 border-cyan-300 hover:bg-cyan-500 hover:border-transparent hover:text-blue-900 transition-all duration-300 hover:shadow-lg"
-              >
-                Đăng ký
-              </Link>
-            </div>
-          ) : (
-            <div className="relative" ref={accountRef}>
+<div className="hidden lg:flex items-center max-w-[1310px] mx-auto px-6 py-2 w-full">
+  {/* Logo bên trái */}
+  <Link to="/" className="flex items-center gap-2 group shrink-0">
+    <img src={logo} alt="logo" className="h-10 w-10 rounded-full shadow-md border-2 border-white" />
+    <span className="text-2xl font-black bg-gradient-to-br from-white to-cyan-200 bg-clip-text text-transparent">
+      Cà Mau <span className="text-yellow-300">Tourism</span>
+    </span>
+  </Link>
 
-              <button
-                className="flex items-center space-x-2 px-3 py-2 rounded-full hover:bg-blue-700/60 transition-all duration-300 font-bold"
-                onClick={() => setAccountOpen((prev) => !prev)}
-                aria-haspopup="true"
-                aria-expanded={accountOpen}
-              >
-                <img src={avatarUrl} alt="Avatar" className="w-9 h-9 rounded-full border-2 border-cyan-300 shadow object-cover" />
-                <span className="hidden sm:inline text-sm">
-                  {user.user.last_name || user.user.username || user.user.email.split('@')[0]}
-                </span>
-                <FaChevronDown className={classNames("transition-transform duration-300", accountOpen ? "rotate-180" : "")} />
-              </button>
-              {accountOpen && (
-                <div className="absolute right-0 mt-1 w-56 bg-white text-gray-800 shadow-xl rounded-xl py-1 z-50 dropdown-menu origin-top-right">
-                  <div className="px-4 py-3 border-b border-gray-100">
-                    <p className="text-sm font-semibold text-gray-900 truncate">
-                      {user.user.first_name} {user.user.last_name}
-                    </p>
-                    <p className="text-xs text-gray-500 truncate">
-                      {user.user.email}
-                    </p>
-                  </div>
-                  <Link to="/trang-ca-nhan" className="flex items-center px-4 py-3 hover:bg-blue-50 transition-colors text-blue-700">
-                    <FaUserCog className="mr-3 text-blue-600" />
-                    <span>Quản lý tài khoản</span>
-                  </Link>
-                  <Link to="/personaltrip" className="flex items-center px-4 py-3 hover:bg-blue-50 transition-colors text-blue-700">
-                    <FaUserCircle className="mr-3 text-blue-600" />
-                    <span>Lộ trình cá nhân</span>
-                  </Link>
-                  <div className="border-t border-gray-100 my-1"></div>
-                  <button
-                    onClick={logout}
-                    className="flex items-center px-4 py-3 w-full hover:bg-red-50 text-left text-red-600 transition-colors"
-                  >
-                    <FaSignOutAlt className="mr-3" />
-                    <span>Đăng xuất</span>
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-        <ToastContainer position='top-right' autoClose={3000}></ToastContainer>
+  {/* Menu giữa, luôn căn giữa dù hai bên rộng bao nhiêu */}
+  <nav className="flex-1 flex justify-center">
+    <ul className="flex space-x-6 font-medium text-base items-center">
+      {menuItems.map((item, index) => (
+        <li key={index}>
+          <Link
+            to={item.path}
+            className="relative py-2 px-1 hover:text-cyan-200 transition-colors duration-300 group"
+          >
+            <span>{item.name}</span>
+            <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-cyan-300 transition-all duration-300 group-hover:w-full"></span>
+          </Link>
+        </li>
+      ))}
+    </ul>
+  </nav>
+
+  {/* Auth/account bên phải */}
+  <div className="flex items-center gap-3 shrink-0">
+    {loading ? (
+      <div className="w-24 h-8 bg-blue-400/30 rounded-full animate-pulse"></div>
+    ) : !user ? (
+      <div className="flex items-center gap-2">
+        <Link
+          to="/login"
+          className="px-4 py-2 rounded-full bg-cyan-500 hover:bg-cyan-400 text-blue-900 font-bold shadow transition-all duration-300 hover:shadow-lg hover:scale-105"
+        >
+          Đăng nhập
+        </Link>
+        <Link
+          to="/register"
+          className="px-4 py-2 rounded-full border-2 border-cyan-300 hover:bg-cyan-500 hover:border-transparent hover:text-blue-900 transition-all duration-300 hover:shadow-lg"
+        >
+          Đăng ký
+        </Link>
       </div>
+    ) : (
+      <div className="relative" ref={accountRef}>
+        <button
+          className="flex items-center space-x-2 px-3 py-2 rounded-full hover:bg-blue-700/60 transition-all duration-300 font-bold"
+          onClick={() => setAccountOpen((prev) => !prev)}
+          aria-haspopup="true"
+          aria-expanded={accountOpen}
+        >
+          <img src={avatarUrl} alt="Avatar" className="w-9 h-9 rounded-full border-2 border-cyan-300 shadow object-cover" />
+          <span className="hidden sm:inline text-sm">
+            {user.user.last_name || user.user.username || user.user.email.split('@')[0]}
+          </span>
+          <FaChevronDown className={classNames("transition-transform duration-300", accountOpen ? "rotate-180" : "")} />
+        </button>
+        {accountOpen && (
+          <div className="absolute right-0 mt-1 w-56 bg-white text-gray-800 shadow-xl rounded-xl py-1 z-50 dropdown-menu origin-top-right">
+            <div className="px-4 py-3 border-b border-gray-100">
+              <p className="text-sm font-semibold text-gray-900 truncate">
+                {user.user.first_name} {user.user.last_name}
+              </p>
+              <p className="text-xs text-gray-500 truncate">
+                {user.user.email}
+              </p>
+            </div>
+            <Link to="/trang-ca-nhan" className="flex items-center px-4 py-3 hover:bg-blue-50 transition-colors text-blue-700">
+              <FaUserCog className="mr-3 text-blue-600" />
+              <span>Quản lý tài khoản</span>
+            </Link>
+            <Link to="/personaltrip" className="flex items-center px-4 py-3 hover:bg-blue-50 transition-colors text-blue-700">
+              <FaUserCircle className="mr-3 text-blue-600" />
+              <span>Lộ trình cá nhân</span>
+            </Link>
+            <div className="border-t border-gray-100 my-1"></div>
+            <button
+              onClick={logout}
+              className="flex items-center px-4 py-3 w-full hover:bg-red-50 text-left text-red-600 transition-colors"
+            >
+              <FaSignOutAlt className="mr-3" />
+              <span>Đăng xuất</span>
+            </button>
+          </div>
+        )}
+      </div>
+    )}
+  </div>
+  <ToastContainer position='top-right' autoClose={3000}></ToastContainer>
+</div>
+      </div>
+
 
       <style>
         {`

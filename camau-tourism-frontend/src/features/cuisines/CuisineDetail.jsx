@@ -1,48 +1,61 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useRef, useLayoutEffect, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getDetail } from "../../api/user_api";
-import ReviewForm from "../../components/Review_Rating/ReviewForm"
-import ReviewList from "../../components/Review_Rating/ReviewList"
+import ReviewForm from "../../components/Review_Rating/ReviewForm";
+import ReviewList from "../../components/Review_Rating/ReviewList";
+
 export default function CuisineDetail() {
     const { slug } = useParams();
-    const [currentImg, setCurrentImg] = useState(0);
-    const [reviewsExpanded, setReviewsExpanded] = useState(false);
     const navigate = useNavigate();
-    const {
-        data: cuisine,
-        isLoading,
-        isError,
-        error
-    } = useQuery({
+    const { data: cuisine, isLoading, isError, error } = useQuery({
         queryKey: ["cuisine", slug],
         queryFn: () => getDetail("cuisines", slug),
         enabled: !!slug,
-        retry: false
+        retry: false,
     });
 
-    const [activeImage, setActiveImage] = useState(null);
+    const [descExpanded, setDescExpanded] = useState(false);
+    const [descMaxHeight, setDescMaxHeight] = useState(300);
+    const descRef = useRef();
+    const [reviewsExpanded, setReviewsExpanded] = useState(false);
     const [showImageViewer, setShowImageViewer] = useState(false);
+    const [activeImage, setActiveImage] = useState(null);
+    const [extraExpand, setExtraExpand] = useState(false);
+    useLayoutEffect(() => {
+        if (descExpanded && descRef.current) {
+            setDescMaxHeight(descRef.current.scrollHeight);
+        } else {
+            setDescMaxHeight(300);
+        }
+    }, [descExpanded, cuisine?.description]);
 
     useEffect(() => {
-        if (cuisine?.image) {
-            setActiveImage(cuisine.image);
-        }
+        if (cuisine?.image) setActiveImage(cuisine.image);
     }, [cuisine]);
 
-    const handleImageClick = (image) => {
-        setActiveImage(image);
-        setShowImageViewer(true);
-    };
     const handleReviewAdded = () => {
         setReviewsExpanded(true);
         setTimeout(() => {
-            document.getElementById('reviews-section')?.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
+            document.getElementById("reviews-section")?.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
             });
         }, 100);
     };
+
+    useLayoutEffect(() => {
+        if (extraExpand && descRef.current) {
+            setDescMaxHeight(descRef.current.scrollHeight);
+        } else {
+            setDescMaxHeight(500);
+        }
+    }, [extraExpand, cuisine?.description]);
+    const gallery =
+        cuisine?.gallery?.length > 0
+            ? cuisine.gallery
+            : Array(4).fill(cuisine?.image || "https://placehold.co/300/amber/white?text=Ảnh");
+
     if (isLoading) {
         return (
             <div className="flex flex-col items-center py-28 text-cyan-600 font-bold text-xl">
@@ -115,22 +128,19 @@ export default function CuisineDetail() {
                             </svg>
                             Quay lại danh sách món ăn
                         </button>
-
                         <div className="flex items-center gap-2 mb-2">
-                            {cuisine.tags?.map((tag, index) => (
+                            {cuisine.tags?.map((tag, idx) => (
                                 <span
-                                    key={index}
+                                    key={idx}
                                     className="px-3 py-1 bg-amber-500 text-black text-xs font-medium rounded-full"
                                 >
                                     {tag === "seafood" ? "Hải sản" : tag === "specialty" ? "Đặc sản" : tag}
                                 </span>
                             ))}
                         </div>
-
                         <h1 className="text-4xl md:text-6xl font-bold text-white mb-2 drop-shadow-lg">
                             {cuisine.name}
                         </h1>
-
                         <div className="flex items-center text-white/90 text-sm md:text-base gap-4 mt-4">
                             <div className="flex items-center gap-1">
                                 <svg className="w-5 h-5 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
@@ -142,7 +152,6 @@ export default function CuisineDetail() {
                     </div>
                 </div>
             </div>
-
             <div className="max-w-7xl mx-auto px-4 py-12 -mt-10 relative z-10">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div className="md:col-span-2 bg-white rounded-2xl">
@@ -151,43 +160,50 @@ export default function CuisineDetail() {
                                 <div className="w-8 h-1 bg-amber-500 rounded-full"></div>
                                 <h2 className="text-2xl font-bold text-gray-800">Giới thiệu</h2>
                             </div>
-
-                            <div className="prose max-w-none text-gray-700"
-                                dangerouslySetInnerHTML={{
-                                    __html: cuisine.description ||
-                                        "<p>Món ăn đặc trưng của Cà Mau, mang đậm hương vị của đất mũi phương Nam với nguyên liệu tươi ngon từ biển và rừng.</p>"
+                            <div
+                                className="prose max-w-none prose-p:text-gray-600 prose-headings:text-gray-800 prose-img:rounded-lg prose-img:shadow-sm prose-a:text-blue-600 transition-all duration-300 overflow-hidden"
+                                ref={descRef}
+                                style={{
+                                    maxHeight: `${descMaxHeight}px`
                                 }}
+                                dangerouslySetInnerHTML={{ __html: cuisine.description || "" }}
                             />
+                            {!extraExpand && (
+                                <div className="h-20 bg-gradient-to-t from-white to-transparent w-full -mt-20 relative pointer-events-none"></div>
+                            )}
+
+                            <div className="text-center mt-2">
+                                <button
+                                    onClick={() => setExtraExpand(!extraExpand)}
+                                    className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50 transition-all"
+                                >
+                                    {!extraExpand ? `Xem thêm` : `Thu gọn`}
+                                    <svg className={`ml-1.5 w-4 h-4 transition-transform ${extraExpand ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
                         <div id="reviews-section" className="mt-8 pt-4">
                             <div className="flex justify-between items-center mb-3">
                                 <h2 className="text-lg font-bold text-cyan-900">Đánh giá về địa điểm</h2>
                                 <button
-                                    onClick={() => setReviewsExpanded(!reviewsExpanded)}
+                                    onClick={() => setReviewsExpanded(v => !v)}
                                     className="text-cyan-600 hover:text-cyan-800 flex items-center text-sm"
                                 >
-                                    {reviewsExpanded ? 'Thu gọn' : 'Xem tất cả'}
-                                    <svg
-                                        className={`ml-1 w-4 h-4 transition-transform ${reviewsExpanded ? 'rotate-180' : ''}`}
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                    >
+                                    {reviewsExpanded ? "Thu gọn" : "Xem tất cả"}
+                                    <svg className={`ml-1 w-4 h-4 transition-transform ${reviewsExpanded ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                                     </svg>
                                 </button>
                             </div>
-
                             <ReviewForm entityType="food" entityId={cuisine.id || slug} onReviewAdded={handleReviewAdded} />
-
-                            <div className={`mt-4 transition-all duration-300 overflow-hidden ${reviewsExpanded ? 'max-h-[2000px]' : 'max-h-[600px]'}`}>
+                            <div className={`mt-4 transition-all duration-300 overflow-hidden ${reviewsExpanded ? "max-h-[2000px]" : "max-h-[600px]"}`}>
                                 <ReviewList entityType="food" entityId={cuisine.id || slug} />
                             </div>
-
                             {!reviewsExpanded && (
                                 <div className="h-20 bg-gradient-to-t from-white to-transparent w-full -mt-20 relative pointer-events-none"></div>
                             )}
-
                             {!reviewsExpanded && (
                                 <div className="text-center mt-2">
                                     <button
@@ -208,7 +224,7 @@ export default function CuisineDetail() {
                         <div className="bg-white rounded-2xl shadow-xl p-6">
                             <div className="flex items-center justify-between mb-4">
                                 <h3 className="text-xl font-bold text-gray-800">Hình ảnh</h3>
-                                {(cuisine.gallery?.length > 4) && (
+                                {(gallery.length > 4) && (
                                     <button
                                         className="text-amber-500 hover:text-amber-600 text-sm font-medium flex items-center gap-1"
                                         onClick={() => setShowImageViewer(true)}
@@ -220,24 +236,25 @@ export default function CuisineDetail() {
                                     </button>
                                 )}
                             </div>
-
                             <div className="grid grid-cols-2 gap-3">
-                                {(cuisine.gallery || [cuisine.image, cuisine.image, cuisine.image, cuisine.image]).slice(0, 4).map((image, index) => (
+                                {gallery.slice(0, 4).map((image, idx) => (
                                     <div
-                                        key={index}
+                                        key={idx}
                                         className="aspect-square rounded-lg overflow-hidden cursor-pointer"
-                                        onClick={() => handleImageClick(image)}
+                                        onClick={() => {
+                                            setActiveImage(image);
+                                            setShowImageViewer(true);
+                                        }}
                                     >
                                         <img
-                                            src={image || `https://placehold.co/300/amber/white?text=${index + 1}`}
-                                            alt={`${cuisine.name} ${index + 1}`}
+                                            src={image || `https://placehold.co/300/amber/white?text=${idx + 1}`}
+                                            alt={`${cuisine.name} ${idx + 1}`}
                                             className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
                                         />
                                     </div>
                                 ))}
                             </div>
                         </div>
-
                         <div className="bg-white rounded-2xl shadow-xl p-6">
                             <h3 className="text-xl font-bold text-gray-800 mb-4">Thông tin thêm</h3>
                             <div className="space-y-4">
@@ -261,7 +278,6 @@ export default function CuisineDetail() {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
-
                     <div className="max-w-4xl w-full">
                         <div className="w-full aspect-[4/3] relative">
                             <img
@@ -270,18 +286,17 @@ export default function CuisineDetail() {
                                 className="w-full h-full object-contain"
                             />
                         </div>
-
                         <div className="mt-6 flex justify-center">
                             <div className="grid grid-cols-6 gap-2">
-                                {(cuisine.gallery || [cuisine.image, cuisine.image, cuisine.image, cuisine.image]).map((image, index) => (
+                                {gallery.map((image, idx) => (
                                     <div
-                                        key={index}
-                                        className={`aspect-square rounded overflow-hidden cursor-pointer border-2 ${activeImage === image ? 'border-amber-500' : 'border-transparent'}`}
+                                        key={idx}
+                                        className={`aspect-square rounded overflow-hidden cursor-pointer border-2 ${activeImage === image ? "border-amber-500" : "border-transparent"}`}
                                         onClick={() => setActiveImage(image)}
                                     >
                                         <img
-                                            src={image || `https://placehold.co/200/amber/white?text=${index + 1}`}
-                                            alt={`${cuisine.name} ${index + 1}`}
+                                            src={image || `https://placehold.co/200/amber/white?text=${idx + 1}`}
+                                            alt={`${cuisine.name} ${idx + 1}`}
                                             className="w-full h-full object-cover"
                                         />
                                     </div>

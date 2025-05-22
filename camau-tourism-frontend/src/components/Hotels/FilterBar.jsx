@@ -14,12 +14,11 @@ export default function FilterBar({ onFilter, count = 0 }) {
 
   const handlePopularChange = (value) => {
     setPopular([value]);
-    setShowOption(false); // Đóng dropdown sau khi chọn
+    setShowOption(false);
   };
 
   const handleShowOption = () => setShowOption((prev) => !prev);
 
-  // Đóng dropdown khi click ra ngoài
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -45,7 +44,7 @@ export default function FilterBar({ onFilter, count = 0 }) {
   }, [popular, view]);
 
   return (
-    <div className="flex items-center flex-wrap h-[55px] gap-48">
+    <div className="flex items-center flex-wrap h-[55px] gap-44">
       <div className="flex flex-col w-[300px]">
         <span className="font-bold ">Tỉnh Cà Mau</span>
         <span className="text-xs">{count} nơi lưu trú được tìm thấy</span>

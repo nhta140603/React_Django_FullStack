@@ -113,12 +113,22 @@ class ArticlesSerializer(serializers.ModelSerializer):
 
 class CuisineSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
+    average_rating = serializers.SerializerMethodField()
+    review_count = serializers.SerializerMethodField()
     class Meta:
         model = Cuisine
         fields = '__all__'
     def get_image(self, obj):
         if obj.image:
             return obj.image.url
+    def get_average_rating(self, obj):
+        avg = obj.ratings.aggregate(avg=Avg('rating'))['avg']
+        if avg is not None:
+            return round(avg, 1)
+        return None
+
+    def get_review_count(self, obj):
+        return obj.ratings.count()
 
 class HotelRoomSerializer(serializers.ModelSerializer):
     image_url = serializers.SerializerMethodField()

@@ -3,11 +3,11 @@
 
 @custom-variant dark (&:is(.dark *));
 
-.text-right{
+.text-right {
     text-align: right;
 }
 
-.r-1ihkh82{
+.r-1ihkh82 {
     background-color: rgba(247, 249, 250, 1.00);
 }
 
@@ -41,14 +41,17 @@
     margin-left: -8px;
     margin-right: -8px;
 }
+
 .r-1pn2ns4a {
     padding-left: 8px;
     padding-right: 8px;
 }
+
 .r-oyd9sga {
     padding-bottom: 4px;
     padding-top: 4px;
 }
+
 .r-14lw9ot {
     background-color: rgba(255, 255, 255, 1.00);
 }
@@ -56,9 +59,11 @@
 .r-cqzzvf {
     border-top-right-radius: 20px;
 }
+
 .r-f1w8kp {
     border-top-left-radius: 20px;
 }
+
 .r-3mtglp {
     row-gap: 16px;
 }
@@ -67,11 +72,23 @@
     box-shadow: 0px 2px 5px rgba(3, 18, 26, 0.15);
 }
 
-body{
+body,
+p,
+span {
     overflow-anchor: none;
+    font-family: 'Be Vietnam Pro', Arial, sans-serif;
+    font-size: 1rem;
+    line-height: 1.6;
 }
 
-.background-orange{
+h1,
+h2,
+h3,
+h4 {
+    font-family: 'Montserrat', 'Be Vietnam Pro', Arial, sans-serif;
+}
+
+.background-orange {
     background-color: #F05800;
 }
 
@@ -183,10 +200,11 @@ body{
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
+    * {
+        @apply border-border outline-ring/50;
     }
-  body {
-    @apply bg-background text-foreground;
+
+    body {
+        @apply bg-background text-foreground;
     }
 }

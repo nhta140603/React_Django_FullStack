@@ -109,7 +109,7 @@ export default function ProfileSidebar({ avatar, name }) {
         
         <div className={`border-t border-blue-400 border-opacity-30 ${isCollapsed ? 'mx-2' : 'mx-4'} mb-4`}></div>
         
-        <nav className="flex-1 flex flex-col gap-1 px-2 overflow-y-auto custom-scrollbar">
+        <nav className="flex-1 flex flex-col gap-1 px-2">
           {menuItems.map(item => (
             <Link
               key={item.key}

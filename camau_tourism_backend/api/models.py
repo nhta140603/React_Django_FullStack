@@ -403,6 +403,18 @@ class Cuisine(models.Model):
             from django.utils.text import slugify
             self.slug = slugify(self.name)
         super().save(*args, **kwargs)
+    @property
+    def get_average_rating(self, obj):
+        value = getattr(obj, 'avg_rating', None)
+        if value is not None:
+            return round(value, 1) if value is not None else 0.0
+        return obj.average_rating
+    @property
+    def get_review_count(self, obj):
+        value = getattr(obj, 'num_reviews', None)
+        if value is not None:
+            return value
+        return obj.review_count
 
 class Rating(models.Model):
     client = models.ForeignKey('Client', on_delete=models.CASCADE)

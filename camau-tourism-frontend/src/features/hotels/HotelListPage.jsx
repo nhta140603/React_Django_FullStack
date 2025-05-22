@@ -772,11 +772,11 @@ export default function HotelListPage() {
       ) : (
         <div className="min-h-screen flex gap-3 max-w-7xl mx-auto py-5 px-4">
           <div className="hidden md:block w-80 ">
-            <FilterSidebar onFilter={handleFilter} />
+            <FilterSidebar onFilter={handleFilter} hotels={hotel}/>
           </div>
           <main className="flex flex-col gap-3 w-full">
             <div
-              className="sticky top-[60px] z-20 bg-white flex flex-col sm:flex-row sm:items-center justify-end gap-3 py-3"
+              className="sticky top-[60px] z-2 bg-white flex flex-col sm:flex-row sm:items-center justify-end gap-3 py-3"
             >
               <FilterBar onFilter={handleFilterPopular} count={filteredHotels.length} />
             </div>

@@ -169,8 +169,8 @@ export default function HotelPage() {
     // { key: "email", title: "Email", inputType: "text", editable: true },
     { key: "star_rating", title: "Số sao", inputType: "text", editable: true },
     // { key: "website", title: "Website", inputType: "text", editable: true },
-    // { key: "latitude", title: "Vĩ độ", inputType: "number", editable: true },
-    // { key: "longitude", title: "Kinh độ", inputType: "number", editable: true },
+    { key: "latitude", title: "Vĩ độ", inputType: "number", editable: true },
+    { key: "longitude", title: "Kinh độ", inputType: "number", editable: true },
     { key: "image_cover", title: "Hình ảnh", inputType: "file", editable: true },
     {
       key: "amenities",

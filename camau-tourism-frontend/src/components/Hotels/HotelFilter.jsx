@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { FaThLarge, FaListUl, FaMapMarkerAlt, FaStar, FaChevronDown } from "react-icons/fa";
-export default function FilterSidebar({ onFilter }) {
+import MapModal from "../../components/Hotels/MapModal";
+export default function FilterSidebar({ onFilter, hotels }) {
   const [priceInRange, setPriceInRange] = useState([]);
   const [hotelRatingStar, setHotelRatingStar] = useState([]);
+  const [showMap, setShowMap] = useState(false);
   const [expanded, setExpanded] = useState({
     price: true,
     popular: true,
@@ -149,7 +151,9 @@ export default function FilterSidebar({ onFilter }) {
             </div>
           </div>
           <div className="p-4">
-            <button className="w-full bg-blue-600 hover:bg-blue-700 transition text-white font-medium py-2.5 rounded-lg shadow-sm">
+            <button
+              onClick={() => setShowMap(true)} 
+              className="w-full bg-blue-600 hover:bg-blue-700 transition text-white font-medium py-2.5 rounded-lg shadow-sm">
               Hiển thị kết quả trên bản đồ
             </button>
           </div>
@@ -292,7 +296,7 @@ export default function FilterSidebar({ onFilter }) {
           )}
         </div>
       </div>
-      
+      <MapModal open={showMap} onClose={() => setShowMap(false)} hotels={hotels} />
       <div className="p-4 border-t border-gray-100">
         <button className="w-full bg-blue-600 hover:bg-blue-700 transition text-white font-medium py-2.5 rounded-lg shadow-sm">
           Áp dụng bộ lọc

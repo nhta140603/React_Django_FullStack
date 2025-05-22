@@ -145,8 +145,6 @@ export default function Destinations() {
                         }}
                         initial="initial"
                         animate="animate"
-                        whileHover="hover"
-                        whileFocus="hover"
                         transition={{ delay: idx * 0.09 }}
                         onMouseEnter={() => setHoveredId(destination.id)}
                         onMouseLeave={() => setHoveredId(null)}
@@ -159,7 +157,6 @@ export default function Destinations() {
                             alt={destination.name}
                             loading="lazy"
                             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                            whileHover={{ scale: 1.08 }}
                             transition={{ duration: 0.4 }}
                           />
                           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 opacity-70 group-hover:opacity-90 transition-opacity duration-300"></div>
@@ -173,14 +170,12 @@ export default function Destinations() {
                             <p
                               className={`text-sm text-white/90 opacity-0 truncate group-hover:opacity-100 transition-opacity duration-300 delay-100 line-clamp-2`}
                               initial={{ opacity: 0 }}
-                              whileHover={{ opacity: 1 }}
                               transition={{ delay: 0.12 }}
                               dangerouslySetInnerHTML={{ __html: destination.description }}
                             />
                             <span
                               className="mt-4 inline-flex bg-emerald-500 hover:bg-emerald-600 text-white py-2 px-4 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 items-center"
                               initial={{ opacity: 0, y: 8 }}
-                              whileHover={{ opacity: 1, y: 0 }}
                               transition={{ delay: 0.2 }}
                             >
                               <span>Khám phá</span>
