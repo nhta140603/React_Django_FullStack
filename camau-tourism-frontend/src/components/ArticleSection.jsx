@@ -35,6 +35,7 @@ function ArticleSection({ limit }) {
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-blue-900 mb-2">
               Có gì mới tại Cà Mau
             </h2>
+            <div className="w-20 sm:w-24 h-1 bg-emerald-500 mx-auto mt-2 rounded-full mb-4"></div>
             <p className="max-w-2xl md:max-w-3xl mx-auto text-sm md:text-base lg:text-lg text-gray-600">
               Khám phá những trải nghiệm độc đáo và đáng nhớ chỉ có tại vùng đất Cà Mau.
             </p>

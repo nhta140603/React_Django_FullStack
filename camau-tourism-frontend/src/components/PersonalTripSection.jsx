@@ -15,7 +15,8 @@ function PersonalTripSection() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
               </svg>
             </div>
-            <h2 className="text-2xl md:text-4xl font-bold text-blue-900 mb-4 md:mb-6">Tạo Hành Trình Cá Nhân Của Bạn</h2>
+            <h2 className="text-2xl md:text-4xl font-bold text-blue-900">Tạo Hành Trình Cá Nhân Của Bạn</h2>
+            <div className="w-20 sm:w-24 h-1 bg-emerald-500 mx-auto mt-2 rounded-full mb-4"></div>
             <p className="md:text-base text-sm text-gray-600 mb-6 md:mb-8">
               Không bị ràng buộc bởi lịch trình có sẵn? Hãy tự do lựa chọn điểm đến, thời gian và dịch vụ phù hợp với nhu cầu riêng của bạn.
             </p>

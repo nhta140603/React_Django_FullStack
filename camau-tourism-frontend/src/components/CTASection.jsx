@@ -15,9 +15,10 @@ function CTASection() {
       <div className="container mx-auto px-6 sm:px-6 relative z-10">
         <MotionItem direction="right" x={30}>
           <div className="max-w-xl md:max-w-3xl mx-auto text-center">
-            <h2 className="text-xl sm:text-2xl md:text-4xl font-bold text-white mb-4 md:mb-6 drop-shadow-sm">
+            <h2 className="text-xl sm:text-2xl md:text-4xl font-bold text-white drop-shadow-sm">
               Sẵn Sàng Cho Chuyến Đi Tiếp Theo?
             </h2>
+            <div className="w-20 sm:w-24 h-1 bg-emerald-500 mx-auto mt-2 rounded-full mb-4"></div>
             <p className="text-sm sm:text-base md:text-sm text-white/90 mb-5 md:mb-8 max-w-2xl mx-auto">
               Đặt tour, khách sạn, phương tiện và hơn thế nữa - tất cả chỉ trong một vài cú nhấp chuột. Khám phá Cà Mau theo cách của bạn!
             </p>

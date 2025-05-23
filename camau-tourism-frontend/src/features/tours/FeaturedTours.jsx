@@ -12,7 +12,7 @@ import {
   BreadcrumbSeparator,
 } from "../../components/ui/breadcrumb"
 
-function TourList({ limit, showSearch = true }) {
+function TourList({ limit, showSearch = true, showBreadcrumb = true }) {
   const [search, setSearch] = useState('');
   const [activeFilter, setActiveFilter] = useState('all');
   const [hoveredCard, setHoveredCard] = useState(null);
@@ -120,6 +120,7 @@ function TourList({ limit, showSearch = true }) {
     <section id="tour-section" className=" bg-white">
 
       <div className="container max-w-7xl mx-auto sm:px-4 py-5 px-2">
+        {showBreadcrumb && (
         <Breadcrumb className="mb-4">
           <BreadcrumbList>
             <BreadcrumbItem>
@@ -131,6 +132,7 @@ function TourList({ limit, showSearch = true }) {
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
+        )}
         <MotionItem y={40}>
           <div ref={headerRef} className="text-center mb-5 sm:mb-12">
             <h2 className="text-xl sm:text-4xl font-bold text-blue-900 mb-1.5 sm:mb-4">

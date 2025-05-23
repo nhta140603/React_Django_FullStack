@@ -812,7 +812,7 @@ export default function HotelListPage() {
               </div>
             </div>
             <main className="flex flex-col gap-3 flex-grow">
-              <div className="sticky top-[60px] z-10 bg-white flex flex-col sm:flex-row sm:items-center justify-end gap-3 py-3 border-b">
+              <div className="sticky top-[60px] z-10 bg-gray-50 flex flex-col sm:flex-row sm:items-center justify-end gap-3 py-3 border-b">
                 <FilterBar onFilter={handleFilterPopular} count={filteredHotels.length} />
               </div>
               <SaleBanner />
