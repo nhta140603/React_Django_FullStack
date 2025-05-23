@@ -231,7 +231,6 @@ export default function HotelRoomPage() {
     setSelectedHotelRoomEdit(null);
   };
 
-  // ---- FORM COLUMNS ----
   const formColumns = [
     {
       key: "hotel",
@@ -275,7 +274,6 @@ export default function HotelRoomPage() {
       inputType: "number",
       editable: true,
     },
-    // -- MỚI: Trường amenities cho phòng --
     {
       key: "amenities",
       title: "Tiện ích phòng",
@@ -301,9 +299,14 @@ export default function HotelRoomPage() {
       inputType: "file",
       editable: true,
     },
+    {
+      key: "quantity",
+      title: "Số lượng phòng",
+      inputType: "number",
+      editable: true,
+    },
   ];
 
-  // ---- TABLE COLUMNS ----
   const columns = [
     {
       key: "checkbox",

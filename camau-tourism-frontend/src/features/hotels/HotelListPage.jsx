@@ -7,8 +7,16 @@ import SaleBanner from "../../components/Hotels/SaleBanner";
 import { useQuery } from "@tanstack/react-query";
 import { FaSortAmountDown } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "../../components/ui/breadcrumb"
 export default function HotelListPage() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { data: hotel = [], isLoading: loading, error } = useQuery({
     queryKey: ['hotel'],
     queryFn: () => getList('hotels'),
@@ -34,6 +42,7 @@ export default function HotelListPage() {
   const [showMobileFilter, setShowMobileFilter] = useState(false);
   const [showSortOptions, setShowSortOptions] = useState(false);
   const [activeTab, setActiveTab] = useState("listing");
+  const [filterLoading, setFilterLoading] = useState(false);
 
   useEffect(() => {
     const handleResize = () => {
@@ -48,31 +57,39 @@ export default function HotelListPage() {
     };
   }, []);
 
+  useEffect(() => {
+    setFilterLoading(true);
+    const timer = setTimeout(() => {
+      setFilterLoading(false);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [currentFilter, filterPopulate, hotel]);
+
   const filteredHotels = useMemo(() => {
     let result = [...hotel];
     if (currentFilter.priceInRange.length > 0) {
       result = result.filter(h => {
         let match = false;
         currentFilter.priceInRange.forEach(range => {
-          if (range === "over2m" && h.min_price > 2000000) match = true
-          if (range === "over1m" && h.min_price > 1000000) match = true
-          if (range === "under500k" && h.min_price < 500000) match = true
-        })
-        return match
-      })
+          if (range === "over2m" && h.min_price > 2000000) match = true;
+          if (range === "over1m" && h.min_price > 1000000) match = true;
+          if (range === "under500k" && h.min_price < 500000) match = true;
+        });
+        return match;
+      });
     }
     if (currentFilter.hotelRatingStar.length > 0) {
       result = result.filter(h => {
         let match = false;
         currentFilter.hotelRatingStar.forEach(rating => {
-          if (rating === 1 && h.star_rating == 1) match = true
-          if (rating === 2 && h.star_rating == 2) match = true
-          if (rating === 3 && h.star_rating == 3) match = true
-          if (rating === 4 && h.star_rating == 4) match = true
-          if (rating === 5 && h.star_rating == 5) match = true
-        })
-        return match
-      })
+          if (rating === 1 && h.star_rating == 1) match = true;
+          if (rating === 2 && h.star_rating == 2) match = true;
+          if (rating === 3 && h.star_rating == 3) match = true;
+          if (rating === 4 && h.star_rating == 4) match = true;
+          if (rating === 5 && h.star_rating == 5) match = true;
+        });
+        return match;
+      });
     }
     if (typeof currentFilter.price === 'number' && currentFilter.price > 0) {
       result = result.filter(h => h.min_price <= currentFilter.price);
@@ -90,36 +107,48 @@ export default function HotelListPage() {
     return result;
   }, [hotel, currentFilter, filterPopulate]);
 
-  const [filterLoading, setFilterLoading] = useState(false);
-
-  useEffect(() => {
-    setFilterLoading(true);
-    const timer = setTimeout(() => {
-      setFilterLoading(false);
-    }, 400);
-    return () => clearTimeout(timer);
-  }, [currentFilter, filterPopulate, hotel]);
-
   const handleFilter = (filter) => {
     setCurrentFilter(filter);
     if (isMobile && showMobileFilter) {
       setShowMobileFilter(false);
     }
-  }
+  };
 
   const handleFilterPopular = (filter) => {
     setFilterPopular(filter);
     if (showSortOptions) {
       setShowSortOptions(false);
     }
-  }
+  };
 
-  const handleApplyFilters = () => {
-    setShowMobileFilter(false);
-  }
+  const SkeletonCard = ({ className = "" }) => (
+    <div
+      className={`rounded-xl bg-gray-100 border border-gray-200 p-3 mb-4 w-full flex gap-3 items-center ${className} min-h-[172px]`}
+      aria-hidden="true"
+    >
+      <div className="bg-gray-200 rounded-lg w-[210px] h-[170px] shrink-0 " />
+      <div className="flex flex-col flex-1 gap-2">
+        <div className="h-5 w-3/5 bg-gray-200 rounded" />
+        <div className="h-4 w-1/3 bg-gray-200 rounded" />
+        <div className="h-4 w-1/2 bg-gray-200 rounded" />
+        <div className="h-4 w-2/3 bg-gray-200 rounded" />
+        <div className="h-8 w-28 bg-gray-200 rounded mt-2" />
+      </div>
+    </div>
+  );
 
-  const SkeletonCard = () => (
-    <div className="animate-pulse rounded-xl bg-gray-100 h-40 mb-4 w-full" />
+  const MobileSkeletonCard = () => (
+    <div className="border rounded-xl overflow-hidden shadow-sm bg-white mb-4 min-h-[430px]" aria-hidden="true">
+      <div className="h-48 bg-gray-200 animate-pulse"></div>
+      <div className="p-3">
+        <div className="h-6 w-4/5 bg-gray-200 rounded animate-pulse mb-2"></div>
+        <div className="h-4 w-2/3 bg-gray-200 rounded animate-pulse mb-3"></div>
+        <div className="h-4 w-full bg-gray-200 rounded animate-pulse mb-3"></div>
+        <div className="h-4 w-3/4 bg-gray-200 rounded animate-pulse mb-3"></div>
+        <div className="h-8 w-28 bg-gray-200 rounded animate-pulse ml-auto mb-3"></div>
+        <div className="h-12 w-full bg-gray-200 rounded animate-pulse"></div>
+      </div>
+    </div>
   );
 
   const MobileFilterButtons = () => (
@@ -352,8 +381,8 @@ export default function HotelListPage() {
                 <button
                   key={star}
                   className={`px-4 py-2 rounded-full border ${localFilter.hotelRatingStar.includes(star)
-                      ? 'bg-blue-50 border-blue-300 text-blue-700'
-                      : 'bg-gray-50 border-gray-200 text-gray-700'
+                    ? 'bg-blue-50 border-blue-300 text-blue-700'
+                    : 'bg-gray-50 border-gray-200 text-gray-700'
                     }`}
                   onClick={() => handleStarChange(star)}
                 >
@@ -450,6 +479,7 @@ export default function HotelListPage() {
             src={hotel.image_cover || "https://via.placeholder.com/300x150"}
             alt={hotel.name}
             className="w-full h-48 object-cover"
+            loading="lazy"
           />
           {discount > 0 && (
             <div className="absolute top-0 left-0 bg-red-500 text-white px-2 py-1 text-sm font-bold">
@@ -489,18 +519,6 @@ export default function HotelListPage() {
                 </div>
               </div>
             </div>
-            {/* <div className="flex flex-col items-end">
-              <div className="bg-green-50 text-green-700 px-2 py-0.5 rounded text-sm font-medium flex items-center">
-                {hotel.average_rating ? hotel.average_rating.toFixed(1) : '8.4'}
-                <span className="text-xs text-green-600 ml-1">
-                  {hotel.average_rating >= 9.0 ? 'Xuất sắc' : 
-                  hotel.average_rating >= 8.0 ? 'Tuyệt vời' : 
-                  hotel.average_rating >= 7.0 ? 'Rất tốt' : 
-                  hotel.average_rating >= 6.0 ? 'Tốt' : 'Bình thường'}
-                </span>
-              </div>
-              <div className="text-gray-500 text-sm">({hotel.review_count || '208'} đánh giá)</div>
-            </div> */}
           </div>
 
           <div className="mt-2 text-gray-700 text-sm flex items-start gap-1">
@@ -562,8 +580,8 @@ export default function HotelListPage() {
           </div>
 
           <button
-           onClick={() => navigate(`/khach-san/${hotel.slug}`)}
-           className="mt-3 w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg transition">
+            onClick={() => navigate(`/khach-san/${hotel.slug}`)}
+            className="mt-3 w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-lg transition">
             Chọn phòng
           </button>
         </div>
@@ -675,8 +693,35 @@ export default function HotelListPage() {
     );
   };
 
+  const NoResultsDisplay = () => (
+    <div className="bg-white rounded-xl p-6 text-center my-8">
+      <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          <line x1="8" y1="11" x2="14" y2="11"></line>
+        </svg>
+      </div>
+      <h3 className="text-lg font-medium text-gray-800 mb-2">Không tìm thấy kết quả phù hợp</h3>
+      <p className="text-gray-600 mb-4">Vui lòng thử lại với bộ lọc khác hoặc điều chỉnh tiêu chí tìm kiếm của bạn</p>
+      <button
+        onClick={() => handleFilter({
+          priceInRange: [],
+          hotelRatingStar: [],
+          price: [],
+          amenities: [],
+          propertyType: [],
+          guestRating: [],
+        })}
+        className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition"
+      >
+        Xóa bộ lọc
+      </button>
+    </div>
+  );
+
   return (
-    <div className="min-h-screen flex max-w-full mx-auto">
+    <div className="min-h-screen max-w-full mx-auto">
       {isMobile ? (
         <div className="flex flex-col w-full bg-gray-50">
           <div className="bg-white pb-1 sticky top-0 z-30 border-b">
@@ -712,11 +757,11 @@ export default function HotelListPage() {
             </div>
           </div>
 
-          <div className="px-3 pt-3">
+          <div className="px-3 pt-3 pb-16 min-h-[60vh]">
             {loading && (
               <>
-                <SkeletonCard />
-                <SkeletonCard />
+                <MobileSkeletonCard />
+                <MobileSkeletonCard />
               </>
             )}
             {error && (
@@ -727,37 +772,12 @@ export default function HotelListPage() {
             )}
             {filterLoading ? (
               <>
-                <SkeletonCard />
-                <SkeletonCard />
+                <MobileSkeletonCard />
+                <MobileSkeletonCard />
               </>
             ) : (
               <>
-                {filteredHotels.length === 0 && !loading && (
-                  <div className="bg-white rounded-xl p-6 text-center my-8">
-                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                        <line x1="8" y1="11" x2="14" y2="11"></line>
-                      </svg>
-                    </div>
-                    <h3 className="text-lg font-medium text-gray-800 mb-2">Không tìm thấy kết quả phù hợp</h3>
-                    <p className="text-gray-600 mb-4">Vui lòng thử lại với bộ lọc khác hoặc điều chỉnh tiêu chí tìm kiếm của bạn</p>
-                    <button
-                      onClick={() => handleFilter({
-                        priceInRange: [],
-                        hotelRatingStar: [],
-                        price: [],
-                        amenities: [],
-                        propertyType: [],
-                        guestRating: [],
-                      })}
-                      className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition"
-                    >
-                      Xóa bộ lọc
-                    </button>
-                  </div>
-                )}
+                {filteredHotels.length === 0 && !loading && <NoResultsDisplay />}
                 <div className="pb-4">
                   {filteredHotels.map((hotel) => (
                     <MobileHotelCard key={hotel.id} hotel={hotel} />
@@ -770,47 +790,69 @@ export default function HotelListPage() {
           {showSortOptions && <MobileSortOptions />}
         </div>
       ) : (
-        <div className="min-h-screen flex gap-3 max-w-7xl mx-auto py-5 px-4">
-          <div className="hidden md:block w-80 ">
-            <FilterSidebar onFilter={handleFilter} hotels={hotel}/>
+        <div className="bg-gray-50 min-h-screen">
+          <div className="max-w-7xl mx-auto px-4 pt-5">
+            <Breadcrumb className="mb-4">
+              <BreadcrumbList>
+                <BreadcrumbItem>
+                  <BreadcrumbLink href="/">Trang chủ</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>Khách sạn</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
           </div>
-          <main className="flex flex-col gap-3 w-full">
-            <div
-              className="sticky top-[60px] z-2 bg-white flex flex-col sm:flex-row sm:items-center justify-end gap-3 py-3"
-            >
-              <FilterBar onFilter={handleFilterPopular} count={filteredHotels.length} />
+
+          <div className="flex gap-3 max-w-7xl mx-auto w-full px-4">
+            <div className="hidden md:block w-80 flex-shrink-0">
+              <div className="sticky top-[60px]">
+                <FilterSidebar onFilter={handleFilter} hotels={hotel} />
+              </div>
             </div>
-            <SaleBanner />
-            <div>
-              {loading && <div></div>}
-              {error && <div className="text-red-500">{error}</div>}
-              {filterLoading ? (
-                <>
-                  <SkeletonCard className="max-w-full h-[172px]" />
-                  <SkeletonCard className="max-w-full h-[172px]" />
-                  <SkeletonCard className="max-w-full h-[172px]" />
-                </>
-              ) : (
-                <>
-                  {filteredHotels.length === 0 && !loading && (
-                    <div className="mx-auto max-w-md mt-10 px-6 py-5 text-gray-800 rounded-xl text-center text-lg font-medium animate-fade-in">
-                      Không tìm thấy khách sạn phù hợp
-                    </div>
-                  )}
-                  <div
-                    className={`grid ${filterPopulate.view === "grid"
-                        ? "grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3"
+            <main className="flex flex-col gap-3 flex-grow">
+              <div className="sticky top-[60px] z-10 bg-white flex flex-col sm:flex-row sm:items-center justify-end gap-3 py-3 border-b">
+                <FilterBar onFilter={handleFilterPopular} count={filteredHotels.length} />
+              </div>
+              <SaleBanner />
+              <div className="min-h-[600px]">
+                {loading && (
+                  <>
+                    <SkeletonCard />
+                    <SkeletonCard />
+                    <SkeletonCard />
+                  </>
+                )}
+                {error && <div className="text-red-500 p-4 bg-red-50 rounded-lg">{error}</div>}
+                {filterLoading ? (
+                  <>
+                    <SkeletonCard />
+                    <SkeletonCard />
+                    <SkeletonCard />
+                  </>
+                ) : (
+                  <>
+                    {filteredHotels.length === 0 && !loading && (
+                      <div className="mx-auto max-w-md mt-10 px-6 py-5 text-gray-800 rounded-xl text-center text-lg font-medium animate-fade-in">
+                        Không tìm thấy khách sạn phù hợp
+                      </div>
+                    )}
+                    <div
+                      className={`grid ${filterPopulate.view === "grid"
+                        ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"
                         : "grid-cols-1"
-                      }`}
-                  >
-                    {filteredHotels.map((hotel) => (
-                      <HotelCard key={hotel.id} hotel={hotel} view={filterPopulate.view} />
-                    ))}
-                  </div>
-                </>
-              )}
-            </div>
-          </main>
+                        }`}
+                    >
+                      {filteredHotels.map((hotel) => (
+                        <HotelCard key={hotel.id} hotel={hotel} view={filterPopulate.view} />
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+            </main>
+          </div>
         </div>
       )}
     </div>

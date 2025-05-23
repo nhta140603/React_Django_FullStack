@@ -185,3 +185,44 @@ export function postHotelReview(hotelId, data) {
 export function getHotelReviews(hotelId) {
   return fetchWithAuth(`${API_URL}hotel/${hotelId}/reviews/`);
 }
+
+export function getNotifications(page = 1, page_size = 20) {
+  return fetchWithAuth(`${API_URL}notifications/?page=${page}&page_size=${page_size}`);
+}
+
+export function getNotificationDetail(id) {
+  return fetchWithAuth(`${API_URL}notifications/${id}/`);
+}
+
+export function markNotificationAsRead(id) {
+  return fetchWithAuth(`${API_URL}notifications/${id}/`, {
+    method: 'PATCH',
+    body: JSON.stringify({ is_read: true }),
+  });
+}
+
+export function markAllNotificationsAsRead() {
+  return fetchWithAuth(`${API_URL}notifications/mark-all-read/`, {
+    method: 'POST',
+    body: JSON.stringify({}),
+  });
+}
+
+export function deleteNotification(id) {
+  return fetchWithAuth(`${API_URL}notifications/${id}/`, {
+    method: 'DELETE',
+  });
+}
+
+export async function AvailableQuantity(roomId, checkIn, checkOut) {
+  if (!roomId || !checkIn || !checkOut) {
+    throw new Error('Thiếu tham số roomId, checkIn hoặc checkOut');
+  }
+  const url = `${API_URL}room-booking/available-quantity/?room_id=${roomId}&check_in=${checkIn}&check_out=${checkOut}`;
+  const res = await fetchWithAuth(url);
+  if (!res) {
+    throw new Error('Lỗi khi lấy số phòng còn lại');
+  }
+
+  return res.available_quantity ?? 0;
+}

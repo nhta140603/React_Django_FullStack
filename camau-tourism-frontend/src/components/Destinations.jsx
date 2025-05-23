@@ -43,8 +43,8 @@ export default function Destinations() {
       <div className="container max-w-7xl mx-auto px-2 sm:px-4">
         <MotionItem y={40}>
           <div className="text-center mb-8 sm:mb-12">
-            <h2 className="text-2xl sm:text-4xl font-bold text-blue-900 mb-3 relative inline-block">
-              <span>Điểm Đến Nổi Bật</span>
+            <h2 className="text-2xl md:text-4xl font-bold text-blue-900 mb-4 md:mb-6">
+              Điểm Đến Nổi Bật
               <div className="w-20 sm:w-24 h-1 bg-emerald-500 mx-auto mt-2 rounded-full"></div>
             </h2>
             <p className="text-gray-600 mt-4 max-w-2xl mx-auto text-sm sm:text-base">

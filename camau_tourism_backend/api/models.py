@@ -177,6 +177,7 @@ class HotelRoom(models.Model):
     room_type = models.CharField(max_length=50)
     price = models.DecimalField(max_digits=12, decimal_places=2)
     capacity = models.IntegerField(default=2)
+    quantity = models.IntegerField(default=1)
     facilities = ArrayField(models.CharField(max_length=50), blank=True, null=True)
     is_available = models.BooleanField(default=True)
     image_url = CloudinaryField('image', folder='hotel-rooms', blank=True, null=True)

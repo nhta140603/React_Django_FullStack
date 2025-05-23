@@ -28,7 +28,7 @@ from datetime import timedelta
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['afd2-2405-4803-c7e5-9c60-7094-34ae-8d2c-6801.ngrok-free.app', 'localhost']
 
 
 # Application definition

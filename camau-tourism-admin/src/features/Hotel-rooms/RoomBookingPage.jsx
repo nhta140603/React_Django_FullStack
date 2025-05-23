@@ -41,7 +41,6 @@ export default function BookingPage() {
     { value: "confirmed", label: "Đã xác nhận", color: "green" },
     { value: "pending", label: "Chờ xác nhận", color: "yellow" },
     { value: "canceled", label: "Đã hủy", color: "red" },
-    { value: "completed", label: "Hoàn thành", color: "blue" },
   ];
 
   useEffect(() => {

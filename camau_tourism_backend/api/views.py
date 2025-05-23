@@ -27,6 +27,12 @@ from dotenv import load_dotenv
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from django.db import transaction
+from django.db.models import Q, Sum
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.exceptions import ValidationError
+
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 10
     page_size_query_param = 'page_size'
@@ -394,30 +400,98 @@ class MomoCallbackView(APIView):
             pass
             
         return Response({"status": "received"})
-    
+from django.utils.dateparse import parse_date
 class RoomBookingViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = RoomBookingSerializer
     queryset = RoomBooking.objects.none()
+
     def get_queryset(self):
         return RoomBooking.objects.filter(client=self.request.user.client)
 
+    @transaction.atomic
     def perform_create(self, serializer):
-        serializer.save(client=self.request.user.client)
+        room = serializer.validated_data['room']
+        check_in = serializer.validated_data['check_in']
+        check_out = serializer.validated_data['check_out']
+        room = HotelRoom.objects.select_for_update().get(id=room.id)
+        if not room.is_available or room.quantity <= 0:
+            raise ValidationError("Phòng không còn sẵn có.")
+        overlapping_bookings = RoomBooking.objects.filter(
+            room=room,
+            status__in=[RoomBooking.STATUS_PENDING, RoomBooking.STATUS_CONFIRMED],
+            check_in__lt=check_out,
+            check_out__gt=check_in,
+        ).count()
+        if overlapping_bookings >= room.quantity:
+            raise ValidationError("Phòng đã được đặt trong khoảng thời gian này.")
+        nights = (check_out - check_in).days
+        total_amount = room.price * nights
+        serializer.save(
+            client=self.request.user.client,
+            total_amount=total_amount,
+            status=RoomBooking.STATUS_PENDING
+        )
 
     def create(self, request, *args, **kwargs):
-        print('>>> request.data:', request.data)
-        return super().create(request, *args, **kwargs)
+        try:
+            response = super().create(request, *args, **kwargs)
+            return response
+        except ValidationError as e:
+            return Response({'detail': e.detail}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({'detail': 'Lỗi khi đặt phòng. Vui lòng thử lại.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
     @action(detail=True, methods=['post'])
     def cancel(self, request, pk=None):
         booking = self.get_object()
-        if booking.status == 'canceled':
+        if booking.status == RoomBooking.STATUS_CANCELED:
             return Response({'detail': 'Đặt phòng đã bị hủy trước đó.'}, status=status.HTTP_400_BAD_REQUEST)
-        booking.status = 'canceled'
+        booking.status = RoomBooking.STATUS_CANCELED
         booking.canceled_at = timezone.now()
         booking.save()
         return Response({'detail': 'Hủy đặt phòng thành công!'}, status=status.HTTP_200_OK)
 
+    @action(detail=False, methods=['get'], url_path='available-quantity')
+    def available_quantity(self, request):
+        room_id = request.query_params.get('room_id')
+        check_in_str = request.query_params.get('check_in')
+        check_out_str = request.query_params.get('check_out')
+
+        if not room_id or not check_in_str or not check_out_str:
+            return Response({'detail': 'Thiếu tham số room_id, check_in hoặc check_out.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            check_in = parse_date(check_in_str)
+            check_out = parse_date(check_out_str)
+            if check_in is None or check_out is None:
+                raise ValueError()
+        except ValueError:
+            return Response({'detail': 'Ngày check_in hoặc check_out không hợp lệ.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if check_in >= check_out:
+            return Response({'detail': 'Ngày check_out phải lớn hơn ngày check_in.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            room = HotelRoom.objects.get(id=room_id)
+        except HotelRoom.DoesNotExist:
+            return Response({'detail': 'Phòng không tồn tại.'}, status=status.HTTP_404_NOT_FOUND)
+
+        overlapping_bookings = RoomBooking.objects.filter(
+            room=room,
+            status__in=[RoomBooking.STATUS_PENDING, RoomBooking.STATUS_CONFIRMED],
+            check_in__lt=check_out,
+            check_out__gt=check_in,
+        ).count()
+
+        available = room.quantity - overlapping_bookings
+        available = max(available, 0)
+
+        return Response({
+            'room_id': room_id,
+            'available_quantity': available,
+            'total_quantity': room.quantity,
+        }, status=status.HTTP_200_OK)
 
 class RatingListCreateAPIView(generics.ListCreateAPIView):
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
@@ -471,3 +545,10 @@ class CommentListCreateAPIView(generics.ListCreateAPIView):
             content_type=content_type,
             object_id=obj_id
         )
+
+class NotificationViewSet(viewsets.ModelViewSet):
+    serializer_class = NotificationSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    queryset = Notification.objects.none()
+    def get_queryset(self):
+        return Notification.objects.filter(client=self.request.user.client).order_by('-sent_at')

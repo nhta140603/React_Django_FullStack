@@ -3,6 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { getList } from '../../api/user_api';
 import { MotionItem } from '../../components/MotionItem';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "../../components/ui/breadcrumb"
 
 function TourList({ limit, showSearch = true }) {
   const [search, setSearch] = useState('');
@@ -45,17 +53,17 @@ function TourList({ limit, showSearch = true }) {
   function SkeletonCard() {
     return (
       <div
-        className="rounded-lg overflow-hidden shadow-lg animate-pulse bg-gray-100 flex flex-col min-h-[160px] sm:min-h-[320px]" // CHỈNH MOBILE
+        className="rounded-lg overflow-hidden shadow-lg animate-pulse bg-gray-100 flex flex-col min-h-[160px] sm:min-h-[320px]"
         aria-hidden="true"
       >
-        <div className="w-full h-20 sm:h-56 bg-gray-300"></div> {/* CHỈNH MOBILE */}
-        <div className="p-2 sm:p-6 flex-1 flex flex-col"> {/* CHỈNH MOBILE */}
-          <div className="h-3 sm:h-6 bg-gray-300 rounded w-3/4 mb-1 sm:mb-3"></div> {/* CHỈNH MOBILE */}
-          <div className="h-2.5 sm:h-4 bg-gray-200 rounded w-full mb-1 sm:mb-2"></div> {/* CHỈNH MOBILE */}
-          <div className="h-2.5 sm:h-4 bg-gray-200 rounded w-5/6 mb-1 sm:mb-2"></div> {/* CHỈNH MOBILE */}
-          <div className="h-2.5 sm:h-4 bg-gray-200 rounded w-2/3 mb-2 sm:mb-6"></div> {/* CHỈNH MOBILE */}
-          <div className="h-3.5 sm:h-5 w-12 sm:w-24 bg-gray-300 rounded mb-2"></div> {/* CHỈNH MOBILE */}
-          <div className="mt-auto h-6 sm:h-9 w-16 sm:w-32 bg-cyan-200/60 rounded-xl"></div> {/* CHỈNH MOBILE */}
+        <div className="w-full h-20 sm:h-56 bg-gray-300"></div>
+        <div className="p-2 sm:p-6 flex-1 flex flex-col">
+          <div className="h-3 sm:h-6 bg-gray-300 rounded w-3/4 mb-1 sm:mb-3"></div>
+          <div className="h-2.5 sm:h-4 bg-gray-200 rounded w-full mb-1 sm:mb-2"></div>
+          <div className="h-2.5 sm:h-4 bg-gray-200 rounded w-5/6 mb-1 sm:mb-2"></div>
+          <div className="h-2.5 sm:h-4 bg-gray-200 rounded w-2/3 mb-2 sm:mb-6"></div>
+          <div className="h-3.5 sm:h-5 w-12 sm:w-24 bg-gray-300 rounded mb-2"></div>
+          <div className="mt-auto h-6 sm:h-9 w-16 sm:w-32 bg-cyan-200/60 rounded-xl"></div>
         </div>
       </div>
     );
@@ -109,15 +117,27 @@ function TourList({ limit, showSearch = true }) {
   const displayedTours = getFilteredTours();
 
   return (
-    <section id="tour-section" className="py-8 sm:py-20 bg-white">
-      <div className="container max-w-7xl mx-auto px-6 sm:px-4">
+    <section id="tour-section" className=" bg-white">
+
+      <div className="container max-w-7xl mx-auto sm:px-4 py-5 px-2">
+        <Breadcrumb className="mb-4">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/">Trang chủ</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Tour du lịch</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
         <MotionItem y={40}>
-          <div ref={headerRef} className="text-center mb-5 sm:mb-12"> 
-            <h2 className="text-xl sm:text-4xl font-bold text-blue-900 mb-1.5 sm:mb-4"> {/* CHỈNH MOBILE */}
+          <div ref={headerRef} className="text-center mb-5 sm:mb-12">
+            <h2 className="text-xl sm:text-4xl font-bold text-blue-900 mb-1.5 sm:mb-4">
               Tour Du Lịch Cà Mau Nổi Bật
-              <div className="w-12 sm:w-24 h-1 bg-blue-500 mx-auto mt-1 sm:mt-2 rounded-full"></div> {/* CHỈNH MOBILE */}
+              <div className="w-12 sm:w-24 h-1 bg-blue-500 mx-auto mt-1 sm:mt-2 rounded-full"></div>
             </h2>
-            <p className="text-blue-800/80 max-w-xs sm:max-w-2xl mx-auto mb-2 sm:mb-6 text-sm sm:text-lg"> 
+            <p className="text-blue-800/80 max-w-xs sm:max-w-2xl mx-auto mb-2 sm:mb-6 text-sm sm:text-lg">
               Khám phá vẻ đẹp hoang sơ của Cà Mau qua các tour độc đáo, trải nghiệm cảnh đẹp thiên nhiên,
               văn hóa & ẩm thực đặc sắc nhất của vùng đất mũi Việt Nam!
             </p>
@@ -221,7 +241,7 @@ function TourList({ limit, showSearch = true }) {
                   <div
                     className={`tour-card bg-white max-h-[380px] sm:max-h-[460px] rounded-lg sm:rounded-xl overflow-hidden shadow-md hover:shadow-xl border border-gray-100 transition-all duration-300 flex flex-col h-full transform ${hoveredCard === tour.id ? 'scale-[1.02]' : ''}`} // CHỈNH MOBILE
                   >
-                    <div className="relative overflow-hidden h-24 sm:h-56 bg-gradient-to-br from-blue-100 to-blue-50"> 
+                    <div className="relative overflow-hidden h-24 sm:h-56 bg-gradient-to-br from-blue-100 to-blue-50">
                       <img
                         src={tour.image}
                         alt={tour.name}
@@ -233,7 +253,7 @@ function TourList({ limit, showSearch = true }) {
                         }}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
-                      <div className="absolute top-1 right-1 sm:top-4 sm:right-4 bg-white/90 text-blue-700 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full font-semibold shadow-lg flex items-center gap-1 text-xs sm:text-base"> {/* CHỈNH MOBILE */}
+                      <div className="absolute top-1 right-1 sm:top-4 sm:right-4 bg-white/90 text-blue-700 px-2 sm:px-3 py-0.5 sm:py-1 rounded-full font-semibold shadow-lg flex items-center gap-1 text-xs sm:text-base">
                         <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" className="w-3 h-3 sm:w-4 sm:h-4">
                           <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
@@ -241,7 +261,7 @@ function TourList({ limit, showSearch = true }) {
                       </div>
                       <PromoBadge promo={tour.promo} />
                     </div>
-                    <div className="flex-1 flex flex-col p-2 sm:p-6 min-h-[180px] sm:min-h-[280px]"> 
+                    <div className="flex-1 flex flex-col p-2 sm:p-6 min-h-[180px] sm:min-h-[280px]">
                       <div className="space-y-1 sm:space-y-2 mb-1 sm:mb-4">
                         <h3 className="text-sm sm:text-xl font-bold text-blue-900 line-clamp-2 leading-tight">
                           {tour.name}
@@ -261,7 +281,7 @@ function TourList({ limit, showSearch = true }) {
                         dangerouslySetInnerHTML={{ __html: tour.description || "Khám phá vẻ đẹp nguyên sơ của vùng đất Cà Mau với nhiều trải nghiệm thú vị, đắm mình trong thiên nhiên hoang dã và thưởng thức ẩm thực đặc sắc vùng sông nước." }}
                         className="text-gray-600 text-xs sm:text-base flex-1 mb-1 sm:mb-4 line-clamp-2 sm:line-clamp-3"
                       ></p>
-                      <div className="flex items-center justify-between mt-auto pt-1 sm:pt-4 border-t border-gray-100"> 
+                      <div className="flex items-center justify-between mt-auto pt-1 sm:pt-4 border-t border-gray-100">
                         {tour.price && (
                           <div className="font-bold text-sm sm:text-lg">
                             <span className="text-blue-600">
@@ -288,7 +308,7 @@ function TourList({ limit, showSearch = true }) {
         )}
 
         {!isLoading && !error && limit && tours.length > limit && (
-          <div className="flex justify-center mt-6 sm:mt-12"> {/* CHỈNH MOBILE */}
+          <div className="flex justify-center mt-6 sm:mt-12">
             <a
               href="/danh-sach-chuyen-du-lich"
               className="bg-blue-500 hover:bg-blue-600 text-white font-bold px-4 sm:px-8 py-2 sm:py-3 rounded-full shadow-lg hover:shadow-blue-200/50 transition-all duration-300 flex items-center gap-1 sm:gap-2 text-sm sm:text-base"

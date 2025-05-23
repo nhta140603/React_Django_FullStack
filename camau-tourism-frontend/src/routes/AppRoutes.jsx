@@ -23,6 +23,8 @@ import PublicRoute from '../routes/PublicRoute'
 import ProtectedRoute from '../routes/ProtectedRoute'
 import HotelDetail from '../pages/HotelDetail';
 import NotFound from '../pages/404NotFound';
+import NotificationsPage from '../pages/User-notification';
+
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 const queryClient = new QueryClient();
@@ -62,6 +64,7 @@ function AppRoutes() {
               <Route path="trang-ca-nhan" element={<UserInfo />} />
               <Route path="cac-chuyen-di" element={<UserTours />} />
               <Route path="cac-don-dat-phong" element={<UserBookingHotel />} />
+              <Route path='tat-ca-thong-bao' element={<NotificationsPage />} />
             </Route>
           </Route>
           <Route path="*" element={<NotFound />} />

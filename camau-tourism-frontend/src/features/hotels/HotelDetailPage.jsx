@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getList, getDetail, createRoomBooking } from "../../api/user_api";
+import { getList, getDetail, createRoomBooking, AvailableQuantity } from "../../api/user_api";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -14,6 +14,8 @@ import {
   FaShuttleVan, FaChalkboardTeacher, FaTv, FaIceCream, FaWind, FaMugHot, FaSoap, FaClock,
   FaBreadSlice, FaChild, FaSuitcaseRolling, FaCarSide, FaMoneyBillWave, FaSmokingBan, FaChevronLeft, FaChevronRight
 } from "react-icons/fa";
+import { useQueryClient } from "@tanstack/react-query";
+
 import { toast, ToastContainer } from 'react-toastify';
 import "react-toastify/dist/ReactToastify.css";
 import { FaElevator } from "react-icons/fa6";
@@ -24,10 +26,18 @@ registerLocale('vi', vi);
 import "react-datepicker/dist/react-datepicker.css";
 import ReviewForm from "../../components/Review_Rating/ReviewForm";
 import ReviewList from "../../components/Review_Rating/ReviewList";
-
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "../../components/ui/breadcrumb"
 export default function HotelDetailPage() {
   const navigate = useNavigate();
   const { slug } = useParams();
+  const [showSoldOutPopup, setShowSoldOutPopup] = useState(false);
   const [activeTab, setActiveTab] = useState("rooms");
   const [wishlist, setWishlist] = useState(false);
   const [activeRoomTab, setActiveRoomTab] = useState(0);
@@ -46,9 +56,10 @@ export default function HotelDetailPage() {
     specialRequests: "",
     paymentMethod: "credit_card"
   });
-
+  const [availableQuantity, setAvailableQuantity] = useState(null);
+  const queryClient = useQueryClient();
   const [reviewsExpanded, setReviewsExpanded] = useState(false);
-    const handleReviewAdded = () => {
+  const handleReviewAdded = () => {
     setReviewsExpanded(true);
     setTimeout(() => {
       document.getElementById('reviews-section')?.scrollIntoView({
@@ -66,7 +77,20 @@ export default function HotelDetailPage() {
     queryFn: () => getDetail("hotels", slug),
     enabled: !!slug,
   });
-
+  async function fetchAvailableQuantity(roomId, checkIn, checkOut) {
+    if (!roomId || !checkIn || !checkOut) return;
+    try {
+      const available = await AvailableQuantity(
+        roomId,
+        checkIn.toISOString().slice(0, 10),
+        checkOut.toISOString().slice(0, 10)
+      );
+      setAvailableQuantity(available);
+    } catch (error) {
+      console.error("Lỗi khi lấy số phòng còn lại:", error);
+      setAvailableQuantity(null);
+    }
+  }
   const {
     data: rooms = [],
     isLoading: loadingRooms,
@@ -187,20 +211,33 @@ export default function HotelDetailPage() {
         total_amount: calculateTotalPrice(),
         payment_method: bookingData.paymentMethod
       };
+
       await createRoomBooking('room-booking', bookingPayload);
+      queryClient.invalidateQueries(["hotelRooms", slug]);
       return true;
     } catch (err) {
       console.error('Booking error:', err);
-      throw new Error(err.message || 'Lỗi đặt phòng');
+      if (err.response?.data?.detail) {
+        toast.error(err.response.data.detail);
+      } else if (err.message) {
+        toast.error(err.message);
+      } else {
+        toast.error('Lỗi đặt phòng, vui lòng thử lại.');
+      }
+      return false;
     }
   }
 
   const openBookingModal = (roomIndex) => {
+    const room = rooms[roomIndex];
+    if (!room.is_available || availableQuantity <= 0) {
+      setShowSoldOutPopup(true);
+      return;
+    }
     setActiveRoomTab(roomIndex);
     setShowBookingModal(true);
     setBookingStep(1);
   };
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setBookingData(prev => ({
@@ -208,7 +245,12 @@ export default function HotelDetailPage() {
       [name]: value
     }));
   };
-
+  useEffect(() => {
+    if (rooms.length > 0) {
+      const roomId = rooms[activeRoomTab]?.id;
+      fetchAvailableQuantity(roomId, bookingData.checkIn, bookingData.checkOut);
+    }
+  }, [rooms, activeRoomTab, bookingData.checkIn, bookingData.checkOut]);
   const nextImage = () => {
     setCurrentImageIndex((prevIndex) =>
       prevIndex === galleryImages.length - 1 ? 0 : prevIndex + 1
@@ -322,7 +364,22 @@ export default function HotelDetailPage() {
   const amenities_Room_list = amenities.filter(amenity => roomAmenitiesIds.includes(amenity.key)).slice(0, 6);
 
   return (
-    <div className="bg-gradient-to-b from-blue-50 to-white min-h-screen font-sans">
+    <div className="min-h-screen font-sans">
+      <Breadcrumb className="px-4 pt-5">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/">Trang chủ</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/tim-khach-san">Khách sạn</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>{hotel.name}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
       <div className="max-w-7xl mx-auto px-4 pt-4 pb-20 md:pt-6 md:pb-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -488,8 +545,8 @@ export default function HotelDetailPage() {
                       key={room.id || idx}
                       onClick={() => setActiveRoomTab(idx)}
                       className={`px-3 md:px-4 py-2 rounded-t-lg font-medium transition-colors whitespace-nowrap text-sm ${activeRoomTab === idx
-                          ? "text-blue-700 border-b-2 border-blue-700 bg-white"
-                          : "text-gray-500 hover:text-blue-700"
+                        ? "text-blue-700 border-b-2 border-blue-700 bg-white"
+                        : "text-gray-500 hover:text-blue-700"
                         }`}
                     >
                       {room.room_type}
@@ -521,6 +578,13 @@ export default function HotelDetailPage() {
                       <div className="p-4 md:p-6 flex-1 flex flex-col md:flex-row">
                         <div className="flex-1">
                           <h4 className="text-xl font-bold text-gray-800 mb-2">{rooms[activeRoomTab].room_type}</h4>
+                          <div className="mb-4 flex flex-wrap gap-2">
+                            <span className={`px-2 py-1 text-xs rounded-full font-medium ${availableQuantity > 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-600"}`}>
+                              {availableQuantity > 0
+                                ? `Còn ${availableQuantity} phòng`
+                                : "Hết phòng"}
+                            </span>
+                          </div>
                           <div className="mb-4 flex flex-wrap gap-2">
                             <span className="bg-gray-100 text-gray-700 rounded-full px-3 py-1 text-xs font-medium">
                               {rooms[activeRoomTab].capacity} khách
@@ -566,7 +630,13 @@ export default function HotelDetailPage() {
                           </div>
                           <button
                             onClick={() => openBookingModal(activeRoomTab)}
-                            className="w-full bg-blue-600 hover:bg-blue-700 transition text-white py-2 px-4 rounded-lg font-medium">
+                            disabled={!rooms[activeRoomTab].is_available || availableQuantity <= 0}
+                            className={`w-full py-2 px-4 rounded-lg font-medium transition
+    ${(!rooms[activeRoomTab].is_available || availableQuantity <= 0)
+                                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                : 'bg-blue-600 hover:bg-blue-700 text-white'
+                              }`}
+                          >
                             Đặt ngay
                           </button>
                         </div>
@@ -702,49 +772,49 @@ export default function HotelDetailPage() {
             )}
 
             {activeTab === "reviews" && (
-            <div id="reviews-section" className="mt-8 pt-4">
-              <div className="flex justify-between items-center mb-3">
-                <h2 className="text-lg font-bold text-cyan-900">Đánh giá về địa điểm</h2>
-                <button
-                  onClick={() => setReviewsExpanded(!reviewsExpanded)}
-                  className="text-cyan-600 hover:text-cyan-800 flex items-center text-sm"
-                >
-                  {reviewsExpanded ? 'Thu gọn' : 'Xem tất cả'}
-                  <svg
-                    className={`ml-1 w-4 h-4 transition-transform ${reviewsExpanded ? 'rotate-180' : ''}`}
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-              </div>
-
-              <ReviewForm entityType="hotel" entityId={hotel.id || slug} onReviewAdded={handleReviewAdded}/>
-
-              <div className={`mt-4 transition-all duration-300 overflow-hidden ${reviewsExpanded ? 'max-h-[2000px]' : 'max-h-[600px]'}`}>
-                <ReviewList entityType="hotel" entityId={hotel.id || slug} />
-              </div>
-
-              {!reviewsExpanded && (
-                <div className="h-20 bg-gradient-to-t from-white to-transparent w-full -mt-20 relative pointer-events-none"></div>
-              )}
-
-              {!reviewsExpanded && (
-                <div className="text-center mt-2">
+              <div id="reviews-section" className="mt-8 pt-4">
+                <div className="flex justify-between items-center mb-3">
+                  <h2 className="text-lg font-bold text-cyan-900">Đánh giá về địa điểm</h2>
                   <button
-                    onClick={() => setReviewsExpanded(true)}
-                    className="text-cyan-600 hover:text-cyan-800 text-sm font-medium inline-flex items-center"
+                    onClick={() => setReviewsExpanded(!reviewsExpanded)}
+                    className="text-cyan-600 hover:text-cyan-800 flex items-center text-sm"
                   >
-                    Xem tất cả đánh giá
-                    <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    {reviewsExpanded ? 'Thu gọn' : 'Xem tất cả'}
+                    <svg
+                      className={`ml-1 w-4 h-4 transition-transform ${reviewsExpanded ? 'rotate-180' : ''}`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
                     </svg>
                   </button>
                 </div>
-              )}
-            </div>
+
+                <ReviewForm entityType="hotel" entityId={hotel.id || slug} onReviewAdded={handleReviewAdded} />
+
+                <div className={`mt-4 transition-all duration-300 overflow-hidden ${reviewsExpanded ? 'max-h-[2000px]' : 'max-h-[600px]'}`}>
+                  <ReviewList entityType="hotel" entityId={hotel.id || slug} />
+                </div>
+
+                {!reviewsExpanded && (
+                  <div className="h-20 bg-gradient-to-t from-white to-transparent w-full -mt-20 relative pointer-events-none"></div>
+                )}
+
+                {!reviewsExpanded && (
+                  <div className="text-center mt-2">
+                    <button
+                      onClick={() => setReviewsExpanded(true)}
+                      className="text-cyan-600 hover:text-cyan-800 text-sm font-medium inline-flex items-center"
+                    >
+                      Xem tất cả đánh giá
+                      <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                  </div>
+                )}
+              </div>
             )}
           </div>
         </div>
@@ -764,7 +834,6 @@ export default function HotelDetailPage() {
         </div>
       </div>
 
-      {/* Full Gallery Modal */}
       <AnimatePresence>
         {showFullGallery && (
           <motion.div
@@ -817,7 +886,6 @@ export default function HotelDetailPage() {
         )}
       </AnimatePresence>
 
-      {/* Booking Modal */}
       <AnimatePresence>
         {showBookingModal && (
           <motion.div
@@ -1206,6 +1274,34 @@ export default function HotelDetailPage() {
           </motion.div>
         )}
         <ToastContainer position="top-right" autoClose={3000} />
+      </AnimatePresence>
+      <AnimatePresence>
+        {showSoldOutPopup && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black bg-opacity-40 flex items-center justify-center p-4"
+            onClick={() => setShowSoldOutPopup(false)}
+          >
+            <div
+              className="bg-white rounded-xl shadow-xl max-w-sm w-full p-6 text-center"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="mb-3 text-red-500 text-4xl">😢</div>
+              <h2 className="font-bold text-lg mb-2">Hết phòng!</h2>
+              <p className="text-gray-600 mb-4">
+                Loại phòng này đã hết chỗ hoặc tạm ngừng bán. Vui lòng chọn loại phòng khác hoặc quay lại sau!
+              </p>
+              <button
+                onClick={() => setShowSoldOutPopup(false)}
+                className="bg-blue-600 text-white px-6 py-2 rounded-lg font-medium"
+              >
+                Đóng
+              </button>
+            </div>
+          </motion.div>
+        )}
       </AnimatePresence>
     </div>
   );

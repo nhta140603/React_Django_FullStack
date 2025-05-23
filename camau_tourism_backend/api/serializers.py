@@ -220,3 +220,8 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ['id', 'client', 'content', 'full_name', 'image', 'parent', 'created_at', 'updated_at', 'is_public']
+
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notification
+        fields = '__all__'  

@@ -1,7 +1,5 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { getInfoUser } from "../api/user_api";
 import {useAuth} from "../contexts/AuthContext" 
-import { useQuery } from "@tanstack/react-query";
 const Spinner = () => (
   <div style={{
     height: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "#fff"

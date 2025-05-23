@@ -2,6 +2,14 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getList } from "../../api/user_api";
 import { useQuery } from "@tanstack/react-query";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "../../components/ui/breadcrumb"
 
 export default function EventsList() {
   const {
@@ -67,7 +75,7 @@ export default function EventsList() {
             {[0, 1].map((idx) => (
               <div
                 key={idx}
-                className="relative  overflow-hidden rounded-lg md:rounded-2xl bg-gradient-to-r from-gray-100 to-gray-200 animate-pulse"
+                className="relative overflow-hidden rounded-lg md:rounded-2xl bg-gradient-to-r from-gray-100 to-gray-200 min-h-[268px]"
               >
                 <div className="flex flex-col md:flex-row">
                   <div className="relative w-full md:w-2/5 h-32 md:h-52 bg-gray-300 rounded-t-lg md:rounded-l-2xl md:rounded-t-none overflow-hidden">
@@ -111,31 +119,28 @@ export default function EventsList() {
             <div className="inline-flex p-0.5 md:p-1 bg-white/20 backdrop-blur-sm rounded-full">
               <button
                 onClick={() => filterEvents("all")}
-                className={`px-3 py-1 md:px-6 md:py-2 rounded-full text-xs md:text-sm font-medium transition-colors duration-200 ${
-                  activeFilter === "all"
+                className={`px-3 py-1 md:px-6 md:py-2 rounded-full text-xs md:text-sm font-medium transition-colors duration-200 ${activeFilter === "all"
                     ? "bg-white text-indigo-700 shadow-md"
                     : "text-white hover:bg-white/10"
-                }`}
+                  }`}
               >
                 Tất cả
               </button>
               <button
                 onClick={() => filterEvents("upcoming")}
-                className={`px-3 py-1 md:px-6 md:py-2 rounded-full text-xs md:text-sm font-medium transition-colors duration-200 ${
-                  activeFilter === "upcoming"
+                className={`px-3 py-1 md:px-6 md:py-2 rounded-full text-xs md:text-sm font-medium transition-colors duration-200 ${activeFilter === "upcoming"
                     ? "bg-white text-indigo-700 shadow-md"
                     : "text-white hover:bg-white/10"
-                }`}
+                  }`}
               >
                 Sắp diễn ra
               </button>
               <button
                 onClick={() => filterEvents("past")}
-                className={`px-3 py-1 md:px-6 md:py-2 rounded-full text-xs md:text-sm font-medium transition-colors duration-200 ${
-                  activeFilter === "past"
+                className={`px-3 py-1 md:px-6 md:py-2 rounded-full text-xs md:text-sm font-medium transition-colors duration-200 ${activeFilter === "past"
                     ? "bg-white text-indigo-700 shadow-md"
                     : "text-white hover:bg-white/10"
-                }`}
+                  }`}
               >
                 Đã diễn ra
               </button>
@@ -143,7 +148,18 @@ export default function EventsList() {
           </div>
         </div>
       </div>
-      <div className="pb-10 md:pb-16 max-w-2xl md:max-w-7xl mx-auto">
+      <div className="pb-10 md:pb-16 max-w-2xl md:max-w-7xl mx-auto px-4">
+        <Breadcrumb className="mb-4 px-4">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/">Trang chủ</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Lễ hội</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
         <div className="px-2 md:px-4">
           {loading && <EventsListSkeleton />}
           {error && (
@@ -180,13 +196,12 @@ export default function EventsList() {
                   {pair.map((event, index) => (
                     <div
                       key={event.id}
-                      className={`relative overflow-hidden group cursor-pointer transition-all duration-500 rounded-lg md:rounded-2xl hover:shadow-xl ${
-                        (pairIndex + index) % 3 === 0
+                      className={`relative overflow-hidden group cursor-pointer transition-all duration-500 rounded-lg md:rounded-2xl hover:shadow-xl ${(pairIndex + index) % 3 === 0
                           ? "bg-gradient-to-r from-indigo-50 to-indigo-100"
                           : (pairIndex + index) % 3 === 1
-                          ? "bg-gradient-to-r from-teal-50 to-teal-100"
-                          : "bg-gradient-to-r from-amber-50 to-amber-100"
-                      }`}
+                            ? "bg-gradient-to-r from-teal-50 to-teal-100"
+                            : "bg-gradient-to-r from-amber-50 to-amber-100"
+                        }`}
                       onClick={() => navigate(`/le-hoi/${event.slug}`)}
                     >
                       <div className="absolute -bottom-2 -right-2 md:-bottom-4 md:-right-4 w-16 h-16 md:w-24 md:h-24 rounded-full bg-gradient-to-r from-indigo-200 to-indigo-300 opacity-50 group-hover:scale-150 transition-transform duration-700"></div>
@@ -213,13 +228,12 @@ export default function EventsList() {
                           </h3>
                           <div className="flex items-center gap-2 md:gap-3 mb-2 md:mb-4">
                             <div
-                              className={`flex items-center justify-center p-1.5 md:p-2 rounded-full ${
-                                (pairIndex + index) % 3 === 0
+                              className={`flex items-center justify-center p-1.5 md:p-2 rounded-full ${(pairIndex + index) % 3 === 0
                                   ? "bg-indigo-200"
                                   : (pairIndex + index) % 3 === 1
-                                  ? "bg-teal-200"
-                                  : "bg-amber-200"
-                              }`}
+                                    ? "bg-teal-200"
+                                    : "bg-amber-200"
+                                }`}
                             >
                               <svg
                                 className="w-4 h-4 md:w-5 md:h-5 text-indigo-700"
@@ -256,13 +270,12 @@ export default function EventsList() {
                             )}
                             <div className="flex justify-end">
                               <div
-                                className={`inline-flex items-center gap-1 md:gap-2 px-3 md:px-5 py-1.5 md:py-2.5 rounded-full font-medium group-hover:scale-105 transition-all duration-300 ${
-                                  (pairIndex + index) % 3 === 0
+                                className={`inline-flex items-center gap-1 md:gap-2 px-3 md:px-5 py-1.5 md:py-2.5 rounded-full font-medium group-hover:scale-105 transition-all duration-300 ${(pairIndex + index) % 3 === 0
                                     ? "bg-indigo-600 text-white"
                                     : (pairIndex + index) % 3 === 1
-                                    ? "bg-teal-600 text-white"
-                                    : "bg-amber-600 text-white"
-                                }`}
+                                      ? "bg-teal-600 text-white"
+                                      : "bg-amber-600 text-white"
+                                  }`}
                               >
                                 <span className="text-xs md:text-base">
                                   Xem chi tiết

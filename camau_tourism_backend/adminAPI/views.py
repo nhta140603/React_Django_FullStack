@@ -99,6 +99,58 @@ class TourBookingViewSet(viewsets.ModelViewSet):
     queryset = TourBooking.objects.all()
     serializer_class = TourBookingSerializer
     pagination_class = StandardResultsSetPagination
+    def perform_update(self, serializer):
+        instance = self.get_object()
+        prev_status = instance.status
+        validated_data = serializer.validated_data
+
+        new_status = validated_data.get('status', prev_status)
+        number_of_people = validated_data.get('number_of_people', instance.number_of_people)
+        tour = validated_data.get('tour', instance.tour)
+        if prev_status != 'confirmed' and new_status == 'confirmed':
+            tour_obj = tour if isinstance(tour, Tour) else Tour.objects.get(pk=tour)
+            confirmed_people = get_confirmed_people_count(tour_obj)
+            if confirmed_people + number_of_people > tour_obj.max_people:
+                raise serializers.ValidationError(
+                    {'non_field_errors': [f"Tour đã đủ chỗ. Chỉ còn {max(0, tour_obj.max_people - confirmed_people)} chỗ."]}
+                )
+        booking = serializer.save()
+        if prev_status != new_status:
+            send_booking_status_notification(booking.client, booking, new_status)
+
+        return booking
+    @action(detail=False, methods=['get'], url_path='pending-count')
+    def pending_count(self, request):
+        count = self.queryset.filter(status='Paid').count()
+        return Response({'count': count})
+
+
+def get_confirmed_people_count(tour):
+    return TourBooking.objects.filter(
+        tour=tour,
+        status='confirmed'
+    ).aggregate(total=models.Sum('number_of_people'))['total'] or 0
+
+def send_booking_status_notification(client, booking, new_status):
+    if new_status == "confirmed":
+        title = "Đơn đặt tour đã được xác nhận"
+        content = f"Đơn đặt tour #{booking.tour.name} đã được xác nhận. Chúng tôi sẽ liên hệ với bạn sớm nhất."
+    elif new_status == "canceled":
+        title = "Đơn đặt tour đã bị hủy"
+        content = f"Đơn đặt tour #{booking.tour.name} đã bị hủy. Nếu có thắc mắc, vui lòng liên hệ hỗ trợ."
+    elif new_status == "completed":
+        title = "Tour đã hoàn thành"
+        content = f"Cảm ơn bạn đã sử dụng dịch vụ. Hy vọng bạn đã có trải nghiệm tốt!"
+    else:
+        return
+
+    Notification.objects.create(
+        client=client,
+        title=title,
+        content=content,
+        type="booking",
+        url=f"/my-bookings/{booking.id}/"
+    )
 
 class ReviewViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminOrReadOnly]
@@ -115,6 +167,62 @@ class RoomBookingViewSet(viewsets.ModelViewSet):
     queryset = RoomBooking.objects.all()
     serializer_class = RoomBookingSerializer
     pagination_class = StandardResultsSetPagination
+    def perform_update(self, serializer):
+        instance = self.get_object()
+        prev_status = instance.status
+        validated_data = serializer.validated_data
+        new_status = validated_data.get('status', prev_status)
+        room = validated_data.get('room', instance.room)
+        check_in = validated_data.get('check_in', instance.check_in)
+        check_out = validated_data.get('check_out', instance.check_out)
+        if prev_status != 'confirmed' and new_status == 'confirmed':
+            room_obj = room if isinstance(room, HotelRoom) else HotelRoom.objects.get(pk=room)
+            booked_count = get_booked_room_count(room_obj, check_in, check_out)
+            if booked_count >= room_obj.quantity:
+                raise serializers.ValidationError(
+                    {'non_field_errors': [f"Loại phòng này đã hết chỗ."]}
+                )
+        booking = serializer.save()
+        if prev_status != new_status:
+            send_room_booking_status_notification(booking.client, booking, new_status)
+        return booking
+    @action(detail=False, methods=['get'], url_path='pending-count')
+    def pending_count(self, request):
+        count = self.queryset.filter(status='pending').count()
+        return Response({'count': count})
+
+
+def get_booked_room_count(room, check_in, check_out):
+    return RoomBooking.objects.filter(
+        room=room,
+        status='confirmed',
+        check_in__lt=check_out,
+        check_out__gt=check_in,
+    ).count()
+
+
+def send_room_booking_status_notification(client, booking, new_status):
+    if new_status == "confirmed":
+        title = "Đơn đặt phòng đã được xác nhận"
+        content = f"Đơn đặt phòng tại khách sạn '{booking.room.hotel.name}' (phòng số {booking.room.room_number}) đã được xác nhận. Chúng tôi sẽ liên hệ với bạn sớm nhất."
+    elif new_status == "canceled":
+        title = "Đơn đặt phòng đã bị hủy"
+        content = f"Đơn đặt phòng tại khách sạn '{booking.room.hotel.name}' (phòng số {booking.room.room_number}) đã bị hủy. Nếu có thắc mắc, vui lòng liên hệ hỗ trợ."
+    elif new_status == "completed":
+        title = "Cảm ơn bạn đã lưu trú cùng chúng tôi"
+        content = (
+            f"Cảm ơn bạn đã đặt phòng tại khách sạn '{booking.room.hotel.name}'. "
+            "Hy vọng bạn đã có trải nghiệm tốt! Rất mong được phục vụ bạn lần sau."
+        )
+    else:
+        return
+    Notification.objects.create(
+        client=client,
+        title=title,
+        content=content,
+        type="booking",
+        url=f"/my-bookings/{booking.id}/"
+    )
 
 class TransportationViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminOrReadOnly]
@@ -169,6 +277,10 @@ class NotificationViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminOrReadOnly]
     queryset = Notification.objects.all()
     serializer_class = NotificationSerializer
+    @action(detail=False, methods=['get'], url_path='unread-count')
+    def unread_count(self, request):
+        count = self.queryset.filter(is_read=False).count()
+        return Response({'count': count})
 
 class FAQViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAdminOrReadOnly]

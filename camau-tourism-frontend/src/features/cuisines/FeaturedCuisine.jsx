@@ -2,6 +2,14 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getList } from "../../api/user_api";
 import { useQuery } from "@tanstack/react-query";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "../../components/ui/breadcrumb"
 
 export default function CuisineList() {
   const { data: cuisines = [], isLoading: loading, error } = useQuery({
@@ -43,7 +51,7 @@ export default function CuisineList() {
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 md:gap-8">
           {skeletons.map(i => (
-            <div key={i} className="group relative bg-white rounded-2xl overflow-hidden shadow-lg animate-pulse">
+            <div key={i} className="group relative bg-white rounded-2xl overflow-hidden shadow-lg">
               <div className="aspect-[4/3] overflow-hidden bg-gray-200">
                 <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300"></div>
               </div>
@@ -76,7 +84,7 @@ export default function CuisineList() {
 
   return (
     <div className="pb-8 md:pb-16 max-w-full mx-auto">
-      <div className="relative w-full h-48 xs:h-56 md:h-96 mb-10 md:mb-24 overflow-hidden rounded-b-3xl">
+      <div className="relative w-full h-48 xs:h-56 md:h-96 mb-10 md:mb-10 overflow-hidden">
         <img
           src="https://fileapidulich.surelrn.vn/Upload/Banner/Cuisines/30/Picture/R637113334948765336.png"
           alt="Ẩm thực Cà Mau"
@@ -97,7 +105,18 @@ export default function CuisineList() {
           </div>
         </div>
       </div>
-      <div className="pb-8 md:pb-16 max-w-7xl mx-auto -mt-8 md:-mt-20 relative z-10">
+      <div className="pb-8 md:pb-16 max-w-7xl mx-auto relative z-10 px-4">
+        <Breadcrumb className="mb-4 px-4">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/">Trang chủ</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>Ẩm thực</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
         <div className="px-3 xs:px-3 md:px-4">
 
           {loading && <CuisineListSkeleton />}

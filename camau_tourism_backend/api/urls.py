@@ -13,6 +13,7 @@ router.register(r'articles', ArticleViewSet)
 router.register(r'cuisines', CuisineViewSet)
 router.register(r'tours-booking', TourBookingViewSet)
 router.register(r'room-booking', RoomBookingViewSet)
+router.register(r'notifications', NotificationViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),

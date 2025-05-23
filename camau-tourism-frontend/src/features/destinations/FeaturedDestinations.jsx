@@ -2,7 +2,17 @@ import React, { useState, useMemo } from "react";
 import { getList } from "../../api/user_api";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "react-router-dom"; 
+import { Link } from "react-router-dom";
+import { MotionItem } from "../../components/MotionItem";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "../../components/ui/breadcrumb"
+
 function MobileFilterSheet({ open, onClose, search, setSearch, typeOptions, selectedType, setSelectedType }) {
   return (
     <div className={`fixed inset-0 z-50 ${open ? '' : 'pointer-events-none'}`}>
@@ -26,7 +36,7 @@ function MobileFilterSheet({ open, onClose, search, setSearch, typeOptions, sele
                 autoFocus
               />
               <span className="absolute left-2 top-2 text-gray-400">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd"/></svg>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" /></svg>
               </span>
               {search && (
                 <button
@@ -45,9 +55,8 @@ function MobileFilterSheet({ open, onClose, search, setSearch, typeOptions, sele
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => setSelectedType("")}
-                className={`px-3 py-1 rounded-lg text-xs font-medium transition-all duration-200 ${
-                  selectedType === "" ? "bg-cyan-600 text-white shadow-md" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                }`}
+                className={`px-3 py-1 rounded-lg text-xs font-medium transition-all duration-200 ${selectedType === "" ? "bg-cyan-600 text-white shadow-md" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  }`}
               >
                 Tất cả
               </button>
@@ -55,9 +64,8 @@ function MobileFilterSheet({ open, onClose, search, setSearch, typeOptions, sele
                 <button
                   key={type}
                   onClick={() => setSelectedType(type)}
-                  className={`px-3 py-1 rounded-lg text-xs font-medium transition-all duration-200 ${
-                    selectedType === type ? "bg-cyan-600 text-white shadow-md" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                  }`}
+                  className={`px-3 py-1 rounded-lg text-xs font-medium transition-all duration-200 ${selectedType === type ? "bg-cyan-600 text-white shadow-md" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    }`}
                 >
                   {type}
                 </button>
@@ -75,9 +83,9 @@ function StarRating({ rating, reviewCount, small = false }) {
   const fullStars = Math.floor(rating);
   const halfStar = rating % 1 >= 0.5;
   const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
-  
+
   const starSize = small ? "w-3 h-3" : "w-4 h-4";
-  
+
   // Full stars
   for (let i = 0; i < fullStars; i++) {
     stars.push(
@@ -86,7 +94,7 @@ function StarRating({ rating, reviewCount, small = false }) {
       </svg>
     );
   }
-  
+
   // Half star
   if (halfStar) {
     stars.push(
@@ -101,7 +109,7 @@ function StarRating({ rating, reviewCount, small = false }) {
       </svg>
     );
   }
-  
+
   // Empty stars
   for (let i = 0; i < emptyStars; i++) {
     stars.push(
@@ -110,7 +118,7 @@ function StarRating({ rating, reviewCount, small = false }) {
       </svg>
     );
   }
-  
+
   return (
     <div className="flex items-center">
       <div className="flex items-center mr-1">
@@ -135,7 +143,7 @@ function RatingBadge({ rating }) {
   else if (rating >= 3.5) bgColor = "bg-amber-400";
   else if (rating >= 3) bgColor = "bg-amber-500";
   else bgColor = "bg-red-400";
-  
+
   return (
     <div className={`${bgColor} text-white text-xs font-bold px-2 py-1 rounded flex items-center`}>
       <svg className="w-3 h-3 mr-0.5" fill="currentColor" viewBox="0 0 20 20">
@@ -148,7 +156,7 @@ function RatingBadge({ rating }) {
 
 function SkeletonDestinationCard() {
   return (
-    <div className="rounded-xl overflow-hidden shadow-lg animate-pulse bg-gray-100 flex flex-col h-full min-w-[170px] max-w-[210px]">
+    <div className="rounded-xl overflow-hidden shadow-lg bg-gray-100 flex flex-col h-full min-w-[170px] max-w-[210px]">
       <div className="w-full h-28 bg-gray-300"></div>
       <div className="p-3 flex-1 flex flex-col">
         <div className="h-4 bg-gray-300 rounded w-2/3 mb-2"></div>
@@ -208,16 +216,30 @@ export default function DestinationList() {
   );
 
   return (
-    <div className="py-4 sm:py-10 px-2 sm:px-4 max-w-7xl mx-auto">
-      <div className="mb-6 animate-fadeIn">
-        <h2 className="text-2xl sm:text-4xl md:text-5xl font-extrabold text-center text-cyan-800 mb-2 leading-tight">
-          <span className="inline-block animate-float">Các địa điểm Cà Mau Nổi Bật</span>
+    <div className="py-5 px-2 sm:px-4 max-w-7xl mx-auto">
+      <Breadcrumb className="mb-4">
+      <BreadcrumbList>
+        <BreadcrumbItem>
+          <BreadcrumbLink href="/">Trang chủ</BreadcrumbLink>
+        </BreadcrumbItem>
+        <BreadcrumbSeparator />
+        <BreadcrumbItem>
+          <BreadcrumbPage>Địa điểm du lịch</BreadcrumbPage>
+        </BreadcrumbItem>
+      </BreadcrumbList>
+    </Breadcrumb>
+
+      <MotionItem y={40}>
+      <div className="mb-6">
+        <h2 className="text-xl sm:text-4xl font-bold text-blue-900 mb-1.5 sm:mb-4 text-center">
+          Các địa điểm Cà Mau Nổi Bật
+          <div class="w-12 sm:w-24 h-1 bg-blue-500 mx-auto mt-1 sm:mt-2 rounded-full"></div>
         </h2>
         <p className="text-center text-blue-900 max-w-2xl mx-auto mb-5 text-sm sm:text-lg px-2 leading-relaxed">
           Khám phá các địa điểm du lịch hấp dẫn, trải nghiệm cảnh đẹp thiên nhiên, văn hóa & ẩm thực Cà Mau. Đặt tour để tận hưởng chuyến đi trọn vẹn!
         </p>
       </div>
-
+    </MotionItem>
       <div className="hidden md:block mb-5">
         <div className="bg-white rounded-xl shadow p-4 border border-cyan-100 flex gap-6 items-center">
           <div className="flex-1">
@@ -232,9 +254,8 @@ export default function DestinationList() {
           <div className="flex flex-wrap gap-2 whitespace-nowrap">
             <button
               onClick={() => setSelectedType("")}
-              className={`px-4 py-2 rounded-lg text-base font-medium transition-all duration-200 ${
-                selectedType === "" ? "bg-cyan-600 text-white shadow-md" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-              }`}
+              className={`px-4 py-2 rounded-lg text-base font-medium transition-all duration-200 ${selectedType === "" ? "bg-cyan-600 text-white shadow-md" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
             >
               Tất cả
             </button>
@@ -242,9 +263,8 @@ export default function DestinationList() {
               <button
                 key={type}
                 onClick={() => setSelectedType(type)}
-                className={`px-4 py-2 rounded-lg text-base font-medium transition-all duration-200 ${
-                  selectedType === type ? "bg-cyan-600 text-white shadow-md" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                }`}
+                className={`px-4 py-2 rounded-lg text-base font-medium transition-all duration-200 ${selectedType === type ? "bg-cyan-600 text-white shadow-md" : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  }`}
               >
                 {type}
               </button>
@@ -323,46 +343,46 @@ export default function DestinationList() {
               <div className="sm:hidden overflow-x-auto pb-2 scrollbar-hide">
                 <div className="flex space-x-3 pl-2 w-max">
                   {filteredGroup.map((dest, idx) => (
-<Link
-  key={dest.id || idx}
-  to={`/dia-diem/${dest.slug}`}
-  className="w-40 min-w-[160px] max-w-[200px] flex-shrink-0 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 bg-white border border-gray-100 cursor-pointer focus:outline-none focus:ring-2 focus:ring-cyan-400"
-  aria-label={dest.name}
-  tabIndex={0}
->
-  <div className="relative h-24 overflow-hidden">
-    {dest.image_url && (
-      <img
-        src={dest.image_url}
-        alt={dest.name}
-        className="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
-      />
-    )}
-    <div className="absolute top-1 right-1 bg-cyan-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-lg">
-      {dest.type}
-    </div>
-    {dest.average_rating > 0 && (
-      <div className="absolute bottom-1 left-1">
-        <RatingBadge rating={dest.average_rating || 0} />
-      </div>
-    )}
-  </div>
-  <div className="p-2">
-    <h3 className="font-bold text-sm text-cyan-800 line-clamp-1 mb-1">{dest.name}</h3>
-    <div className="flex items-center text-gray-500 text-xs mb-1">
-      <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-      <span className="line-clamp-1">{dest.address || 'Cà Mau'}</span>
-    </div>
-    <div className="mb-1.5">
-      <StarRating rating={dest.average_rating || 0} reviewCount={dest.review_count || 0} small={true} />
-    </div>
-    <p className="text-gray-600 text-xs line-clamp-2 mb-2" dangerouslySetInnerHTML={{__html:dest.description || 'Địa điểm du lịch hấp dẫn tại Cà Mau' }}></p>
-    <span className="w-full py-1.5 bg-gradient-to-r from-cyan-400 to-cyan-500 hover:from-cyan-500 hover:to-cyan-600 text-white rounded-md text-xs font-medium transition-colors duration-300 flex items-center justify-center">
-      <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 9l3 3m0 0l-3 3m3-3H8m13 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-      Xem chi tiết
-    </span>
-  </div>
-</Link>
+                    <Link
+                      key={dest.id || idx}
+                      to={`/dia-diem/${dest.slug}`}
+                      className="w-40 min-w-[160px] max-w-[200px] flex-shrink-0 rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 bg-white border border-gray-100 cursor-pointer focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                      aria-label={dest.name}
+                      tabIndex={0}
+                    >
+                      <div className="relative h-24 overflow-hidden">
+                        {dest.image_url && (
+                          <img
+                            src={dest.image_url}
+                            alt={dest.name}
+                            className="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
+                          />
+                        )}
+                        <div className="absolute top-1 right-1 bg-cyan-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-lg">
+                          {dest.type}
+                        </div>
+                        {dest.average_rating > 0 && (
+                          <div className="absolute bottom-1 left-1">
+                            <RatingBadge rating={dest.average_rating || 0} />
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-2">
+                        <h3 className="font-bold text-sm text-cyan-800 line-clamp-1 mb-1">{dest.name}</h3>
+                        <div className="flex items-center text-gray-500 text-xs mb-1">
+                          <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                          <span className="line-clamp-1">{dest.address || 'Cà Mau'}</span>
+                        </div>
+                        <div className="mb-1.5">
+                          <StarRating rating={dest.average_rating || 0} reviewCount={dest.review_count || 0} small={true} />
+                        </div>
+                        <p className="text-gray-600 text-xs line-clamp-2 mb-2" dangerouslySetInnerHTML={{ __html: dest.description || 'Địa điểm du lịch hấp dẫn tại Cà Mau' }}></p>
+                        <span className="w-full py-1.5 bg-gradient-to-r from-cyan-400 to-cyan-500 hover:from-cyan-500 hover:to-cyan-600 text-white rounded-md text-xs font-medium transition-colors duration-300 flex items-center justify-center">
+                          <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 9l3 3m0 0l-3 3m3-3H8m13 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                          Xem chi tiết
+                        </span>
+                      </div>
+                    </Link>
                   ))}
                 </div>
               </div>
@@ -410,7 +430,7 @@ export default function DestinationList() {
                       <div className="mb-2 mt-1">
                         <StarRating rating={dest.average_rating || 0} reviewCount={dest.review_count || 0} />
                       </div>
-                      <p className="text-gray-600 text-sm line-clamp-2 mb-3" dangerouslySetInnerHTML={{__html:dest.description || 'Địa điểm du lịch hấp dẫn tại Cà Mau' }}>
+                      <p className="text-gray-600 text-sm line-clamp-2 mb-3" dangerouslySetInnerHTML={{ __html: dest.description || 'Địa điểm du lịch hấp dẫn tại Cà Mau' }}>
                       </p>
                       <div className="mt-auto">
                         <button className="w-full py-2 bg-gradient-to-r from-cyan-400 to-cyan-500 hover:from-cyan-500 hover:to-cyan-600 text-white rounded-lg text-sm font-medium transition-colors duration-300 flex items-center justify-center">

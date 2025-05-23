@@ -1,19 +1,36 @@
 import React, { useState, useRef, useEffect } from "react";
-import { FaBell, FaSignOutAlt, FaUser } from "react-icons/fa";
+import { FaBell, FaSignOutAlt, FaUser, FaHotel, FaRoute } from "react-icons/fa";
 import { useAdminAuth } from "../../context/authContext";
+import { useNotificationCounts } from "../../context/NotificationCountsContext"; // Lấy context
 
 function Header() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [notificationOpen, setNotificationOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const notificationRef = useRef(null);
   const { admin, logoutAdmin } = useAdminAuth();
+
+  // Lấy số lượng từ context (chính là dữ liệu từ polling chung)
+  const pendingCounts = useNotificationCounts();
+
   useEffect(() => {
     function handleClickOutside(event) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target)
+      ) {
         setDropdownOpen(false);
+      }
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(event.target)
+      ) {
+        setNotificationOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () =>
+      document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   return (
@@ -27,10 +44,67 @@ function Header() {
           type="text"
           placeholder="Tìm kiếm nội dung..."
         />
-        <button className="relative p-2 hover:bg-cyan-100 rounded-full" title="Thông báo">
-          <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white animate-pulse" />
-          <FaBell className="text-cyan-700 text-xl" />
-        </button>
+
+        <div className="relative" ref={notificationRef}>
+          <button
+            className="relative p-2 hover:bg-cyan-100 rounded-full"
+            title="Thông báo"
+            onClick={() => setNotificationOpen(!notificationOpen)}
+          >
+            {pendingCounts.tour > 0 && (
+              <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full border-2 border-white flex items-center justify-center text-white text-xs font-bold animate-pulse">
+                {pendingCounts.tour}
+              </span>
+            )}
+            <FaBell className="text-cyan-700 text-xl" />
+          </button>
+
+          {notificationOpen && (
+            <div className="absolute right-0 top-12 w-80 bg-white border border-gray-200 rounded-lg shadow-lg animate-dropdown-fade z-50">
+              <div className="bg-gradient-to-r from-cyan-600 to-cyan-500 text-white px-4 py-3 flex justify-between items-center rounded-t-lg">
+                <h3 className="font-semibold">Thông báo tổng hợp</h3>
+              </div>
+              <div className="divide-y divide-gray-100">
+                <div className="px-4 py-3 flex items-center gap-3">
+                  <span className="p-2 rounded-full bg-blue-500 text-white">
+                    <FaRoute />
+                  </span>
+                  <span>Tour chờ duyệt:</span>
+                  <span className="ml-auto font-bold text-blue-600">
+                    {pendingCounts.tour}
+                  </span>
+                </div>
+                <div className="px-4 py-3 flex items-center gap-3">
+                  <span className="p-2 rounded-full bg-amber-500 text-white">
+                    <FaHotel />
+                  </span>
+                  <span>Phòng chờ duyệt:</span>
+                  <span className="ml-auto font-bold text-amber-600">
+                    {pendingCounts.room}
+                  </span>
+                </div>
+                <div className="px-4 py-3 flex items-center gap-3">
+                  <span className="p-2 rounded-full bg-cyan-500 text-white">
+                    <FaBell />
+                  </span>
+                  <span>Thông báo chưa đọc:</span>
+                  <span className="ml-auto font-bold text-cyan-600">
+                    {pendingCounts.notification}
+                  </span>
+                </div>
+              </div>
+              <div className="bg-gray-50 px-4 py-2 border-t text-center rounded-b-lg">
+                <a
+                  href="/notifications"
+                  className="text-sm text-cyan-600 hover:text-cyan-800 font-medium"
+                >
+                  Xem tất cả thông báo
+                </a>
+              </div>
+            </div>
+          )}
+        </div>
+
         <div className="flex items-center gap-2 relative" ref={dropdownRef}>
           <button
             className="relative focus:outline-none cursor-pointer"
@@ -62,7 +136,9 @@ function Header() {
               <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-2">
                 <FaUser className="text-cyan-600" />
                 <div>
-                  <div className="font-semibold text-gray-700 whitespace-nowrap">{admin?.username}</div>
+                  <div className="font-semibold text-gray-700 whitespace-nowrap">
+                    {admin?.username}
+                  </div>
                   <div className="text-xs text-gray-400">Quản trị viên</div>
                 </div>
               </div>
@@ -77,10 +153,16 @@ function Header() {
           )}
         </div>
       </div>
-      <style>{`
+      <style jsx>{`
         @keyframes dropdown-fade {
-          from { opacity: 0; transform: translateY(-10px);}
-          to { opacity: 1; transform: translateY(0);}
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
         .animate-dropdown-fade {
           animation: dropdown-fade 0.18s ease;

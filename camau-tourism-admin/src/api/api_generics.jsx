@@ -66,3 +66,13 @@ export async function uploadImageToServer(file) {
   url = url.replace('/upload/', '/upload/f_auto,q_auto/');
   return url;
 }
+
+
+export const getTourBookingPendingCount = () =>
+  fetchWithAuth(`${API_URL}tour-bookings/pending-count/`);
+
+export const getRoomBookingPendingCount = () =>
+  fetchWithAuth(`${API_URL}room-bookings/pending-count/`);
+
+export const getNotificationsUnreadCount = () =>
+  fetchWithAuth(`${API_URL}notifications/unread-count/`);

@@ -4,7 +4,14 @@ import { getDetail } from "../../api/user_api";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useQuery } from "@tanstack/react-query";
-
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "../../components/ui/breadcrumb"
 import {
   Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger,
 } from "../../components/ui/sheet";
@@ -301,8 +308,23 @@ export default function FestivalDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-cyan-50">
+    <div className="min-h-screen bg-gradient-to-b from-white to-cyan-50 py-8">
       <div className="max-w-2xl md:max-w-7xl mx-auto px-3 sm:px-4 md:px-5">
+        <Breadcrumb className="mb-2">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/">Trang chủ</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/danh-sach-dia-diem">Lễ Hội</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>{event.title}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
         <div className="py-4 md:py-6 relative">
           <EventHeroSection title={event.title} image={eventImage}>
             <div className="hidden md:block">
@@ -338,7 +360,7 @@ export default function FestivalDetail() {
           <div className="mb-5 bg-gradient-to-r from-cyan-600 to-cyan-700 p-4 rounded-xl shadow-lg">
             <CountdownTimer eventDate={formattedDate} />
           </div>
-          
+
           <Accordion type="multiple" defaultValue={["time", "desc"]} className="rounded-xl overflow-hidden shadow-sm border border-gray-200 bg-white">
             <AccordionItem value="time" className="border-b border-gray-200">
               <AccordionTrigger className="px-4 py-3 hover:bg-cyan-50 transition-colors">
@@ -367,7 +389,7 @@ export default function FestivalDetail() {
                 </div>
               </AccordionContent>
             </AccordionItem>
-            
+
             <AccordionItem value="desc" className="border-b border-gray-200">
               <AccordionTrigger className="px-4 py-3 hover:bg-cyan-50 transition-colors">
                 <span className="font-semibold text-cyan-800 flex items-center gap-2">
@@ -384,7 +406,7 @@ export default function FestivalDetail() {
                 />
               </AccordionContent>
             </AccordionItem>
-            
+
             {mapSrc &&
               <AccordionItem value="map">
                 <AccordionTrigger className="px-4 py-3 hover:bg-cyan-50 transition-colors">
@@ -413,7 +435,7 @@ export default function FestivalDetail() {
                 </AccordionContent>
               </AccordionItem>
             }
-            
+
             <AccordionItem value="note">
               <AccordionTrigger className="px-4 py-3 hover:bg-cyan-50 transition-colors">
                 <span className="font-semibold text-cyan-800 flex items-center gap-2">
@@ -441,7 +463,7 @@ export default function FestivalDetail() {
               </AccordionContent>
             </AccordionItem>
           </Accordion>
-          
+
           <div className="flex gap-3 mt-4">
             <button
               onClick={handleAddToCalendar}
@@ -554,7 +576,7 @@ export default function FestivalDetail() {
                   />
                 </div>
               </div>
-              
+
               <div className="bg-cyan-50 rounded-xl shadow-md overflow-hidden border border-cyan-100 p-5">
                 <h3 className="font-bold text-cyan-800 mb-4 flex items-center text-lg">
                   <svg className="mr-2 w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -590,7 +612,7 @@ export default function FestivalDetail() {
                 </ul>
               </div>
             </div>
-            
+
             <div className="md:col-span-1">
               <div className="md:sticky md:top-6 space-y-6">
                 <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
@@ -604,7 +626,7 @@ export default function FestivalDetail() {
                     <p className="text-sm text-gray-500">{formattedDate}</p>
                   </div>
                 </div>
-                
+
                 {mapSrc && (
                   <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
                     <div className="border-b border-gray-100">
@@ -632,7 +654,7 @@ export default function FestivalDetail() {
                     </div>
                   </div>
                 )}
-                
+
                 <div className="bg-gradient-to-r from-amber-500 to-amber-600 rounded-xl shadow-md overflow-hidden text-white p-4">
                   <h3 className="font-bold mb-3 flex items-center text-lg">
                     <svg className="mr-2 w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">

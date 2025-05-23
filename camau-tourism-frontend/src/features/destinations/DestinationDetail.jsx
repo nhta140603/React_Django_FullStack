@@ -6,6 +6,14 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ReviewList from "../../components/Review_Rating/ReviewList"
 import ReviewForm from "../../components/Review_Rating/ReviewForm"
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "../../components/ui/breadcrumb"
 
 export default function DestinationDetailPage() {
   const { slug } = useParams();
@@ -90,6 +98,22 @@ export default function DestinationDetailPage() {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4">
+        <Breadcrumb className="mb-2">
+          <BreadcrumbList>
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/">Trang chủ</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbLink href="/danh-sach-dia-diem">Địa điểm</BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator />
+            <BreadcrumbItem>
+              <BreadcrumbPage>{destination.name}</BreadcrumbPage>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+
         <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
           <h1 className="text-3xl font-bold text-gray-800 mb-2">{destination.name}</h1>
           {hasAddress && (
@@ -169,8 +193,8 @@ export default function DestinationDetailPage() {
               {images.length > 1 && (
                 <div className="hidden md:flex p-3 gap-2 overflow-x-auto">
                   {images.map((img, idx) => (
-                    <div 
-                      key={idx} 
+                    <div
+                      key={idx}
                       onClick={() => setCurrentImg(idx)}
                       className={`flex-shrink-0 w-20 h-16 rounded-md overflow-hidden cursor-pointer border-2 transition-all ${currentImg === idx ? 'border-blue-500' : 'border-transparent hover:border-gray-300'}`}
                     >
@@ -188,7 +212,7 @@ export default function DestinationDetailPage() {
                 </svg>
                 Thông tin chi tiết
               </h2>
-              
+
               <div
                 ref={descRef}
                 className="prose max-w-none prose-p:text-gray-600 prose-headings:text-gray-800 prose-img:rounded-lg prose-img:shadow-sm prose-a:text-blue-600 transition-all duration-300 overflow-hidden"
@@ -279,7 +303,7 @@ export default function DestinationDetailPage() {
                 </svg>
                 Vị trí trên bản đồ
               </h2>
-              
+
               <div className="h-[260px] rounded-lg overflow-hidden border border-gray-200">
                 {mapSrc ? (
                   <iframe
@@ -303,7 +327,7 @@ export default function DestinationDetailPage() {
                   </div>
                 )}
               </div>
-              
+
               {hasAddress && (
                 <div className="mt-4 p-3 bg-gray-50 rounded-lg text-gray-600 text-sm">
                   <strong className="text-gray-700 block mb-1">Địa chỉ:</strong>
@@ -327,7 +351,7 @@ export default function DestinationDetailPage() {
                       </div>
                     </li>
                   )}
-                  
+
                   {destination.price_range && (
                     <li className="flex items-start">
                       <svg className="w-5 h-5 text-gray-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -339,7 +363,7 @@ export default function DestinationDetailPage() {
                       </div>
                     </li>
                   )}
-                  
+
                   {destination.phone_number && (
                     <li className="flex items-start">
                       <svg className="w-5 h-5 text-gray-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

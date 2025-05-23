@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import MainLayout from '../layouts/MainLayout';
-import TripPage from '../features/Users/FeatureTourBooking';
-function Trips() {
+import MyReviewsPage from '../features/Users/FeatureTourBooking';
+function Review() {
   return (
-      <TripPage/>
+      <MyReviewsPage/>
   );
 }
-export default Trips;
+export default Review;
