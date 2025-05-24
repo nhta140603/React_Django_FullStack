@@ -1,7 +1,5 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { getList } from '../../api/user_api';
 import { MotionItem } from '../../components/MotionItem';
 import {
   Breadcrumb,
@@ -11,37 +9,15 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "../../components/ui/breadcrumb"
-
+import { useFilterSearch } from "../../hooks/useFilterSearch";
+import { useFetchList } from "../../hooks/useFetchList"
+import { DataLoader } from '../../hooks/useDataLoader';
+import { formatPrice } from "../../utils/formatPrice"
+import  SkeletonCard  from "../../components/Common/SkeletonCard"
 function TourList({ limit, showSearch = true, showBreadcrumb = true }) {
-  const [search, setSearch] = useState('');
-  const [activeFilter, setActiveFilter] = useState('all');
   const [hoveredCard, setHoveredCard] = useState(null);
   const headerRef = useRef(null);
   const navigate = useNavigate();
-
-  const { data: tours = [], isLoading, error } = useQuery({
-    queryKey: ['tours'],
-    queryFn: () => getList('tours'),
-    staleTime: 5 * 60 * 1000,
-    retry: 2
-  });
-
-  const getFilteredTours = () => {
-    let filtered = tours;
-    if (search) {
-      filtered = filtered.filter(tour =>
-        tour.name?.toLowerCase().includes(search.toLowerCase())
-      );
-    }
-    if (activeFilter !== 'all') {
-      filtered = filtered.filter(tour =>
-        tour.category?.toLowerCase() === activeFilter.toLowerCase() ||
-        tour.location?.toLowerCase().includes(activeFilter.toLowerCase())
-      );
-    }
-    return limit ? filtered.slice(0, limit) : filtered;
-  };
-
   const categories = [
     { id: 'all', name: 'Tất cả' },
     { id: 'popular', name: 'Phổ biến nhất' },
@@ -50,88 +26,38 @@ function TourList({ limit, showSearch = true, showBreadcrumb = true }) {
     { id: 'food', name: 'Ẩm thực' }
   ];
 
-  function SkeletonCard() {
-    return (
-      <div
-        className="rounded-lg overflow-hidden shadow-lg animate-pulse bg-gray-100 flex flex-col min-h-[160px] sm:min-h-[320px]"
-        aria-hidden="true"
-      >
-        <div className="w-full h-20 sm:h-56 bg-gray-300"></div>
-        <div className="p-2 sm:p-6 flex-1 flex flex-col">
-          <div className="h-3 sm:h-6 bg-gray-300 rounded w-3/4 mb-1 sm:mb-3"></div>
-          <div className="h-2.5 sm:h-4 bg-gray-200 rounded w-full mb-1 sm:mb-2"></div>
-          <div className="h-2.5 sm:h-4 bg-gray-200 rounded w-5/6 mb-1 sm:mb-2"></div>
-          <div className="h-2.5 sm:h-4 bg-gray-200 rounded w-2/3 mb-2 sm:mb-6"></div>
-          <div className="h-3.5 sm:h-5 w-12 sm:w-24 bg-gray-300 rounded mb-2"></div>
-          <div className="mt-auto h-6 sm:h-9 w-16 sm:w-32 bg-cyan-200/60 rounded-xl"></div>
-        </div>
-      </div>
-    );
-  }
+  const { data: tours = [], isLoading, error } = useFetchList('tours');
+  const filterOptions = categories.map(cat => cat.id);
+  const {
+    search,
+    setSearch,
+    selectedFilter: activeFilter,
+    setSelectedFilter,
+    filteredData: filteredTours,
+  } = useFilterSearch(tours, {
+    searchFields: ["name"],
+    filterField: "category",
+    filterOptions,
+  });
 
-  const PromoBadge = ({ promo }) =>
-    promo ? (
-      <div className="absolute top-1 left-1 sm:top-3 sm:left-3 z-10">
-        <div className="relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-pink-500 to-red-500 rounded-full blur-sm opacity-70"></div>
-          <span className="relative bg-gradient-to-r from-pink-500 to-red-500 text-white text-xs px-2 sm:px-3 py-0.5 sm:py-1 rounded-full font-bold shadow-lg inline-block">
-            {promo}
-          </span>
-        </div>
-      </div>
-    ) : null;
-
-  const RatingStars = ({ rating }) => {
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 !== 0;
-    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
-
-    return (
-      <div className="flex items-center">
-        {[...Array(fullStars)].map((_, i) => (
-          <svg key={`full-${i}`} className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-        ))}
-        {hasHalfStar && (
-          <svg className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-            <defs>
-              <linearGradient id="halfStarGradient">
-                <stop offset="50%" stopColor="#FBBF24" />
-                <stop offset="50%" stopColor="#E5E7EB" />
-              </linearGradient>
-            </defs>
-            <path fill="url(#halfStarGradient)" d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-        )}
-        {[...Array(emptyStars)].map((_, i) => (
-          <svg key={`empty-${i}`} className="w-3 h-3 sm:w-4 sm:h-4 text-gray-300" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-          </svg>
-        ))}
-        <span className="ml-1 text-xs sm:text-sm font-semibold text-gray-700">{rating}</span>
-      </div>
-    );
-  };
-
-  const displayedTours = getFilteredTours();
+  const displayedTours = limit ? filteredTours.slice(0, limit) : filteredTours;
 
   return (
     <section id="tour-section" className=" bg-white">
 
       <div className="container max-w-7xl mx-auto sm:px-4 py-5 px-2">
         {showBreadcrumb && (
-        <Breadcrumb className="mb-4">
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/">Trang chủ</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Tour du lịch</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
+          <Breadcrumb className="mb-4">
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/">Trang chủ</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Tour du lịch</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
         )}
         <MotionItem y={40}>
           <div ref={headerRef} className="text-center mb-5 sm:mb-12">
@@ -179,7 +105,7 @@ function TourList({ limit, showSearch = true, showBreadcrumb = true }) {
               {categories.map(category => (
                 <button
                   key={category.id}
-                  onClick={() => setActiveFilter(category.id)}
+                  onClick={() => setSelectedFilter(category.id)}
                   className={`px-2.5 sm:px-4 py-1 sm:py-2 rounded-full text-xs sm:text-sm font-bold transition-all duration-200 ${activeFilter === category.id
                     ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg scale-105"
                     : "bg-white text-gray-600 hover:bg-gray-100 shadow border border-gray-200"
@@ -191,47 +117,27 @@ function TourList({ limit, showSearch = true, showBreadcrumb = true }) {
             </div>
           </div>
         )}
-
-        {isLoading && (
-          <div className="grid gap-3 sm:gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: limit }).map((_, i) => (
-              <SkeletonCard key={i} />
-            ))}
-          </div>
-        )}
-
-        {!isLoading && error && (
-          <div className="flex flex-col items-center py-4 sm:py-12 text-red-500">
-            <svg className="w-8 h-8 sm:w-16 sm:h-16 mb-2 sm:mb-4 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
-            <p className="text-center font-medium text-xs sm:text-base">{error.message}</p>
-            <button
-              onClick={() => window.location.reload()}
-              className="mt-2 sm:mt-4 px-4 sm:px-6 py-1.5 sm:py-2 bg-red-100 hover:bg-red-200 text-red-500 rounded-full transition-colors duration-200 text-xs sm:text-base"
-            >
-              Thử lại
-            </button>
-          </div>
-        )}
-
-        {!isLoading && !error && displayedTours.length === 0 && (
-          <div className="text-center py-4 sm:py-12 text-gray-500">
-            <svg className="w-8 h-8 sm:w-16 sm:h-16 mx-auto mb-2 sm:mb-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-            </svg>
-            <h3 className="text-sm sm:text-xl font-bold text-gray-700 mb-1 sm:mb-2">Không tìm thấy tour phù hợp</h3>
-            <p className="text-xs sm:text-base text-gray-500 max-w-xs sm:max-w-md mx-auto">Vui lòng thử lại với từ khóa khác hoặc xem tất cả các tour của chúng tôi.</p>
-            <button
-              onClick={() => { setSearch(''); setActiveFilter('all'); }}
-              className="mt-4 sm:mt-6 px-4 sm:px-6 py-2 sm:py-3 bg-blue-500 text-white rounded-full shadow-md hover:bg-blue-600 transition-colors duration-200 text-xs sm:text-base"
-            >
-              Xem tất cả tour
-            </button>
-          </div>
-        )}
-
-        {!isLoading && !error && displayedTours.length > 0 && (
+        <DataLoader
+          isLoading={isLoading}
+          error={error?.message || error}
+          dataLength={displayedTours.length}
+          skeleton={<SkeletonCard/>}
+          noData={
+            <div className="text-center py-4 sm:py-12 text-gray-500">
+              <svg className="w-8 h-8 sm:w-16 sm:h-16 mx-auto mb-2 sm:mb-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+              </svg>
+              <h3 className="text-sm sm:text-xl font-bold text-gray-700 mb-1 sm:mb-2">Không tìm thấy tour phù hợp</h3>
+              <p className="text-xs sm:text-base text-gray-500 max-w-xs sm:max-w-md mx-auto">Vui lòng thử lại với từ khóa khác hoặc xem tất cả các tour của chúng tôi.</p>
+              <button
+                onClick={() => { setSearch(''); setSelectedFilter('all'); }}
+                className="mt-4 sm:mt-6 px-4 sm:px-6 py-2 sm:py-3 bg-blue-500 text-white rounded-full shadow-md hover:bg-blue-600 transition-colors duration-200 text-xs sm:text-base"
+              >
+                Xem tất cả tour
+              </button>
+            </div>
+          }
+        >
           <div className="grid gap-3 sm:gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {displayedTours.map((tour, index) => (
               <MotionItem key={index} y={40}>
@@ -261,7 +167,6 @@ function TourList({ limit, showSearch = true, showBreadcrumb = true }) {
                         </svg>
                         {tour.duration || "2 ngày 1 đêm"}
                       </div>
-                      <PromoBadge promo={tour.promo} />
                     </div>
                     <div className="flex-1 flex flex-col p-2 sm:p-6 min-h-[180px] sm:min-h-[280px]">
                       <div className="space-y-1 sm:space-y-2 mb-1 sm:mb-4">
@@ -274,9 +179,6 @@ function TourList({ limit, showSearch = true, showBreadcrumb = true }) {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                           </svg>
                           <span>{tour.location || "Cà Mau"}</span>
-                          <div className="ml-auto">
-                            <RatingStars rating={tour.rating || 4.5} />
-                          </div>
                         </div>
                       </div>
                       <p
@@ -287,7 +189,7 @@ function TourList({ limit, showSearch = true, showBreadcrumb = true }) {
                         {tour.price && (
                           <div className="font-bold text-sm sm:text-lg">
                             <span className="text-blue-600">
-                              {Number(tour.price).toLocaleString("vi-VN")}đ
+                              {formatPrice(tour.price)}
                             </span>
                           </div>
                         )}
@@ -307,7 +209,8 @@ function TourList({ limit, showSearch = true, showBreadcrumb = true }) {
               </MotionItem>
             ))}
           </div>
-        )}
+
+        </DataLoader>
 
         {!isLoading && !error && limit && tours.length > limit && (
           <div className="flex justify-center mt-6 sm:mt-12">

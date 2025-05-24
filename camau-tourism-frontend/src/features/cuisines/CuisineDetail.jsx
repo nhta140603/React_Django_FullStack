@@ -4,7 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 import { getDetail } from "../../api/user_api";
 import ReviewForm from "../../components/Review_Rating/ReviewForm";
 import ReviewList from "../../components/Review_Rating/ReviewList";
-
+import { useDescriptionExpand } from "../../hooks/useDescriptionExpand";
+import {DataLoader} from "../../hooks/useDataLoader"
 export default function CuisineDetail() {
     const { slug } = useParams();
     const navigate = useNavigate();
@@ -14,23 +15,16 @@ export default function CuisineDetail() {
         enabled: !!slug,
         retry: false,
     });
+    const [extraExpand, setExtraExpand] = useState(false);
+    const { descRef, descMaxHeight } = useDescriptionExpand(
+        extraExpand,
+        cuisine?.description,
+        300
+    );
 
-    const [descExpanded, setDescExpanded] = useState(false);
-    const [descMaxHeight, setDescMaxHeight] = useState(320);
-    const descRef = useRef();
     const [reviewsExpanded, setReviewsExpanded] = useState(false);
     const [showImageViewer, setShowImageViewer] = useState(false);
     const [activeImage, setActiveImage] = useState(null);
-    const [extraExpand, setExtraExpand] = useState(false);
-
-    // Tối ưu: chỉ 1 useLayoutEffect cho mô tả
-    useLayoutEffect(() => {
-        if ((descExpanded || extraExpand) && descRef.current) {
-            setDescMaxHeight(descRef.current.scrollHeight);
-        } else {
-            setDescMaxHeight(320);
-        }
-    }, [descExpanded, extraExpand, cuisine?.description]);
 
     useEffect(() => {
         if (cuisine?.image) setActiveImage(cuisine.image);
@@ -46,78 +40,24 @@ export default function CuisineDetail() {
         }, 100);
     };
 
-    // Gallery fallback
     const gallery =
         cuisine?.gallery?.length > 0
             ? cuisine.gallery
             : Array(4).fill(
-                  cuisine?.image ||
-                      "https://placehold.co/300/amber/white?text=Ảnh"
-              );
+                cuisine?.image ||
+                "https://placehold.co/300/amber/white?text=Ảnh"
+            );
 
-    // Loading state
-    if (isLoading) {
-        return (
-            <div className="flex flex-col items-center py-28 text-cyan-600 font-semibold text-lg md:text-xl">
-                <div className="relative w-20 h-20 mb-6">
-                    <div className="absolute top-0 left-0 w-full h-full border-8 border-cyan-200 rounded-full animate-ping opacity-75"></div>
-                    <div className="absolute top-0 left-0 w-full h-full border-8 border-t-transparent border-cyan-500 rounded-full animate-spin"></div>
-                </div>
-                <p className="animate-pulse">Đang chuẩn bị món ăn...</p>
-            </div>
-        );
-    }
-
-    // Error state
-    if (isError) {
-        return (
-            <div className="min-h-screen flex flex-col items-center justify-center py-20 bg-red-50">
-                <div className="bg-white rounded-2xl p-10 text-center shadow-xl max-w-md mx-auto">
-                    <svg className="w-16 h-16 mx-auto text-red-500 mb-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
-                    <h3 className="text-2xl font-semibold text-red-700 mb-2">Đã xảy ra lỗi</h3>
-                    <p className="text-red-600 mb-6">{error?.message || "Có lỗi xảy ra khi tải thông tin món ăn"}</p>
-                    <button
-                        onClick={() => navigate("/am-thuc")}
-                        className="px-5 py-2 bg-amber-500 text-white rounded-full hover:bg-amber-600 font-medium"
-                    >
-                        Quay lại danh sách món ăn
-                    </button>
-                </div>
-            </div>
-        );
-    }
-
-    // Not found state
-    if (!cuisine) {
-        return (
-            <div className="min-h-screen flex flex-col items-center justify-center py-20 bg-amber-50">
-                <div className="bg-white rounded-2xl p-10 text-center shadow-xl max-w-md mx-auto">
-                    <svg className="w-16 h-16 mx-auto text-amber-400 mb-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <h3 className="text-2xl font-semibold text-amber-700 mb-2">Không tìm thấy món ăn</h3>
-                    <p className="text-amber-600 mb-6">Món ăn bạn đang tìm kiếm không tồn tại hoặc đã bị xóa.</p>
-                    <button
-                        onClick={() => navigate("/am-thuc")}
-                        className="px-5 py-2 bg-amber-500 text-white rounded-full hover:bg-amber-600 font-medium"
-                    >
-                        Xem danh sách món ăn khác
-                    </button>
-                </div>
-            </div>
-        );
-    }
-
-    // Main render
     return (
+        <DataLoader
+            isLoading={isLoading}
+            isError={isError}
+        >
         <div className="min-h-screen bg-gray-50">
-            {/* Header ảnh nền */}
             <div className="w-full h-[38vh] md:h-[54vh] relative overflow-hidden">
                 <img
-                    src={cuisine.image || "https://placehold.co/1200x800/amber/white?text=Ẩm+Thực+Cà+Mau"}
-                    alt={cuisine.name}
+                    src={cuisine?.image || "https://placehold.co/1200x800/amber/white?text=Ẩm+Thực+Cà+Mau"}
+                    alt={cuisine?.name}
                     className="w-full h-full object-cover object-center"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
@@ -133,7 +73,7 @@ export default function CuisineDetail() {
                             Quay lại danh sách món ăn
                         </button>
                         <div className="flex flex-wrap items-center gap-3 mb-1">
-                            {cuisine.tags?.map((tag, idx) => (
+                            {cuisine?.tags?.map((tag, idx) => (
                                 <span
                                     key={idx}
                                     className="px-3 py-1 bg-amber-500 text-black text-xs font-semibold rounded-full tracking-wide"
@@ -143,7 +83,7 @@ export default function CuisineDetail() {
                             ))}
                         </div>
                         <h1 className="text-3xl md:text-5xl font-extrabold text-white drop-shadow-lg leading-tight mb-1">
-                            {cuisine.name}
+                            {cuisine?.name}
                         </h1>
                         <div className="flex items-center text-white/90 text-sm md:text-base gap-5 mt-2">
                             <div className="flex items-center gap-1">
@@ -156,12 +96,9 @@ export default function CuisineDetail() {
                     </div>
                 </div>
             </div>
-            {/* Thân trang */}
             <div className="max-w-7xl mx-auto px-3 md:px-7 py-8 md:py-16 -mt-10 relative z-10">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
-                    {/* Phần chính */}
                     <div className="md:col-span-2 bg-white rounded-2xl shadow-lg p-6 md:p-10">
-                        {/* Giới thiệu */}
                         <section className="mb-12">
                             <div className="flex items-center gap-3 mb-4">
                                 <div className="w-8 h-1 bg-amber-500 rounded-full"></div>
@@ -173,7 +110,7 @@ export default function CuisineDetail() {
                                 style={{
                                     maxHeight: `${descMaxHeight}px`
                                 }}
-                                dangerouslySetInnerHTML={{ __html: cuisine.description || "" }}
+                                dangerouslySetInnerHTML={{ __html: cuisine?.description || "" }}
                             />
                             {!extraExpand && (
                                 <div className="h-16 bg-gradient-to-t from-white to-transparent w-full -mt-16 relative pointer-events-none"></div>
@@ -191,7 +128,6 @@ export default function CuisineDetail() {
                             </div>
                         </section>
 
-                        {/* Đánh giá */}
                         <section id="reviews-section" className="mt-12 pt-4">
                             <div className="flex justify-between items-center mb-4">
                                 <h2 className="text-xl md:text-2xl font-bold text-cyan-900">Đánh giá về địa điểm</h2>
@@ -205,9 +141,9 @@ export default function CuisineDetail() {
                                     </svg>
                                 </button>
                             </div>
-                            <ReviewForm entityType="food" entityId={cuisine.id || slug} onReviewAdded={handleReviewAdded} />
+                            <ReviewForm entityType="food" entityId={cuisine?.id || slug} onReviewAdded={handleReviewAdded} />
                             <div className={`mt-5 transition-all duration-300 overflow-hidden ${reviewsExpanded ? "max-h-[2000px]" : "max-h-[440px]"}`}>
-                                <ReviewList entityType="food" entityId={cuisine.id || slug} />
+                                <ReviewList entityType="food" entityId={cuisine?.id || slug} />
                             </div>
                             {!reviewsExpanded && (
                                 <>
@@ -228,9 +164,7 @@ export default function CuisineDetail() {
                         </section>
                     </div>
 
-                    {/* Sidebar phải */}
                     <div className="md:col-span-1 space-y-8">
-                        {/* Gallery */}
                         <div className="bg-white rounded-2xl shadow-lg p-6">
                             <div className="flex items-center justify-between mb-4">
                                 <h3 className="text-lg md:text-xl font-bold text-gray-900">Hình ảnh</h3>
@@ -258,14 +192,13 @@ export default function CuisineDetail() {
                                     >
                                         <img
                                             src={image || `https://placehold.co/300/amber/white?text=${idx + 1}`}
-                                            alt={`${cuisine.name} ${idx + 1}`}
+                                            alt={`${cuisine?.name} ${idx + 1}`}
                                             className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                                         />
                                     </div>
                                 ))}
                             </div>
                         </div>
-                        {/* Extra info */}
                         <div className="bg-white rounded-2xl shadow-lg p-6">
                             <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-4">Thông tin thêm</h3>
                             <div className="space-y-4">
@@ -273,14 +206,11 @@ export default function CuisineDetail() {
                                     <span className="text-gray-600 font-medium">Vùng miền</span>
                                     <span className="font-semibold text-gray-800">Miền Tây Nam Bộ</span>
                                 </div>
-                                {/* Có thể thêm thông tin khác ở đây */}
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-
-            {/* Image Viewer */}
             {showImageViewer && (
                 <div className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4">
                     <button
@@ -320,5 +250,6 @@ export default function CuisineDetail() {
                 </div>
             )}
         </div>
+        </DataLoader>
     );
 }

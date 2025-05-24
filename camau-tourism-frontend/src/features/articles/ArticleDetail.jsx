@@ -13,7 +13,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "../../components/ui/drawer"
-
+import { DataLoader } from "../../hooks/useDataLoader"
 function ReadingProgress() {
   const [readingProgress, setReadingProgress] = useState(0);
 
@@ -42,9 +42,8 @@ function ArticleHeading({ title, date, type, readTime }) {
   return (
     <div className="mb-6 sm:mb-8 bg-white rounded-xl p-6 shadow-sm border border-gray-100">
       <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-          type === 'news' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'
-        }`}>
+        <span className={`px-3 py-1 rounded-full text-xs font-medium ${type === 'news' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'
+          }`}>
           {type === 'news' ? 'Tin tức' : 'Sự kiện'}
         </span>
         <span className="text-gray-500 text-xs sm:text-sm flex items-center">
@@ -124,9 +123,8 @@ function RelatedArticles({ articles }) {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
               <div className="absolute bottom-3 left-3">
-                <span className={`px-2 py-1 rounded-md text-xs font-medium ${
-                  article.type === 'news' ? 'bg-blue-600 text-white' : 'bg-purple-600 text-white'
-                }`}>
+                <span className={`px-2 py-1 rounded-md text-xs font-medium ${article.type === 'news' ? 'bg-blue-600 text-white' : 'bg-purple-600 text-white'
+                  }`}>
                   {article.type === 'news' ? 'Tin tức' : 'Sự kiện'}
                 </span>
               </div>
@@ -136,7 +134,7 @@ function RelatedArticles({ articles }) {
                 {article.title}
               </h3>
               <div className="flex justify-between text-xs sm:text-sm text-gray-500 mt-2 pt-2 border-t border-gray-100">
-                <span>{new Date(article.created_at).toLocaleDateString('vi-VN')}</span>
+                <span>{new Date(article?.created_at).toLocaleDateString('vi-VN')}</span>
                 <span className="flex items-center">
                   <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -199,11 +197,10 @@ function TableOfContents({ mobileMode, onClickLink }) {
             >
               <a
                 href={`#${item.id}`}
-                className={`block py-1.5 px-3 rounded-r-md ${
-                  activeId === item.id
+                className={`block py-1.5 px-3 rounded-r-md ${activeId === item.id
                     ? 'text-orange-600 font-medium border-l-2 border-orange-500 -ml-[1px]'
                     : 'text-gray-600 hover:text-orange-600'
-                }`}
+                  }`}
                 onClick={onClickLink}
               >
                 {item.text}
@@ -236,7 +233,7 @@ function ArticleSidebarInfo({ article, eventDate, categoryLink, authorAvatar, au
             <svg className="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            Đăng tải: {format(new Date(article.created_at), 'HH:mm - dd/MM/yyyy', { locale: vi })}
+            Đăng tải: {format(new Date(article?.created_at), 'HH:mm - dd/MM/yyyy', { locale: vi })}
           </p>
           {article.updated_at && article.updated_at !== article.created_at && (
             <p className="text-sm text-gray-500 flex items-center">
@@ -312,7 +309,7 @@ function ArticleSidebarInfo({ article, eventDate, categoryLink, authorAvatar, au
           </svg>
         </Link>
       </div>
-      
+
       <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
         <h3 className="font-bold text-gray-800 mb-3 flex items-center">
           <svg className="w-5 h-5 mr-2 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -350,8 +347,8 @@ function ArticleSidebarInfo({ article, eventDate, categoryLink, authorAvatar, au
 function QuickNavButtons() {
   return (
     <div className="fixed bottom-5 left-5 z-[100] flex flex-col space-y-2 lg:hidden">
-      <button 
-        onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}
+      <button
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         className="bg-white p-3 rounded-full shadow-lg text-gray-600 hover:text-orange-600 transition-colors border border-gray-200"
         aria-label="Lên đầu trang"
       >
@@ -384,13 +381,14 @@ export default function ArticleDetailPage() {
   const { slug, id } = useParams();
   const [article, setArticle] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(true);
   const [relatedArticles, setRelatedArticles] = useState([]);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const contentRef = useRef(null);
 
   const calculateReadingTime = (content) => {
-    const text = content.replace(/<[^>]*>/g, "");
-    const words = text.split(/\s+/).length;
+    const text = content?.replace(/<[^>]*>/g, "");
+    const words = text?.split(/\s+/).length;
     const readingTime = Math.ceil(words / 200);
     return readingTime < 1 ? 1 : readingTime;
   };
@@ -445,160 +443,136 @@ export default function ArticleDetailPage() {
     window.scrollTo(0, 0);
   }, [slug, id]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="relative w-20 h-20 mx-auto mb-4">
-            <div className="absolute top-0 left-0 w-full h-full border-8 border-gray-200 rounded-full"></div>
-            <div className="absolute top-0 left-0 w-full h-full border-8 border-orange-500 rounded-full animate-spin border-t-transparent"></div>
-          </div>
-          <p className="text-gray-600 font-medium">Đang tải bài viết...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!article) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center px-4 text-center">
-        <div className="w-24 h-24 mb-6 text-gray-300">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-        </div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">Không tìm thấy bài viết</h1>
-        <p className="text-gray-600 mb-6">Bài viết này có thể đã bị xóa hoặc không tồn tại.</p>
-        <Link to="/news" className="px-5 py-2 bg-orange-600 text-white rounded-lg shadow-sm hover:bg-orange-700 transition-colors">
-          Quay lại trang tin tức
-        </Link>
-      </div>
-    );
-  }
-
-  const formattedDate = article.created_at
+  const formattedDate = article?.created_at
     ? format(new Date(article.created_at), "dd/MM/yyyy", { locale: vi })
     : "";
-  const readTime = calculateReadingTime(article.content);
-  const categoryLink = article.type === "news" ? "/tin-tuc-su-kien" : "/tin-tuc-su-kien";
-  const eventDate = article.event_date ? new Date(article.event_date) : null;
+  const readTime = calculateReadingTime(article?.content);
+  const categoryLink = article?.type === "news" ? "/tin-tuc-su-kien" : "/tin-tuc-su-kien";
+  const eventDate = article?.event_date ? new Date(article?.event_date) : null;
 
   return (
-    <div className="min-h-screen pb-16">
-      <ReadingProgress />
-      <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
-        <DrawerTrigger asChild>
-          <button
-            className="fixed bottom-5 right-5 z-[110] bg-orange-600 hover:bg-orange-700 text-white rounded-full shadow-lg w-14 h-14 flex items-center justify-center transition-all lg:hidden"
-            aria-label="Thông tin bài viết"
-          >
-            <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-        </DrawerTrigger>
-        <DrawerContent>
-          <DrawerHeader className="flex flex-row items-center justify-between px-4 pt-4 pb-2">
-            <DrawerTitle className="text-lg font-bold text-gray-800">Thông tin bài viết</DrawerTitle>
-            <DrawerClose asChild>
-              <button
-                className="p-2 rounded-full hover:bg-gray-100 transition-colors"
-                aria-label="Đóng"
-              >
-                <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </DrawerClose>
-          </DrawerHeader>
-          <div className="px-4 pb-4">
-            <ArticleSidebarInfo
+    <DataLoader
+      isLoading={loading}
+      isError={error}
+    >
+
+
+      <div className="min-h-screen pb-16">
+        <ReadingProgress />
+        <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
+          <DrawerTrigger asChild>
+            <button
+              className="fixed bottom-5 right-5 z-[110] bg-orange-600 hover:bg-orange-700 text-white rounded-full shadow-lg w-14 h-14 flex items-center justify-center transition-all lg:hidden"
+              aria-label="Thông tin bài viết"
+            >
+              <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+          </DrawerTrigger>
+          <DrawerContent>
+            <DrawerHeader className="flex flex-row items-center justify-between px-4 pt-4 pb-2">
+              <DrawerTitle className="text-lg font-bold text-gray-800">Thông tin bài viết</DrawerTitle>
+              <DrawerClose asChild>
+                <button
+                  className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+                  aria-label="Đóng"
+                >
+                  <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </DrawerClose>
+            </DrawerHeader>
+            <div className="px-4 pb-4">
+              <ArticleSidebarInfo
+                article={article}
+                eventDate={eventDate}
+                categoryLink={categoryLink}
+                authorAvatar="https://ui-avatars.com/api/?name=Admin&background=f97316"
+                authorName="Admin"
+              />
+              <div className="mt-4">
+                <TableOfContents mobileMode onClickLink={() => setDrawerOpen(false)} />
+              </div>
+            </div>
+          </DrawerContent>
+        </Drawer>
+
+        <QuickNavButtons />
+
+        <div className="max-w-7xl mx-auto px-4 pt-5 sm:px-6 lg:px-8">
+          <div className="sticky top-[68px] bg-white py-2 z-20">
+            <Link
+              to={categoryLink}
+              className="inline-flex items-center text-sm text-gray-600 hover:text-orange-600 mb-2 transition-colors bg-white px-3 py-1 rounded-full shadow-sm"
+            >
+              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+              </svg>
+              Quay lại {article?.type === "news" ? "tin tức" : "sự kiện"}
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <div className="lg:col-span-3 space-y-6">
+              <ArticleHeading title={article?.title} date={formattedDate} type={article?.type} readTime={readTime} />
+
+              {article?.cover_image_url && (
+                <div className="w-full rounded-xl overflow-hidden shadow-md bg-white p-2">
+                  <div className="rounded-lg overflow-hidden">
+                    <img
+                      src={article?.cover_image_url}
+                      alt={article?.title}
+                      className="w-full object-cover h-[180px] sm:h-[320px] md:h-[450px] transition-all"
+                      style={{ objectPosition: "center" }}
+                    />
+                  </div>
+                  <SocialShareButtons />
+                </div>
+              )}
+
+              <article className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div className="p-4 sm:p-6 md:p-8">
+                  <div
+                    ref={contentRef}
+                    className="article-content prose prose-base sm:prose-lg max-w-none prose-headings:text-gray-800 prose-headings:font-bold prose-p:text-gray-700 prose-a:text-orange-600 prose-a:no-underline hover:prose-a:underline prose-img:rounded-xl prose-img:shadow-md"
+                    dangerouslySetInnerHTML={{ __html: article?.content }}
+                  />
+                  <div className="flex flex-wrap gap-2 mt-8 pt-6 border-t">
+                    <span className="text-sm font-medium text-gray-700 mr-2 flex items-center">
+                      <svg className="w-5 h-5 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                      </svg>
+                      Tags:
+                    </span>
+                    {["tin-tuc", "su-kien", "noi-bat"].map((tag) => (
+                      <Link
+                        key={tag}
+                        to={`/tags/${tag}`}
+                        className="px-3 py-1 hover:bg-orange-100 rounded-full text-sm text-gray-700 hover:text-orange-700 transition-colors border border-orange-100"
+                      >
+                        #{tag}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </article>
+
+              <RelatedArticles articles={relatedArticles} />
+            </div>
+
+            <ArticleSidebar
               article={article}
               eventDate={eventDate}
               categoryLink={categoryLink}
               authorAvatar="https://ui-avatars.com/api/?name=Admin&background=f97316"
               authorName="Admin"
             />
-            <div className="mt-4">
-              <TableOfContents mobileMode onClickLink={() => setDrawerOpen(false)} />
-            </div>
           </div>
-        </DrawerContent>
-      </Drawer>
-
-      <QuickNavButtons />
-
-      <div className="max-w-7xl mx-auto px-4 pt-5 sm:px-6 lg:px-8">
-        <div className="sticky top-[68px] bg-white py-2 z-20">
-          <Link
-            to={categoryLink}
-            className="inline-flex items-center text-sm text-gray-600 hover:text-orange-600 mb-2 transition-colors bg-white px-3 py-1 rounded-full shadow-sm"
-          >
-            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
-            </svg>
-            Quay lại {article.type === "news" ? "tin tức" : "sự kiện"}
-          </Link>
         </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          <div className="lg:col-span-3 space-y-6">
-            <ArticleHeading title={article.title} date={formattedDate} type={article.type} readTime={readTime} />
-
-            {article.cover_image_url && (
-              <div className="w-full rounded-xl overflow-hidden shadow-md bg-white p-2">
-                <div className="rounded-lg overflow-hidden">
-                  <img
-                    src={article.cover_image_url}
-                    alt={article.title}
-                    className="w-full object-cover h-[180px] sm:h-[320px] md:h-[450px] transition-all"
-                    style={{ objectPosition: "center" }}
-                  />
-                </div>
-                <SocialShareButtons />
-              </div>
-            )}
-
-            <article className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-              <div className="p-4 sm:p-6 md:p-8">
-                <div
-                  ref={contentRef}
-                  className="article-content prose prose-base sm:prose-lg max-w-none prose-headings:text-gray-800 prose-headings:font-bold prose-p:text-gray-700 prose-a:text-orange-600 prose-a:no-underline hover:prose-a:underline prose-img:rounded-xl prose-img:shadow-md"
-                  dangerouslySetInnerHTML={{ __html: article.content }}
-                />
-                <div className="flex flex-wrap gap-2 mt-8 pt-6 border-t">
-                  <span className="text-sm font-medium text-gray-700 mr-2 flex items-center">
-                    <svg className="w-5 h-5 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                    </svg>
-                    Tags:
-                  </span>
-                  {["tin-tuc", "su-kien", "noi-bat"].map((tag) => (
-                    <Link
-                      key={tag}
-                      to={`/tags/${tag}`}
-                      className="px-3 py-1 hover:bg-orange-100 rounded-full text-sm text-gray-700 hover:text-orange-700 transition-colors border border-orange-100"
-                    >
-                      #{tag}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            </article>
-
-            <RelatedArticles articles={relatedArticles} />
-          </div>
-          
-          <ArticleSidebar
-            article={article}
-            eventDate={eventDate}
-            categoryLink={categoryLink}
-            authorAvatar="https://ui-avatars.com/api/?name=Admin&background=f97316"
-            authorName="Admin"
-          />
-        </div>
+        <ToastContainer position="top-right" autoClose={3000} />
       </div>
-      <ToastContainer position="top-right" autoClose={3000} />
-    </div>
+    </DataLoader>
   );
 }

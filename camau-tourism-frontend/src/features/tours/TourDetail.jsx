@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { getDetail, getList, createMomoPayment } from "../../api/user_api";
 import { useAuth } from '../../contexts/AuthContext';
-
+import {DataLoader} from "../../hooks/useDataLoader"
 function Modal({ open, onClose, children }) {
   if (!open) return null;
   return (
@@ -158,22 +158,6 @@ const TourDetail = () => {
     setPaymentStatusModal({ open: false, status: '', amount: null });
   };
 
-  if (isLoadingTour || isLoadingDest)
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="text-xl text-blue-500 font-semibold">Đang tải dữ liệu tour...</div>
-      </div>
-    );
-
-  if (tourError || destError)
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="text-red-500 text-lg">
-          {tourError?.message || destError?.message || "Có lỗi xảy ra khi tải dữ liệu!"}
-        </div>
-      </div>
-    );
-
   const formatPrice = (price) =>
     new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
 
@@ -240,7 +224,6 @@ const TourDetail = () => {
     );
   }
 
-  // DESKTOP TIMELINE COMPONENT (giữ nguyên như cũ)
   function DesktopTimeline({ destinations }) {
     return (
       <div className="relative">
@@ -296,7 +279,6 @@ const TourDetail = () => {
     );
   }
 
-  // Mobile đặt tour bar
   function MobileBookBar() {
     return (
       <div className="fixed bottom-0 left-0 w-full z-40 bg-white border-t border-gray-200 shadow-lg flex justify-between items-center px-4 py-2 md:hidden">
@@ -314,7 +296,6 @@ const TourDetail = () => {
     );
   }
 
-  // Mobile đặt tour modal
   function MobileBookModal({ open, onClose }) {
     return (
       <Modal open={open} onClose={onClose}>
@@ -476,6 +457,10 @@ const TourDetail = () => {
 
 
   return (
+    <DataLoader
+      isLoading={isLoadingTour || isLoadingDest}
+      error={tourError || destError}
+    >
     <div className="bg-gradient-to-r from-blue-50 to-teal-50 min-h-screen pb-24 md:pb-0">
       <div className="relative h-[36vw] min-h-[180px] max-h-[320px] md:h-[40vh] overflow-hidden rounded-b-2xl shadow-lg">
         <div className="absolute inset-0 z-0">
@@ -732,6 +717,7 @@ const TourDetail = () => {
         </button>
       </motion.div>
     </div>
+    </DataLoader>
   );
 };
 

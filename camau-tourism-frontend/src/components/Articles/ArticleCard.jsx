@@ -1,6 +1,7 @@
 import { format } from "date-fns";
 import { Link } from "react-router-dom";
 import { vi } from "date-fns/locale";
+import formatDateFullVN from "../../utils/formatDate";
 export default function ArticleCard({ article, viewType = "grid" }) {
   const articleUrl =
     article.type === "news"
@@ -26,18 +27,15 @@ export default function ArticleCard({ article, viewType = "grid" }) {
           <div className="p-2 sm:p-4 flex-1 flex flex-col">
             <div className="flex items-center gap-1 sm:gap-2 mb-1 sm:mb-2">
               <span
-                className={`px-1.5 py-0.5 sm:px-2 sm:py-1 rounded text-[11px] sm:text-xs font-medium ${
-                  article.type === "news"
+                className={`px-1.5 py-0.5 sm:px-2 sm:py-1 rounded text-[11px] sm:text-xs font-medium ${article.type === "news"
                     ? "bg-green-100 text-green-800"
                     : "bg-orange-100 text-orange-800"
-                }`}
+                  }`}
               >
                 {article.type === "news" ? "Tin tức" : "Sự kiện"}
               </span>
               <span className="text-[11px] sm:text-xs text-gray-500">
-                {format(new Date(article.created_at), "dd/MM/yyyy", {
-                  locale: vi,
-                })}
+                {formatDateFullVN(article.created_at)}
               </span>
             </div>
 
@@ -69,9 +67,7 @@ export default function ArticleCard({ article, viewType = "grid" }) {
                   />
                 </svg>
                 <span className="text-xs sm:text-sm text-blue-700">
-                  {format(new Date(article.event_date), "dd/MM/yyyy - HH:mm", {
-                    locale: vi,
-                  })}
+                  {formatDateFullVN(article.event_date)}
                 </span>
               </div>
             )}
@@ -98,18 +94,15 @@ export default function ArticleCard({ article, viewType = "grid" }) {
           <div className="p-2 sm:p-4 flex-1 flex flex-col">
             <div className="flex items-center gap-1 sm:gap-2 mb-1 sm:mb-2">
               <span
-                className={`px-1.5 py-0.5 sm:px-2 sm:py-1 rounded text-[11px] sm:text-xs font-medium ${
-                  article.type === "news"
+                className={`px-1.5 py-0.5 sm:px-2 sm:py-1 rounded text-[11px] sm:text-xs font-medium ${article.type === "news"
                     ? "bg-green-100 text-green-800"
                     : "bg-orange-100 text-orange-800"
-                }`}
+                  }`}
               >
                 {article.type === "news" ? "Tin tức" : "Sự kiện"}
               </span>
               <span className="text-[11px] sm:text-xs text-gray-500">
-                {format(new Date(article.created_at), "dd/MM/yyyy", {
-                  locale: vi,
-                })}
+                {formatDateFullVN(article.created_at)}
               </span>
             </div>
             <div className="text-base sm:text-lg font-semibold group-hover:text-blue-600 mb-1 sm:mb-2 block">
@@ -139,9 +132,7 @@ export default function ArticleCard({ article, viewType = "grid" }) {
                   />
                 </svg>
                 <span className="text-xs sm:text-sm text-blue-700">
-                  {format(new Date(article.event_date), "dd/MM/yyyy - HH:mm", {
-                    locale: vi,
-                  })}
+                  {formatDateFullVN(article.event_date)}
                 </span>
               </div>
             )}

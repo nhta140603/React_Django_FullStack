@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getList } from "../../api/user_api";
-import { useQuery } from "@tanstack/react-query";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -10,14 +8,9 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "../../components/ui/breadcrumb"
-
+import { useFetchList } from "../../hooks/useFetchList"
 export default function CuisineList() {
-  const { data: cuisines = [], isLoading: loading, error } = useQuery({
-    queryKey: ['cuisines'],
-    queryFn: () => getList('cuisines'),
-    staleTime: 5 * 60 * 1000,
-    retry: 2
-  });
+  const { data: cuisines = [], isLoading: loading, error } = useFetchList('cuisines')
   const [activeFilter, setActiveFilter] = useState("all");
   const navigate = useNavigate();
 

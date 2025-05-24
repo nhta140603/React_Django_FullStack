@@ -6,6 +6,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ReviewList from "../../components/Review_Rating/ReviewList"
 import ReviewForm from "../../components/Review_Rating/ReviewForm"
+import { useDescriptionExpand } from "../../hooks/useDescriptionExpand";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -14,15 +15,12 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "../../components/ui/breadcrumb"
-
+import {DataLoader} from "../../hooks/useDataLoader"
 export default function DestinationDetailPage() {
   const { slug } = useParams();
   const [currentImg, setCurrentImg] = useState(0);
   const [reviewsExpanded, setReviewsExpanded] = useState(false);
   const [extraExpand, setExtraExpand] = useState(false);
-  const [descMaxHeight, setDescMaxHeight] = useState(300);
-  const descRef = useRef();
-
   const {
     data: destination, isLoading, isError, } = useQuery({
       queryKey: ["destination-detail", slug],
@@ -31,14 +29,11 @@ export default function DestinationDetailPage() {
       onError: () => toast.error("Không tìm thấy địa điểm!"),
     });
 
-  useLayoutEffect(() => {
-    if (extraExpand && descRef.current) {
-      setDescMaxHeight(descRef.current.scrollHeight);
-    } else {
-      setDescMaxHeight(300);
-    }
-  }, [extraExpand, destination?.description]);
-
+  const { descRef, descMaxHeight } = useDescriptionExpand(
+    extraExpand,
+    destination?.description,
+    300
+  );
   const handleReviewAdded = () => {
     setReviewsExpanded(true);
     setTimeout(() => {
@@ -49,51 +44,22 @@ export default function DestinationDetailPage() {
     }, 100);
   };
 
-  if (isLoading)
-    return (
-      <div className="flex items-center justify-center h-screen bg-gray-50">
-        <span className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-700"></span>
-      </div>
-    );
-
-  if (isError || !destination)
-    return (
-      <div className="flex items-center justify-center h-screen bg-gray-50">
-        <div className="text-center py-10 px-6 bg-white rounded-lg shadow-md">
-          <svg className="w-16 h-16 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-          </svg>
-          <p className="text-xl font-semibold text-gray-800">Không tìm thấy địa điểm</p>
-          <p className="mt-2 text-gray-600">Địa điểm này có thể đã bị xóa hoặc không tồn tại</p>
-        </div>
-      </div>
-    );
-
   let images = [];
-  if (Array.isArray(destination.image_url)) {
-    images = destination.image_url.filter(Boolean);
-  } else if (typeof destination.image_url === "string" && destination.image_url) {
-    images = [destination.image_url];
+  if (Array.isArray(destination?.image_url)) {
+    images = destination?.image_url.filter(Boolean);
+  } else if (typeof destination?.image_url === "string" && destination.image_url) {
+    images = [destination?.image_url];
   }
-
-  const address = destination.location || "";
+    const address = destination?.location || "";
   const hasAddress = address && address.trim().length > 4;
-  const lat = destination.latitude || destination.lat;
-  const lng = destination.longitude || destination.lng;
+  const lat = destination?.latitude || destination?.lat;
+  const lng = destination?.longitude || destination?.lng;
   const hasLatLng = lat && lng;
   const mapSrc = hasLatLng
     ? `https://maps.google.com/maps?q=${lat},${lng}&z=16&output=embed`
     : (hasAddress
       ? `https://maps.google.com/maps?q=${encodeURIComponent(address)}&z=16&output=embed`
       : null);
-
-  function limitChar(html, max = 360) {
-    if (!html) return "";
-    const temp = document.createElement("div");
-    temp.innerHTML = html;
-    const text = temp.textContent || temp.innerText || "";
-    return text.length > max ? `${text.slice(0, max)}...` : text;
-  }
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -109,13 +75,16 @@ export default function DestinationDetailPage() {
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
-              <BreadcrumbPage>{destination.name}</BreadcrumbPage>
+              <BreadcrumbPage>{destination?.name}</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
-
+        <DataLoader
+          isLoading={isLoading}
+          isError={isError}>
+          
         <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">{destination.name}</h1>
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">{destination?.name}</h1>
           {hasAddress && (
             <div className="flex items-center text-gray-600 mb-1">
               <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -135,7 +104,7 @@ export default function DestinationDetailPage() {
                   <>
                     <img
                       src={images[currentImg]}
-                      alt={`Địa điểm ${destination.name}`}
+                      alt={`Địa điểm ${destination?.name}`}
                       className="object-cover w-full h-full"
                       onClick={() => window.open(images[currentImg], "_blank")}
                       style={{ cursor: "zoom-in" }}
@@ -220,7 +189,7 @@ export default function DestinationDetailPage() {
                   maxHeight: `${descMaxHeight}px`
                 }}
                 dangerouslySetInnerHTML={{
-                  __html: destination.description || "<p>Chưa có thông tin chi tiết về địa điểm này.</p>"
+                  __html: destination?.description || "<p>Chưa có thông tin chi tiết về địa điểm này.</p>"
                 }}
               />
 
@@ -267,11 +236,11 @@ export default function DestinationDetailPage() {
 
               <div className="mb-6 bg-gray-50 rounded-lg p-4 border border-gray-100">
                 <h3 className="text-lg font-medium text-gray-800 mb-3">Chia sẻ trải nghiệm của bạn</h3>
-                <ReviewForm entityType="destination" entityId={destination.id || slug} onReviewAdded={handleReviewAdded} />
+                <ReviewForm entityType="destination" entityId={destination?.id || slug} onReviewAdded={handleReviewAdded} />
               </div>
 
               <div className={`transition-all duration-300 overflow-hidden ${reviewsExpanded ? 'max-h-[2000px]' : 'max-h-[600px]'}`}>
-                <ReviewList entityType="destination" entityId={destination.id || slug} />
+                <ReviewList entityType="destination" entityId={destination?.id || slug} />
               </div>
 
               {!reviewsExpanded && (
@@ -336,50 +305,9 @@ export default function DestinationDetailPage() {
               )}
             </div>
 
-            {destination.open_time || destination.price_range || destination.phone_number ? (
-              <div className="bg-white rounded-xl shadow-sm p-5">
-                <h2 className="text-xl font-bold text-gray-800 mb-4">Thông tin hữu ích</h2>
-                <ul className="space-y-3">
-                  {destination.open_time && (
-                    <li className="flex items-start">
-                      <svg className="w-5 h-5 text-gray-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      <div>
-                        <span className="block text-sm font-medium text-gray-700">Giờ mở cửa</span>
-                        <span className="text-gray-600">{destination.open_time}</span>
-                      </div>
-                    </li>
-                  )}
-
-                  {destination.price_range && (
-                    <li className="flex items-start">
-                      <svg className="w-5 h-5 text-gray-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      <div>
-                        <span className="block text-sm font-medium text-gray-700">Giá vé</span>
-                        <span className="text-gray-600">{destination.price_range}</span>
-                      </div>
-                    </li>
-                  )}
-
-                  {destination.phone_number && (
-                    <li className="flex items-start">
-                      <svg className="w-5 h-5 text-gray-500 mr-3 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                      </svg>
-                      <div>
-                        <span className="block text-sm font-medium text-gray-700">Liên hệ</span>
-                        <span className="text-gray-600">{destination.phone_number}</span>
-                      </div>
-                    </li>
-                  )}
-                </ul>
-              </div>
-            ) : null}
           </div>
         </div>
+        </DataLoader>
       </div>
       <ToastContainer position="top-right" autoClose={2000} />
     </div>

@@ -152,7 +152,7 @@ export default function FilterSidebar({ onFilter, hotels }) {
           </div>
           <div className="p-4">
             <button
-              onClick={() => setShowMap(true)} 
+              // onClick={() => setShowMap(true)} 
               className="w-full bg-blue-600 hover:bg-blue-700 transition text-white font-medium py-2.5 rounded-lg shadow-sm">
               Hiển thị kết quả trên bản đồ
             </button>

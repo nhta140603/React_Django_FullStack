@@ -4,22 +4,17 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { getList } from '../api/user_api';
 import { MotionItem } from '../components/MotionItem';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Pagination, Navigation, A11y } from 'swiper/modules';
+import { Navigation, A11y } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 function SkeletonDestinationCard({ mobile }) {
   return (
     <div className={
-      `rounded-xl overflow-hidden shadow-lg animate-pulse bg-gray-100 flex flex-col
-      ${mobile ? "min-w-[80vw] max-w-[90vw] h-[300px] mx-auto" : ""}`
+      `rounded-xl overflow-hidden shadow-lg bg-gray-100 flex flex-col
+      ${mobile ? "min-w-[80vw] max-w-[90vw] h-[288px] mx-auto" : ""}`
     }>
       <div className={mobile ? "w-full h-40 bg-gray-300" : "w-full h-72 bg-gray-300"}></div>
-      <div className={mobile ? "p-4" : "p-6"}>
-        <div className={mobile ? "h-5 bg-gray-300 rounded w-2/3 mb-2" : "h-6 bg-gray-300 rounded w-3/4 mb-3"}></div>
-        <div className={mobile ? "h-3 bg-gray-200 rounded w-5/6 mb-1" : "h-4 bg-gray-200 rounded w-full mb-2"}></div>
-        <div className={mobile ? "h-3 bg-gray-200 rounded w-2/3" : "h-4 bg-gray-200 rounded w-5/6"}></div>
-      </div>
     </div>
   );
 }

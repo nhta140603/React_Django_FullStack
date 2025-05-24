@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { getPage } from "../../api/user_api";
 import ArticleFilter from "../../components/Articles/ArticleFilter";
 import LatestArticles from "../../components/Articles/LatestArticles";
 import FeaturedEvent from "../../components/Articles/FeaturedEvents";
 import ArticleCard from "../../components/Articles/ArticleCard";
 import FilterBar from "../../components/Articles/FilterBar";
-import { useQuery } from "@tanstack/react-query";
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -14,7 +12,7 @@ import {
     BreadcrumbPage,
     BreadcrumbSeparator,
 } from "../../components/ui/breadcrumb";
-
+import { useFetchList } from "../../hooks/useFetchList"
 function MobileFilterDrawer({ open, onClose, children }) {
     return (
         <div className={`fixed inset-0 z-50 transition-all duration-200 ${open ? "pointer-events-auto" : "pointer-events-none"}`}>
@@ -43,13 +41,7 @@ export default function ArticlesPage() {
     const [view, setView] = useState("list");
     const [drawerOpen, setDrawerOpen] = useState(false);
 
-    const { data, isLoading, error } = useQuery({
-        queryKey: ['articles', page, pageSize],
-        queryFn: () => getPage('articles', page, pageSize),
-        staleTime: 5 * 60 * 1000,
-        retry: 2
-    });
-
+    const { data, isLoading, error } = useFetchList('articles')
     useEffect(() => {
         if (data && data.count) setTotalPages(Math.max(1, Math.ceil(data.count / pageSize)));
     }, [data, pageSize]);

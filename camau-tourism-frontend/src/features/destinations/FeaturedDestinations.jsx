@@ -12,7 +12,8 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "../../components/ui/breadcrumb"
-
+import { useFilterSearch } from "../../hooks/useFilterSearch";
+import { useFetchList } from "../../hooks/useFetchList"
 function MobileFilterSheet({ open, onClose, search, setSearch, typeOptions, selectedType, setSelectedType }) {
   return (
     <div className={`fixed inset-0 z-50 ${open ? '' : 'pointer-events-none'}`}>
@@ -175,21 +176,26 @@ function SkeletonDestinationCard() {
 }
 
 export default function DestinationList() {
-  const [search, setSearch] = useState("");
-  const [selectedType, setSelectedType] = useState("");
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const navigate = useNavigate();
 
-  const { data: destinations = [], isLoading, error } = useQuery({
-    queryKey: ["destinations"],
-    queryFn: () => getList("destinations"),
-    staleTime: 5 * 60 * 1000,
-  });
-
-  const typeOptions = useMemo(
+  const { data: destinations = [], isLoading, error } = useFetchList('destinations')
+    const typeOptions = useMemo(
     () => Array.from(new Set(destinations.map((d) => d.type).filter(Boolean))),
     [destinations]
   );
+
+  const {
+    search,
+    setSearch,
+    selectedFilter: selectedType,
+    setSelectedFilter: setSelectedType,
+    filteredData: filteredDestinations,
+  } = useFilterSearch(destinations, {
+    searchFields: ["name"],
+    filterField: "type",
+    filterOptions: typeOptions,
+  });
 
   const destinationsByType = useMemo(
     () =>
@@ -201,18 +207,6 @@ export default function DestinationList() {
         return value;
       }, {}),
     [destinations]
-  );
-
-  const filteredDestinations = useMemo(
-    () =>
-      destinations.filter((dest) => {
-        const matchType = !selectedType || dest.type === selectedType;
-        const matchSearch = dest.name
-          .toLowerCase()
-          .includes(search.toLowerCase());
-        return matchType && matchSearch;
-      }),
-    [destinations, selectedType, search]
   );
 
   return (
@@ -233,7 +227,7 @@ export default function DestinationList() {
       <div className="mb-6">
         <h2 className="text-xl sm:text-4xl font-bold text-blue-900 mb-1.5 sm:mb-4 text-center">
           Các địa điểm Cà Mau Nổi Bật
-          <div class="w-12 sm:w-24 h-1 bg-blue-500 mx-auto mt-1 sm:mt-2 rounded-full"></div>
+          <div className="w-12 sm:w-24 h-1 bg-blue-500 mx-auto mt-1 sm:mt-2 rounded-full"></div>
         </h2>
         <p className="text-center text-blue-900 max-w-2xl mx-auto mb-5 text-sm sm:text-lg px-2 leading-relaxed">
           Khám phá các địa điểm du lịch hấp dẫn, trải nghiệm cảnh đẹp thiên nhiên, văn hóa & ẩm thực Cà Mau. Đặt tour để tận hưởng chuyến đi trọn vẹn!

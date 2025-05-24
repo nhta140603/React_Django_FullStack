@@ -3,7 +3,7 @@ import {
   FaStar, FaMapMarkerAlt, FaRegBookmark, FaBolt
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-
+import {formatPrice} from "../../utils/formatPrice"
 export default function HotelCard({ hotel, view = "list" }) {
   const images = hotel.images || [hotel.image_cover || hotel.image];
   const [imgIdx, setImgIdx] = useState(0);  
@@ -51,13 +51,12 @@ export default function HotelCard({ hotel, view = "list" }) {
             <span className="text-xs text-gray-500">
               ({hotel.review_count || "0"} đánh giá)
             </span>
-            {/* <span className="text-xs text-gray-500">{hotel.ratingText || "Rất tốt"}</span> */}
           </div>
           <div className="text-right">
             {hotel.price && (
-              <div className="line-through text-gray-400 text-xs mb-1 animate-fadeIn">{hotel.min_price.toLocaleString()} VND</div>
+              <div className="line-through text-gray-400 text-xs mb-1 animate-fadeIn">{formatPrice(hotel.min_price)}</div>
             )}
-            <div className="text-pink-600 font-black text-xl drop-shadow animate-bounce">{hotel.min_price.toLocaleString()} VND</div>
+            <div className="text-pink-600 font-black text-xl drop-shadow animate-bounce">{formatPrice(hotel.min_price)}</div>
             {hotel.onlyOneLeft && (
               <div className="text-orange-500 text-xs font-semibold mt-1 animate-pulse">Chỉ còn 1 phòng giá sốc!</div>
             )}
@@ -121,9 +120,9 @@ export default function HotelCard({ hotel, view = "list" }) {
       <div className="flex flex-col items-end justify-between bg-white min-w-[185px] pl-6 pr-4 py-4 border-l border-gray-100">
         <div className="text-right">
           {hotel.price && (
-            <div className="line-through text-gray-400 text-sm mb-1 animate-fadeIn">{hotel.min_price.toLocaleString()} VND</div>
+            <div className="line-through text-gray-400 text-sm mb-1 animate-fadeIn">{formatPrice(hotel.min_price)}</div>
           )}
-          <div className="text-pink-600 font-black text-2xl drop-shadow animate-bounce">{hotel.min_price.toLocaleString()} VND</div>
+          <div className="text-pink-600 font-black text-2xl drop-shadow animate-bounce">{formatPrice(hotel.min_price)}</div>
           {hotel.onlyOneLeft && (
             <div className="text-orange-500 text-xs font-semibold mt-1 animate-pulse">Chỉ còn 1 phòng giá sốc!</div>
           )}

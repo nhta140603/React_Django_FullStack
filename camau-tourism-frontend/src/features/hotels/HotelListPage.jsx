@@ -1,10 +1,8 @@
 import React, { useMemo, useState, useEffect } from "react";
 import FilterSidebar from "../../components/Hotels/HotelFilter";
 import HotelCard from "../../components/Hotels/HotelCard";
-import { getList } from "../../api/user_api";
 import FilterBar from "../../components/Hotels/FilterBar";
 import SaleBanner from "../../components/Hotels/SaleBanner";
-import { useQuery } from "@tanstack/react-query";
 import { FaSortAmountDown } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import {
@@ -15,14 +13,12 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "../../components/ui/breadcrumb"
+import { useFetchList } from "../../hooks/useFetchList"
+import { DataLoader } from "../../hooks/useDataLoader"
+import { SkeletonCardListItem } from "../../components/Common/SkeletonCard";
 export default function HotelListPage() {
   const navigate = useNavigate();
-  const { data: hotel = [], isLoading: loading, error } = useQuery({
-    queryKey: ['hotel'],
-    queryFn: () => getList('hotels'),
-    staleTime: 5 * 60 * 1000,
-    retry: 2
-  });
+  const { data: hotel = [], isLoading: loading, error } = useFetchList('hotels')
 
   const [currentFilter, setCurrentFilter] = useState({
     priceInRange: [],
@@ -120,22 +116,6 @@ export default function HotelListPage() {
       setShowSortOptions(false);
     }
   };
-
-  const SkeletonCard = ({ className = "" }) => (
-    <div
-      className={`rounded-xl bg-gray-100 border border-gray-200 p-3 mb-4 w-full flex gap-3 items-center ${className} min-h-[172px]`}
-      aria-hidden="true"
-    >
-      <div className="bg-gray-200 rounded-lg w-[210px] h-[170px] shrink-0 " />
-      <div className="flex flex-col flex-1 gap-2">
-        <div className="h-5 w-3/5 bg-gray-200 rounded" />
-        <div className="h-4 w-1/3 bg-gray-200 rounded" />
-        <div className="h-4 w-1/2 bg-gray-200 rounded" />
-        <div className="h-4 w-2/3 bg-gray-200 rounded" />
-        <div className="h-8 w-28 bg-gray-200 rounded mt-2" />
-      </div>
-    </div>
-  );
 
   const MobileSkeletonCard = () => (
     <div className="border rounded-xl overflow-hidden shadow-sm bg-white mb-4 min-h-[430px]" aria-hidden="true">
@@ -817,39 +797,34 @@ export default function HotelListPage() {
               </div>
               <SaleBanner />
               <div className="min-h-[600px]">
-                {loading && (
-                  <>
-                    <SkeletonCard />
-                    <SkeletonCard />
-                    <SkeletonCard />
-                  </>
-                )}
-                {error && <div className="text-red-500 p-4 bg-red-50 rounded-lg">{error}</div>}
-                {filterLoading ? (
-                  <>
-                    <SkeletonCard />
-                    <SkeletonCard />
-                    <SkeletonCard />
-                  </>
-                ) : (
-                  <>
-                    {filteredHotels.length === 0 && !loading && (
-                      <div className="mx-auto max-w-md mt-10 px-6 py-5 text-gray-800 rounded-xl text-center text-lg font-medium animate-fade-in">
-                        Không tìm thấy khách sạn phù hợp
-                      </div>
-                    )}
-                    <div
-                      className={`grid ${filterPopulate.view === "grid"
-                        ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"
-                        : "grid-cols-1"
-                        }`}
-                    >
-                      {filteredHotels.map((hotel) => (
-                        <HotelCard key={hotel.id} hotel={hotel} view={filterPopulate.view} />
-                      ))}
+                <DataLoader
+                  isLoading={loading || filterLoading}
+                  error={error}
+                  dataLength={filteredHotels.length}
+                  skeleton={
+                    <>
+                      <SkeletonCardListItem />
+                      <SkeletonCardListItem />
+                      <SkeletonCardListItem />
+                    </>
+                  }
+                  noData={
+                    <div className="mx-auto max-w-md mt-10 px-6 py-5 text-gray-800 rounded-xl text-center text-lg font-medium animate-fade-in">
+                      Không tìm thấy khách sạn phù hợp
                     </div>
-                  </>
-                )}
+                  }
+                >
+                  <div
+                    className={`grid ${filterPopulate.view === "grid"
+                      ? "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3"
+                      : "grid-cols-1"
+                      }`}
+                  >
+                    {filteredHotels.map((hotel) => (
+                      <HotelCard key={hotel.id} hotel={hotel} view={filterPopulate.view} />
+                    ))}
+                  </div>
+                </DataLoader>
               </div>
             </main>
           </div>

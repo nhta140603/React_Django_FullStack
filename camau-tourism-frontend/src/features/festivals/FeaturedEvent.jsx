@@ -10,33 +10,12 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "../../components/ui/breadcrumb"
-
+import { useFetchList } from "../../hooks/useFetchList"
 export default function EventsList() {
-  const {
-    data: events = [],
-    isLoading: loading,
-    error,
-  } = useQuery({
-    queryKey: ["events"],
-    queryFn: () => getList("festivals"),
-    staleTime: 5 * 60 * 1000,
-    retry: 2,
-  });
+  const { data: events = [], isLoading: loading, error} = useFetchList('festivals')
 
   const [activeFilter, setActiveFilter] = useState("all");
   const navigate = useNavigate();
-
-  const formatDate = (dateString) => {
-    if (!dateString) return "Đang cập nhật";
-    const [day, month, year] = dateString.split("/");
-    const date = new Date(year, month - 1, day);
-    return date.toLocaleDateString("vi-VN", {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
-  };
 
   const getMonthFromDate = (dateString) => {
     if (!dateString) return 0;
