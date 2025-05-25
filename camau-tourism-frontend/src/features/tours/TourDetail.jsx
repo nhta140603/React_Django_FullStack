@@ -75,7 +75,11 @@ function PaymentStatusModal({ status, open, onClose, amount }) {
           </div>
         )}
         <button
-          onClick={onClose}
+          onClick={
+            status === 'success'
+              ? onGotoDetail
+              : onClose
+          }
           className={`px-6 py-3 text-white font-medium rounded-lg ${info.buttonColor} transition-colors`}
         >
           {info.buttonText}
@@ -519,6 +523,10 @@ const TourDetail = () => {
         open={paymentStatusModal.open}
         onClose={handleClosePaymentModal}
         amount={paymentStatusModal.amount}
+        onGotoDetail={() => {
+        setPaymentStatusModal({ open: false, status: '', amount: null });
+        navigate('/cac-chuyen-di');
+  }}
       />
 
       <div className="container max-w-7xl mx-auto px-2 md:px-4 pt-7 pb-6">

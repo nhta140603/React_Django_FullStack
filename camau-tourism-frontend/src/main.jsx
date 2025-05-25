@@ -4,12 +4,14 @@ import { AuthProvider } from './contexts/AuthContext';
 import AppRoutes from './routes/AppRoutes';
 import './index.css';
 import { Toaster } from "../src/components/ui/sonner";
-
+import { NotificationProvider } from './hooks/useNotification';
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-      <AuthProvider>
+    <AuthProvider>
+      <NotificationProvider>
         <AppRoutes />
         <Toaster position="bottom-right" richColors />
-      </AuthProvider>
+      </NotificationProvider>
+    </AuthProvider>
   </StrictMode>
 );
