@@ -108,7 +108,7 @@ const TourDetail = () => {
       const newUrl = window.location.pathname;
       window.history.replaceState({}, document.title, newUrl);
 
-      const depositAmount = tour.price * peopleCount * 0.3;
+      const depositAmount = tour?.price * peopleCount * 0.3;
       setPaymentStatusModal({
         open: true,
         status: paymentStatus,
@@ -125,7 +125,7 @@ const TourDetail = () => {
     }
 
     try {
-      const deposit = tour.price * peopleCount * 0.3;
+      const deposit = tour?.price * peopleCount * 0.3;
       const data = await createMomoPayment(deposit, tour.id, peopleCount);
       if (data.payUrl) window.open(data.payUrl, "_self");
       else alert("Không lấy được link thanh toán");
