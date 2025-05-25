@@ -370,7 +370,8 @@ class MomoCallbackView(APIView):
                 booking.paid_amount += payment.amount
                 booking.status = 'Paid'
                 booking.save()
-                redirect_frontend = f"http://localhost:5174/chuyen-du-lich/{booking.tour.slug}?payment=success&booking_id={booking_id}"
+                # redirect_frontend = f"http://localhost:5174/chuyen-du-lich/{booking.tour.slug}?payment=success&booking_id={booking_id}"
+                redirect_frontend = f"https://4b53912b-7f0c-426c-9146-b0123e128c19.e1-us-east-azure.choreoapps.dev/chuyen-du-lich/{booking.tour.slug}?payment=success&booking_id={booking_id}"
                 return redirect(redirect_frontend)
             else:
                 payment.status = "Failed"
@@ -378,7 +379,8 @@ class MomoCallbackView(APIView):
                 booking = payment.booking
                 booking.status = 'Failed'
                 booking.save()
-                redirect_frontend = f"http://localhost:5174/chuyen-du-lich/{booking.tour.slug}?payment=failed&booking_id={booking_id}"
+                # redirect_frontend = f"http://localhost:5174/chuyen-du-lich/{booking.tour.slug}?payment=failed&booking_id={booking_id}"
+                redirect_frontend = f"https://4b53912b-7f0c-426c-9146-b0123e128c19.e1-us-east-azure.choreoapps.dev/chuyen-du-lich/{booking.tour.slug}?payment=failed&booking_id={booking_id}"
                 return redirect(redirect_frontend)
         except Payment.DoesNotExist:
             return redirect(f"http://localhost:5174/?payment=error")

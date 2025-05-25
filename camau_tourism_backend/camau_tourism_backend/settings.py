@@ -31,7 +31,8 @@ DEBUG = True
 # ALLOWED_HOSTS = ['afd2-2405-4803-c7e5-9c60-7094-34ae-8d2c-6801.ngrok-free.app', 'localhost']
 ALLOWED_HOSTS = ['4b53912b-7f0c-426c-9146-b0123e128c19.e1-us-east-azure.choreoapps.dev', 
                  '194522ae-690b-4686-960a-bd41215db82b.e1-us-east-azure.choreoapps.dev',
-                 'camautourismbackend-2103037872.dp-development-reactdjangofullsta-69765-4121780363']
+                 'camautourismbackend-2103037872.dp-development-reactdjangofullsta-69765-4121780363',
+                 '4f55-2405-4803-c7e5-9c60-11c0-ccf4-47-284d.ngrok-free.app']
 
 # Application definition
 
