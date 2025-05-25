@@ -25,7 +25,7 @@ function Modal({ open, onClose, children }) {
   );
 }
 
-function PaymentStatusModal({ status, open, onClose, amount }) {
+function PaymentStatusModal({ status, open, onClose, amount, onGotoDetail }) {
   const statusInfo = {
     success: {
       title: "Thanh toán thành công",
