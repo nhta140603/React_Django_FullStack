@@ -16,18 +16,13 @@ import {
   BreadcrumbSeparator,
 } from "../../components/ui/breadcrumb"
 import {DataLoader} from "../../hooks/useDataLoader"
+import useFetchResource from "../../hooks/useFetchDetail"
 export default function DestinationDetailPage() {
   const { slug } = useParams();
   const [currentImg, setCurrentImg] = useState(0);
   const [reviewsExpanded, setReviewsExpanded] = useState(false);
   const [extraExpand, setExtraExpand] = useState(false);
-  const {
-    data: destination, isLoading, isError, } = useQuery({
-      queryKey: ["destination-detail", slug],
-      queryFn: () => getDetail("destinations", slug),
-      retry: false,
-      onError: () => toast.error("Không tìm thấy địa điểm!"),
-    });
+  const { data: destination, isLoading, isError } =  useFetchResource({ type: 'destinations', slug });
 
   const { descRef, descMaxHeight } = useDescriptionExpand(
     extraExpand,

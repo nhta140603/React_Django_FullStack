@@ -45,7 +45,6 @@ export default function UserProfile() {
         onSaveInfo={handleSaveInfo}
         isSaving={updateMutation.isLoading}
       />
-      <ToastContainer position="top-right" autoClose={3000} />
     </main>
   );
 }

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useQuery } from '@tanstack/react-query';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import { getDetail, getList, createMomoPayment } from "../../api/user_api";
+import { createMomoPayment } from "../../api/user_api";
 import { useAuth } from '../../contexts/AuthContext';
 import {DataLoader} from "../../hooks/useDataLoader"
+import useFetchResource from "../../hooks/useFetchDetail"
+import {formatPrice} from "../../utils/formatPrice"
 function Modal({ open, onClose, children }) {
   if (!open) return null;
   return (
@@ -94,25 +95,10 @@ const TourDetail = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [openMobileBook, setOpenMobileBook] = useState(false);
-  const {
-    data: tour = {},
-    isLoading: isLoadingTour,
-    error: tourError,
-  } = useQuery({
-    queryKey: ['tour', slug],
-    queryFn: () => getDetail('tours', slug),
-    enabled: !!slug,
-  });
 
-  const {
-    data: tourDestinations = [],
-    isLoading: isLoadingDest,
-    error: destError,
-  } = useQuery({
-    queryKey: ['tourDestinations', slug],
-    queryFn: () => getList(`tours/${slug}/tour-destination`),
-    enabled: !!slug,
-  });
+  const { data: tour, isLoadingTour, tourError } = useFetchResource({ type: 'tours', slug });
+
+  const { data: tourDestinations, isLoadingDest, destError } = useFetchResource({ type: 'tours', slug, subPath: 'tour-destination' });
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
@@ -130,7 +116,7 @@ const TourDetail = () => {
         bookingId: bookingId
       });
     }
-  }, [location, tour.price, peopleCount]);
+  }, [location, tour?.price, peopleCount]);
 
   const handleBookTour = async () => {
     if (!isAuthenticated) {
@@ -158,12 +144,9 @@ const TourDetail = () => {
     setPaymentStatusModal({ open: false, status: '', amount: null });
   };
 
-  const formatPrice = (price) =>
-    new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
+  const description = tour?.description || "";
 
-  const description = tour.description || "";
-
-  function MobileTimeline({ destinations }) {
+  function MobileTimeline({ destinations = [] }) {
     return (
       <div className="flex flex-col items-center w-full">
         <div className="relative flex flex-col items-center w-full">
@@ -224,7 +207,7 @@ const TourDetail = () => {
     );
   }
 
-  function DesktopTimeline({ destinations }) {
+  function DesktopTimeline({ destinations = [] }) {
     return (
       <div className="relative">
         <div className="absolute top-0 bottom-0 left-[39px] w-1 bg-gradient-to-b from-blue-500 to-teal-400 rounded-full"></div>
@@ -284,7 +267,7 @@ const TourDetail = () => {
       <div className="fixed bottom-0 left-0 w-full z-40 bg-white border-t border-gray-200 shadow-lg flex justify-between items-center px-4 py-2 md:hidden">
         <div>
           <div className="text-xs text-gray-500 font-medium">Chỉ cần đặt cọc</div>
-          <div className="text-blue-600 font-bold text-lg">{formatPrice(tour.price * 0.3)}</div>
+          <div className="text-blue-600 font-bold text-lg">{formatPrice(tour?.price * 0.3)}</div>
         </div>
         <button
           onClick={handleBookTour}
@@ -318,14 +301,14 @@ const TourDetail = () => {
                   className="flex-1 p-2 text-center focus:outline-none"
                   value={peopleCount}
                   onChange={(e) =>
-                    setPeopleCount(Math.min(tour.max_people, Math.max(1, parseInt(e.target.value) || 1)))
+                    setPeopleCount(Math.min(tour?.max_people, Math.max(1, parseInt(e.target.value) || 1)))
                   }
                   min={1}
-                  max={tour.max_people}
+                  max={tour?.max_people}
                 />
                 <button
                   className="px-4 py-2 text-gray-600 hover:bg-gray-100 focus:outline-none"
-                  onClick={() => setPeopleCount(Math.min(tour.max_people, peopleCount + 1))}
+                  onClick={() => setPeopleCount(Math.min(tour?.max_people, peopleCount + 1))}
                 >
                   <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
@@ -336,15 +319,15 @@ const TourDetail = () => {
             <div className="pt-4 border-t border-gray-200">
               <div className="flex justify-between text-sm mb-2">
                 <span className="text-gray-600">Giá gốc × {peopleCount} người</span>
-                <span className="text-gray-900">{formatPrice(tour.price * peopleCount)}</span>
+                <span className="text-gray-900">{formatPrice(tour?.price * peopleCount)}</span>
               </div>
               <div className="flex justify-between text-sm mb-2">
                 <span className="text-gray-600">Thuế và phí</span>
-                <span className="text-gray-900">{formatPrice(tour.price * peopleCount * 0.1)}</span>
+                <span className="text-gray-900">{formatPrice(tour?.price * peopleCount * 0.1)}</span>
               </div>
               <div className="flex justify-between font-bold text-base mt-4">
                 <span>Tổng cộng</span>
-                <span className="text-blue-600">{formatPrice(tour.price * peopleCount * 1.1)}</span>
+                <span className="text-blue-600">{formatPrice(tour?.price * peopleCount * 1.1)}</span>
               </div>
             </div>
             <button
@@ -472,7 +455,7 @@ const TourDetail = () => {
           >
             <div
               className="w-full h-full bg-cover bg-center object-cover"
-              style={{ backgroundImage: `url(${tour.image})` }}
+              style={{ backgroundImage: `url(${tour?.image})` }}
             />
           </motion.div>
         </div>
@@ -486,7 +469,7 @@ const TourDetail = () => {
             transition={{ duration: 0.8 }}
             className="text-2xl md:text-4xl font-extrabold tracking-tight drop-shadow-xl text-center"
           >
-            {tour.name}
+            {tour?.name}
           </motion.h1>
           <motion.div
             initial={{ y: 50, opacity: 0 }}
@@ -498,19 +481,19 @@ const TourDetail = () => {
               <svg className="h-5 w-5 md:h-6 md:w-6 text-yellow-300 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <span>{tour.duration} ngày</span>
+              <span>{tour?.duration} ngày</span>
             </div>
             <div className="flex items-center bg-white/10 backdrop-blur-sm px-3 py-1 rounded-full shadow-lg">
               <svg className="h-5 w-5 md:h-6 md:w-6 text-green-300 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
-              <span>{tour.min_people}-{tour.max_people} người</span>
+              <span>{tour?.min_people}-{tour?.max_people} người</span>
             </div>
             <div className="flex items-center bg-white/10 backdrop-blur-sm px-3 py-1 rounded-full shadow-lg">
               <svg className="h-5 w-5 md:h-6 md:w-6 text-pink-300 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <span>{formatPrice(tour.price)}</span>
+              <span>{formatPrice(tour?.price)}</span>
             </div>
           </motion.div>
         </div>
@@ -620,13 +603,13 @@ const TourDetail = () => {
                         type="number"
                         className="flex-1 p-2 text-center focus:outline-none"
                         value={peopleCount}
-                        onChange={(e) => setPeopleCount(Math.min(tour.max_people, Math.max(1, parseInt(e.target.value) || 1)))}
+                        onChange={(e) => setPeopleCount(Math.min(tour?.max_people, Math.max(1, parseInt(e.target.value) || 1)))}
                         min={1}
-                        max={tour.max_people}
+                        max={tour?.max_people}
                       />
                       <button
                         className="px-4 py-2 text-gray-600 hover:bg-gray-100 focus:outline-none"
-                        onClick={() => setPeopleCount(Math.min(tour.max_people, peopleCount + 1))}
+                        onClick={() => setPeopleCount(Math.min(tour?.max_people, peopleCount + 1))}
                       >
                         <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
@@ -637,15 +620,15 @@ const TourDetail = () => {
                   <div className="pt-4 border-t border-gray-200">
                     <div className="flex justify-between text-sm mb-2">
                       <span className="text-gray-600">Giá gốc × {peopleCount} người</span>
-                      <span className="text-gray-900">{formatPrice(tour.price * peopleCount)}</span>
+                      <span className="text-gray-900">{formatPrice(tour?.price * peopleCount)}</span>
                     </div>
                     <div className="flex justify-between text-sm mb-2">
                       <span className="text-gray-600">Thuế và phí</span>
-                      <span className="text-gray-900">{formatPrice(tour.price * peopleCount * 0.1)}</span>
+                      <span className="text-gray-900">{formatPrice(tour?.price * peopleCount * 0.1)}</span>
                     </div>
                     <div className="flex justify-between font-bold text-base mt-4">
                       <span>Tổng cộng</span>
-                      <span className="text-blue-600">{formatPrice(tour.price * peopleCount * 1.1)}</span>
+                      <span className="text-blue-600">{formatPrice(tour?.price * peopleCount * 1.1)}</span>
                     </div>
                   </div>
                   <button
@@ -655,7 +638,7 @@ const TourDetail = () => {
                     Đặt tour ngay
                   </button>
                   <p className="text-center text-gray-500 text-sm mt-2">
-                    Chỉ cần đặt cọc {formatPrice(tour.price * 0.3)} để giữ chỗ
+                    Chỉ cần đặt cọc {formatPrice(tour?.price * 0.3)} để giữ chỗ
                   </p>
                 </div>
                 <div className="mt-6 space-y-3">

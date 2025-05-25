@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { getList, getDetail, createRoomBooking, AvailableQuantity } from "../../api/user_api";
+import { createRoomBooking, AvailableQuantity } from "../../api/user_api";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -21,7 +20,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { FaElevator } from "react-icons/fa6";
 import DatePicker from "react-datepicker";
 import { vi } from 'date-fns/locale/vi';
-import { registerLocale, setDefaultLocale } from "react-datepicker";
+import { registerLocale } from "react-datepicker";
 registerLocale('vi', vi);
 import "react-datepicker/dist/react-datepicker.css";
 import ReviewForm from "../../components/Review_Rating/ReviewForm";
@@ -35,8 +34,9 @@ import {
   BreadcrumbSeparator,
 } from "../../components/ui/breadcrumb"
 import { DataLoader } from "../../hooks/useDataLoader"
+import useFetchResource from "../../hooks/useFetchDetail"
+import { formatPrice } from "../../utils/formatPrice"
 export default function HotelDetailPage() {
-  const navigate = useNavigate();
   const { slug } = useParams();
   const [showSoldOutPopup, setShowSoldOutPopup] = useState(false);
   const [activeTab, setActiveTab] = useState("rooms");
@@ -69,15 +69,10 @@ export default function HotelDetailPage() {
       });
     }, 100);
   };
-  const {
-    data: hotel,
-    isLoading: loadingHotel,
-    isError: errorHotel,
-  } = useQuery({
-    queryKey: ["hotelDetail", slug],
-    queryFn: () => getDetail("hotels", slug),
-    enabled: !!slug,
-  });
+  const { data: hotel = [], loadingHotel, errorHotel } = useFetchResource({ type: 'hotels', slug });
+
+  const { data: rooms = [], loadingRooms, errorRooms } = useFetchResource({ type: 'hotels', slug, subPath: 'rooms' });
+
   async function fetchAvailableQuantity(roomId, checkIn, checkOut) {
     if (!roomId || !checkIn || !checkOut) return;
     try {
@@ -92,15 +87,6 @@ export default function HotelDetailPage() {
       setAvailableQuantity(null);
     }
   }
-  const {
-    data: rooms = [],
-    isLoading: loadingRooms,
-    isError: errorRooms,
-  } = useQuery({
-    queryKey: ["hotelRooms", slug],
-    queryFn: () => getList(`hotels/${slug}/rooms`),
-    enabled: !!slug,
-  });
 
   const galleryImages = useMemo(() => {
     if (!hotel) return [];
@@ -214,7 +200,6 @@ export default function HotelDetailPage() {
       queryClient.invalidateQueries(["hotelRooms", slug]);
       return true;
     } catch (err) {
-      console.error('Booking error:', err);
       if (err.response?.data?.detail) {
         toast.error(err.response.data.detail);
       } else if (err.message) {
@@ -479,8 +464,8 @@ export default function HotelDetailPage() {
                 <div className="mt-4 md:mt-0">
                   <div className="text-xs md:text-sm text-gray-500 mb-1">Giá chỉ từ</div>
                   <div className="flex items-center">
-                    <span className="line-through text-gray-400 mr-2 text-sm">{minPrice ? `${(minPrice * 1.2).toLocaleString()} VND` : "--"}</span>
-                    <span className="text-xl md:text-2xl font-bold text-red-500">{minPrice ? `${minPrice.toLocaleString()} VND` : "--"}</span>
+                    <span className="line-through text-gray-400 mr-2 text-sm">{formatPrice(minPrice) ? `${formatPrice(minPrice * 1.2)}` : "--"}</span>
+                    <span className="text-xl md:text-2xl font-bold text-red-500">{formatPrice(minPrice) ? `${formatPrice(minPrice)}` : "--"}</span>
                     <span className="text-xs text-gray-500 ml-1">/đêm</span>
                   </div>
                   <span className="text-xs text-green-600 font-medium">Tiết kiệm 20% cho đặt phòng hôm nay</span>
@@ -591,12 +576,12 @@ export default function HotelDetailPage() {
                             <div>
                               <div className="flex items-center justify-end">
                                 <div className="line-through text-gray-400 text-sm">
-                                  {(Number(rooms[activeRoomTab].price) * 1.15).toLocaleString()} VND
+                                  {(formatPrice(Number(rooms[activeRoomTab].price) * 1.15))}
                                 </div>
                               </div>
                               <div className="text-right">
-                                <span className="text-2xl font-bold text-red-500">{Number(rooms[activeRoomTab].price).toLocaleString()} VND</span>
-                                <span className="text-xs text-gray-500">/đêm</span>
+                                <span className="text-2xl font-bold text-red-500">{formatPrice(Number(rooms[activeRoomTab].price))}</span>
+                                <span className="text-xs text-gray-500"> /đêm</span>
                               </div>
                               <div className="text-xs text-gray-500 text-right mb-4">
                                 Chưa bao gồm thuế và phí
@@ -606,7 +591,7 @@ export default function HotelDetailPage() {
                               onClick={() => openBookingModal(activeRoomTab)}
                               disabled={!rooms[activeRoomTab].is_available || availableQuantity <= 0}
                               className={`w-full py-2 px-4 rounded-lg font-medium transition
-    ${(!rooms[activeRoomTab].is_available || availableQuantity <= 0)
+                              ${(!rooms[activeRoomTab].is_available || availableQuantity <= 0)
                                   ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                   : 'bg-blue-600 hover:bg-blue-700 text-white'
                                 }`}

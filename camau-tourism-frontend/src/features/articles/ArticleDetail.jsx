@@ -1,10 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
-import { getDetail } from "../../api/user_api";
-import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { format } from "date-fns";
-import { vi } from "date-fns/locale";
 import {
   Drawer,
   DrawerClose,
@@ -14,6 +10,8 @@ import {
   DrawerTrigger,
 } from "../../components/ui/drawer"
 import { DataLoader } from "../../hooks/useDataLoader"
+import useFetchResource from "../../hooks/useFetchDetail"
+import formattedDate from "../../utils/formatDate"
 function ReadingProgress() {
   const [readingProgress, setReadingProgress] = useState(0);
 
@@ -233,14 +231,14 @@ function ArticleSidebarInfo({ article, eventDate, categoryLink, authorAvatar, au
             <svg className="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            Đăng tải: {format(new Date(article?.created_at), 'HH:mm - dd/MM/yyyy', { locale: vi })}
+            Đăng tải: {formattedDate(new Date(article?.created_at))}
           </p>
           {article.updated_at && article.updated_at !== article.created_at && (
             <p className="text-sm text-gray-500 flex items-center">
               <svg className="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
               </svg>
-              Cập nhật: {format(new Date(article.updated_at), 'HH:mm - dd/MM/yyyy', { locale: vi })}
+              Cập nhật: {formattedDate(new Date(article?.updated_at))}
             </p>
           )}
         </div>
@@ -257,18 +255,18 @@ function ArticleSidebarInfo({ article, eventDate, categoryLink, authorAvatar, au
           <div className="flex items-center justify-between bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-3 shadow-sm">
             <div className="text-center w-1/4">
               <div className="text-2xl font-bold text-purple-700">
-                {format(new Date(eventDate), 'dd', { locale: vi })}
+                {formattedDate(new Date(eventDate))}
               </div>
               <div className="text-xs text-gray-500">
-                {format(new Date(eventDate), 'MMM', { locale: vi })}
+                {formattedDate(new Date(eventDate))}
               </div>
             </div>
             <div className="text-center w-1/2">
               <div className="text-sm font-medium text-gray-800">
-                {format(new Date(eventDate), 'EEEE', { locale: vi })}
+                {formattedDate(new Date(eventDate))}
               </div>
               <div className="text-base font-bold text-purple-700">
-                {format(new Date(eventDate), 'HH:mm', { locale: vi })}
+                {formattedDate(new Date(eventDate))}
               </div>
             </div>
             <button className="bg-purple-600 hover:bg-purple-700 text-white py-1.5 px-3 text-xs rounded-lg transition-colors shadow-sm flex items-center">
@@ -379,9 +377,6 @@ function ArticleSidebar({ article, eventDate, categoryLink, authorAvatar, author
 
 export default function ArticleDetailPage() {
   const { slug, id } = useParams();
-  const [article, setArticle] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(true);
   const [relatedArticles, setRelatedArticles] = useState([]);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const contentRef = useRef(null);
@@ -393,69 +388,17 @@ export default function ArticleDetailPage() {
     return readingTime < 1 ? 1 : readingTime;
   };
 
-  useEffect(() => {
-    setLoading(true);
-    getDetail("articles", slug)
-      .then((data) => {
-        setArticle(data);
+  const { data: article, isLoading, isError } = useFetchResource({ type: 'articles', slug });
 
-        setTimeout(() => {
-          if (contentRef.current) {
-            const headings = contentRef.current.querySelectorAll("h2, h3");
-            headings.forEach((heading, index) => {
-              heading.id = `heading-${index}`;
-            });
-          }
-        }, 100);
-
-        fetch(`/api/articles?type=${data.type}&limit=3&exclude=${id}`)
-          .then((res) => res.json())
-          .then(setRelatedArticles)
-          .catch(() => {
-            setRelatedArticles([
-              {
-                id: 101,
-                title: "Bài viết liên quan 1",
-                type: data.type,
-                cover_image_url: "https://source.unsplash.com/random/300x200?sig=1",
-                created_at: new Date().toISOString(),
-              },
-              {
-                id: 102,
-                title: "Bài viết liên quan 2",
-                type: data.type,
-                cover_image_url: "https://source.unsplash.com/random/300x200?sig=2",
-                created_at: new Date().toISOString(),
-              },
-              {
-                id: 103,
-                title: "Bài viết liên quan 3",
-                type: data.type,
-                cover_image_url: "https://source.unsplash.com/random/300x200?sig=3",
-                created_at: new Date().toISOString(),
-              },
-            ]);
-          });
-      })
-      .catch(() => toast.error("Không tìm thấy bài viết!"))
-      .finally(() => setLoading(false));
-
-    window.scrollTo(0, 0);
-  }, [slug, id]);
-
-  const formattedDate = article?.created_at
-    ? format(new Date(article.created_at), "dd/MM/yyyy", { locale: vi })
-    : "";
   const readTime = calculateReadingTime(article?.content);
   const categoryLink = article?.type === "news" ? "/tin-tuc-su-kien" : "/tin-tuc-su-kien";
   const eventDate = article?.event_date ? new Date(article?.event_date) : null;
 
   return (
     <DataLoader
-      isLoading={loading}
-      isError={error}
+      isLoading={isLoading}
+      isError={isError}
     >
-
 
       <div className="min-h-screen pb-16">
         <ReadingProgress />
@@ -571,7 +514,6 @@ export default function ArticleDetailPage() {
             />
           </div>
         </div>
-        <ToastContainer position="top-right" autoClose={3000} />
       </div>
     </DataLoader>
   );

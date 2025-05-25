@@ -19,6 +19,7 @@ import {
   Accordion, AccordionContent, AccordionItem, AccordionTrigger,
 } from "../../components/ui/accordion";
 import { DataLoader } from "../../hooks/useDataLoader";
+import useFetchResource from "../../hooks/useFetchDetail"
 function EventHeroSection({ title, image, children }) {
   return (
     <div className="relative min-h-[240px] sm:min-h-[280px] md:min-h-[360px] rounded-xl overflow-hidden shadow-lg flex items-end">
@@ -190,17 +191,7 @@ export default function FestivalDetail() {
   const { id, slug } = useParams();
   const [openSheet, setOpenSheet] = useState(false);
 
-  const {
-    data: event,
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ["festivalDetail", slug],
-    queryFn: () => getDetail("festivals", slug),
-    enabled: !!slug,
-    retry: false,
-    onError: () => toast.error("Không tìm thấy sự kiện!"),
-  });
+  const { data: event, isLoading, isError} = useFetchResource({ type: 'festivals', slug });
 
   const handleShareEvent = () => {
     if (!event) return;

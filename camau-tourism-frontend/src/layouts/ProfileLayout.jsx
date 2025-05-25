@@ -2,10 +2,8 @@ import React, { useState } from "react";
 import ProfileSidebar from "../components/Users/ProfileSidebar";
 import MainLayout from "./MainLayout";
 import { Outlet } from "react-router-dom";
-import { getInfoUser, updateInfoUser } from "../api/user_api";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { getInfoUser } from "../api/user_api";
+import { useQuery } from "@tanstack/react-query";
 export default function UserProfile() {
   const { data: userData, isLoading: loading, error } = useQuery({
     queryKey: ["userData"],
@@ -34,9 +32,7 @@ export default function UserProfile() {
           name={userData.name}
         />
         <Outlet />
-        <ToastContainer position="top-right" autoClose={3000} />
       </div>
     </MainLayout>
-
   );
 }

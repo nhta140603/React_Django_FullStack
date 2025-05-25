@@ -17,7 +17,6 @@ export default function Avatar({ src, alt, size = "default", sizeClasses }) {
     large: "w-full h-full border-4"
   };
   
-  // Use custom size classes if provided, otherwise use default
   const finalSizeClasses = sizeClasses || defaultSizeClasses[size];
   
   return (

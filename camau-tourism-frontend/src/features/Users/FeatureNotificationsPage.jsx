@@ -161,7 +161,7 @@ function NotificationsPage() {
   });
 
   return (
-    <div className="flex-1 p-4 bg-[#f5f7fb]">
+    <div className="flex-1 p-2 bg-[#f5f7fb]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

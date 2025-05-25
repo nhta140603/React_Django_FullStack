@@ -6,15 +6,11 @@ import ReviewForm from "../../components/Review_Rating/ReviewForm";
 import ReviewList from "../../components/Review_Rating/ReviewList";
 import { useDescriptionExpand } from "../../hooks/useDescriptionExpand";
 import {DataLoader} from "../../hooks/useDataLoader"
+import useFetchResource from "../../hooks/useFetchDetail"
 export default function CuisineDetail() {
     const { slug } = useParams();
     const navigate = useNavigate();
-    const { data: cuisine, isLoading, isError, error } = useQuery({
-        queryKey: ["cuisine", slug],
-        queryFn: () => getDetail("cuisines", slug),
-        enabled: !!slug,
-        retry: false,
-    });
+    const { data: cuisine, isLoading, isError } = useFetchResource({ type: 'cuisines', slug });
     const [extraExpand, setExtraExpand] = useState(false);
     const { descRef, descMaxHeight } = useDescriptionExpand(
         extraExpand,
