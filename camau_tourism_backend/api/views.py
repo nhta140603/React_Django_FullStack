@@ -339,6 +339,8 @@ class MomoPaymentView(APIView):
                 payment_date = timezone.now(),
                 method='momo'
             )
+            print('MOMO_REDIRECT_URL:', os.getenv('MOMO_REDIRECT_URL'))
+            print('MOMO_IPN_URL:', os.getenv('MOMO_IPN_URL'))
             payUrl = momo_create_pay_url(
                 order_id=order_id,
                 amount=amount,
